@@ -6,3 +6,5 @@ tslint.json
 tests/
 .nyc_output/
 coverage/
+junit_report.xml
+Jenkinsfile

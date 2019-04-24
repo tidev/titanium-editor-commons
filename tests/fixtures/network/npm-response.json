@@ -1,0 +1,241 @@
+{
+    "_id": "appcelerator",
+    "_rev": "479-6b5764437772e427ad34e01c534e8402",
+    "name": "appcelerator",
+    "description": "Appcelerator Platform Software installer",
+    "dist-tags": {
+        "latest": "4.2.13"
+    },
+    "versions": {
+        "4.2.12": {
+            "name": "appcelerator",
+            "version": "4.2.12",
+            "description": "Appcelerator Platform Software installer",
+            "main": "index.js",
+            "author": {
+                "name": "Jeff Haynie"
+            },
+            "license": "SEE LICENSE IN LICENSE",
+            "preferGlobal": true,
+            "bin": {
+                "appc": "./bin/appc",
+                "appcelerator": "./bin/appc"
+            },
+            "scripts": {
+                "test": "JUNIT_REPORT_PATH=junit_report.xml grunt"
+            },
+            "repository": {
+                "type": "git",
+                "url": "git+https://github.com/appcelerator/appc-install.git"
+            },
+            "homepage": "https://github.com/appcelerator/appc-install",
+            "keywords": [
+                "appcelerator",
+                "titanium",
+                "apibuilder",
+                "acs",
+                "appcelerator cloud",
+                "arrow"
+            ],
+            "devDependencies": {
+                "grunt": "^1.0.1",
+                "grunt-appc-js": "^1.0.19",
+                "grunt-cli": "^1.2.0",
+                "grunt-contrib-clean": "^1.0.0",
+                "grunt-env": "0.4.4",
+                "grunt-mocha-istanbul": "^5.0.2",
+                "istanbul": "^0.4.1",
+                "lodash": "^3.10.1",
+                "mocha": "^2.3.4",
+                "mocha-jenkins-reporter": "^0.3.7",
+                "should": "^8.0.2"
+            },
+            "dependencies": {
+                "async": "^1.5.0",
+                "chalk": "0.5.1",
+                "debug": "^2.1.1",
+                "npm-install-checks": "^3.0.0",
+                "pac-proxy-agent": "^2.0.0",
+                "progress": "1.1.8",
+                "request": "^2.55.0",
+                "semver": "~5.4.1",
+                "tar": "1.0.3",
+                "which": "1.0.8"
+            },
+            "engines": {
+                "node": ">=8.0.0"
+            },
+            "gitHead": "2ee4d450eca18fb9bfe6e50954b6b1fd3769a650",
+            "bugs": {
+                "url": "https://github.com/appcelerator/appc-install/issues"
+            },
+            "_id": "appcelerator@4.2.12",
+            "_npmVersion": "5.5.1",
+            "_nodeVersion": "8.9.1",
+            "_npmUser": {
+                "name": "appcelerator",
+                "email": "npmjs@appcelerator.com"
+            },
+            "dist": {
+                "integrity": "sha512-0jVc5+aKBwxihy/nC/XbvICmSLrZsNA6iuAbnXZ/miJzpGPrDI8lX14KGJZvi0glZZu+Fb+NbrrdXFdXLMAOkQ==",
+                "shasum": "2fc23e2f0cf19ffd47865785ad20b64a6d7924bc",
+                "tarball": "https://registry.npmjs.org/appcelerator/-/appcelerator-4.2.12.tgz",
+                "fileCount": 27,
+                "unpackedSize": 366374
+            },
+            "maintainers": [
+                {
+                    "name": "appcelerator",
+                    "email": "npmjs@appcelerator.com"
+                },
+                {
+                    "name": "cb1kenobi",
+                    "email": "chris@cb1inc.com"
+                }
+            ],
+            "directories": {},
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/appcelerator_4.2.12_1518217856762_0.442870121162074"
+            },
+            "_hasShrinkwrap": false
+        },
+        "4.2.13": {
+            "name": "appcelerator",
+            "version": "4.2.13",
+            "description": "Appcelerator Platform Software installer",
+            "main": "index.js",
+            "author": {
+                "name": "Jeff Haynie"
+            },
+            "license": "SEE LICENSE IN LICENSE",
+            "preferGlobal": true,
+            "bin": {
+                "appc": "./bin/appc",
+                "appcelerator": "./bin/appc"
+            },
+            "scripts": {
+                "test": "JUNIT_REPORT_PATH=junit_report.xml grunt"
+            },
+            "repository": {
+                "type": "git",
+                "url": "git+https://github.com/appcelerator/appc-install.git"
+            },
+            "homepage": "https://github.com/appcelerator/appc-install",
+            "keywords": [
+                "appcelerator",
+                "titanium",
+                "apibuilder",
+                "acs",
+                "appcelerator cloud",
+                "arrow"
+            ],
+            "devDependencies": {
+                "grunt": "^1.0.1",
+                "grunt-appc-js": "^1.0.19",
+                "grunt-cli": "^1.2.0",
+                "grunt-contrib-clean": "^1.0.0",
+                "grunt-env": "0.4.4",
+                "grunt-mocha-istanbul": "^5.0.2",
+                "istanbul": "^0.4.1",
+                "lodash": "^3.10.1",
+                "mocha": "^2.3.4",
+                "mocha-jenkins-reporter": "^0.3.7",
+                "should": "^8.0.2"
+            },
+            "dependencies": {
+                "async": "^1.5.0",
+                "chalk": "0.5.1",
+                "debug": "^2.1.1",
+                "npm-install-checks": "^3.0.0",
+                "pac-proxy-agent": "^2.0.0",
+                "progress": "1.1.8",
+                "request": "^2.55.0",
+                "semver": "~5.4.1",
+                "tar": "1.0.3",
+                "which": "1.0.8"
+            },
+            "engines": {
+                "node": ">=8.0.0"
+            },
+            "gitHead": "2f7f6b16dd1694fc92a5a75d8e9a51d91770944a",
+            "bugs": {
+                "url": "https://github.com/appcelerator/appc-install/issues"
+            },
+            "_id": "appcelerator@4.2.13",
+            "_npmVersion": "5.5.1",
+            "_nodeVersion": "8.9.1",
+            "_npmUser": {
+                "name": "appcelerator",
+                "email": "npmjs@appcelerator.com"
+            },
+            "dist": {
+                "integrity": "sha512-hh2d0Mf678Hu4LCRh99dBt4kJfYizIbBtdZ55VAxKdJQMah7DJ9ndQfE3Gf5cK6/BSnCG4EtVLibJckcH7GN0g==",
+                "shasum": "4e15fcc3181cf8ff6bbf2b48abb1d2be31ade71c",
+                "tarball": "https://registry.npmjs.org/appcelerator/-/appcelerator-4.2.13.tgz",
+                "fileCount": 15,
+                "unpackedSize": 88983,
+                "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJa6iAICRA9TVsSAnZWagAAGxQQAJcOKiFVJMd9rpi9vflk\n2k41HQY0FX2yngB+P226FPN4a+g5IhNGffwsgZ2RXDI3lxrQ3EOKTMlpSFY/\n3wF9L3IpUl5o9I5wG/TJdHynR05G30xZzv4dwMZD1H9agD8aA3ccLQAn9ERG\nf9Yvq5vGC6sOUl8lSomcxzvLtON76df4pYSbOOi1SR45UNS9ST+ThGGKsVUr\nZC/pIZtoQLGPVlVRKrV3TERQ31ilc/HLNR9yqFRSRhoJ7Rc92RWrdL95ehwn\nxn83hxFrhM+ZWXI1rM93lK+/TVv1IuhjM9NHF2jJ1AMgV6HTTgyGOVzML4pQ\nltBJFhm3c2+IKKnWkL7m6dIm4TD3g3bktchureeT1Gql4dj4I8oRZGipg+AV\njn+kP+2kRCDZZB9l0AGpEk4FCzd8GI1qQHMIMTpFWcrureGqf3e6PFHcFy2R\nfzr3UiqVTAo2RG/x+j9uLiWV7lL3nyhJ7bcv9ETnm9W1sQ9kNHEiCjDKb3vl\not3WoYMnsjm7yB6lMHC/ca/Qjuk+4m6APnGmOj+k2qne+iWzMr1P4h+2EvrS\nkw5GKfoLDpL3ubOXE/ni9RY1SYxXijDZ81kpyvMyzGzm0AKEqz38Eg2sBYJF\nU21qN0i5cL4ibt9cpoUVRZZmVDERXU8gkwS5jr4u3rb8zpnd79QWvZnhCX+K\nyjJu\r\n=ntq/\r\n-----END PGP SIGNATURE-----\r\n"
+            },
+            "maintainers": [
+                {
+                    "name": "appcelerator",
+                    "email": "npmjs@appcelerator.com"
+                },
+                {
+                    "name": "cb1kenobi",
+                    "email": "chris@cb1inc.com"
+                }
+            ],
+            "directories": {},
+            "_npmOperationalInternal": {
+                "host": "s3://npm-registry-packages",
+                "tmp": "tmp/appcelerator_4.2.13_1525293063518_0.9237890171111007"
+            },
+            "_hasShrinkwrap": false
+        }
+    },
+    "readme": "",
+    "maintainers": [
+        {
+            "name": "appcelerator",
+            "email": "npmjs@appcelerator.com"
+        },
+        {
+            "name": "cb1kenobi",
+            "email": "chris@cb1inc.com"
+        }
+    ],
+    "time": {
+        "modified": "2019-01-01T05:19:13.542Z",
+        "created": "2012-07-25T15:23:56.609Z",
+        "4.2.12": "2018-02-09T23:10:56.855Z",
+        "4.2.13": "2018-05-02T20:31:03.578Z"
+    },
+    "author": {
+        "name": "Jeff Haynie"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/appcelerator/appc-install.git"
+    },
+    "users": {
+        "fgribreau": true,
+        "brentonhouse": true,
+        "helsner": true
+    },
+    "homepage": "https://github.com/appcelerator/appc-install",
+    "keywords": [
+        "appcelerator",
+        "titanium",
+        "apibuilder",
+        "acs",
+        "appcelerator cloud",
+        "arrow"
+    ],
+    "bugs": {
+        "url": "https://github.com/appcelerator/appc-install/issues"
+    },
+    "readmeFilename": "",
+    "license": "SEE LICENSE IN LICENSE"
+}
