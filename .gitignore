@@ -1,3 +1,9 @@
 node_modules/
 dist/
-out/
+*.js
+*.d.ts
+coverage/
+.nyc_output/
+*.js.map
+!src/@types/**/*.d.ts
+.DS_Store

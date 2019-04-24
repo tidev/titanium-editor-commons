@@ -3,3 +3,6 @@
 src/
 tsconfig.json
 tslint.json
+tests/
+.nyc_output/
+coverage/
