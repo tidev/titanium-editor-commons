@@ -12,7 +12,7 @@
     "commit": "git-cz",
     "compile": "tsc -p ./",
     "lint": "tslint -p tsconfig.json --format stylish",
-    "prepare": "npm run compile",
+    "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",
     "test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
