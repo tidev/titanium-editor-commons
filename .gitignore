@@ -8,3 +8,4 @@ coverage/
 !src/@types/**/*.d.ts
 .DS_Store
 junit_report.xml
+!dangerfile.js
