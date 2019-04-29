@@ -4,9 +4,9 @@ import * as fs from 'fs-extra';
 import * as libnpm from 'libnpm';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
+import { ProductNames } from '../product-names';
 import * as util from '../util';
 
-const PRODUCT_NAME = 'Appcelerator CLI (npm)';
 const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Appcelerator_CLI_Release_Notes';
 
 export async function checkForUpdate () {
@@ -19,7 +19,7 @@ export async function checkForUpdate () {
 		currentVersion,
 		latestVersion,
 		action: installUpdate,
-		productName: PRODUCT_NAME,
+		productName: ProductNames.AppcInstaller,
 		releaseNotes: RELEASE_NOTES,
 		priority: 10,
 		hasUpdate: false
@@ -47,7 +47,7 @@ export async function checkLatestVersion () {
 
 export async function installUpdate (version: string) {
 	// todo
-	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}` ], { shell: true });
+	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json'], { shell: true });
 	if (code) {
 		throw new util.InstallError('Failed to install package', {
 			code,

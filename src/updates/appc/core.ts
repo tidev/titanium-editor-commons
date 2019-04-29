@@ -6,13 +6,11 @@ import * as os from 'os';
 import * as path from 'path';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
+import { ProductNames } from '../product-names';
 import { InstallError } from '../util';
 
 const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-
-const PRODUCT_NAME = 'Appcelerator CLI';
 const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Appcelerator_CLI_Release_Notes';
-
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
 export async function checkForUpdate () {
@@ -25,7 +23,7 @@ export async function checkForUpdate () {
 		currentVersion,
 		latestVersion,
 		action: installUpdate,
-		productName: PRODUCT_NAME,
+		productName: ProductNames.AppcCore,
 		releaseNotes: RELEASE_NOTES,
 		priority: 10,
 		hasUpdate: false

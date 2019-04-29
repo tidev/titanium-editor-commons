@@ -1,8 +1,8 @@
 import * as semver from 'semver';
 import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
+import { ProductNames } from '../product-names';
 
-const PRODUCT_NAME = 'Titanium SDK';
 const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Titanium_SDK_Release_Notes';
 
 export async function checkForUpdate () {
@@ -15,7 +15,7 @@ export async function checkForUpdate () {
 		currentVersion: currentVersion ? currentVersion.name : '',
 		latestVersion: latestVersion.name,
 		action: installUpdate,
-		productName: PRODUCT_NAME,
+		productName: ProductNames.TitaniumSDK,
 		releaseNotes: RELEASE_NOTES,
 		priority: 100,
 		hasUpdate: false
@@ -54,7 +54,7 @@ export async function checkLatestVersion () {
 }
 
 export async function installUpdate (version: string) {
-	await sdk.install({
+	return sdk.install({
 		uri: version
 	});
 	// TODO: Write out to ~/.titanium/config.json sdk.selected to update the selected SDK
