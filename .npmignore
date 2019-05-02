@@ -8,3 +8,5 @@ tests/
 coverage/
 junit_report.xml
 Jenkinsfile
+.DS_Store
+dangerfile.js
