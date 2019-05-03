@@ -3,20 +3,16 @@ import * as path from 'path';
 
 export class InstallError extends Error {
 	public code: string;
-	public exitCode: number;
-	public stderr: string;
-	public stdout: string;
+	public metadata: object;
 
 	constructor (
 		message: string,
-		{ code, stderr, stdout}: { code: number, stderr: string, stdout: string }
+		metadata: object
 	) {
 		super(message);
 
 		this.code = 'EINSTALLFAILED';
-		this.exitCode = code;
-		this.stderr = stderr;
-		this.stdout = stdout;
+		this.metadata = metadata || {};
 	}
 }
 

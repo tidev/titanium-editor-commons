@@ -1,4 +1,5 @@
 import * as appc from './appc';
+import { ProductNames } from './product-names';
 import * as titanium from './titanium';
 
 interface UpdateInfo {
@@ -25,5 +26,6 @@ export {
 	UpdateInfo,
 	checkAllUpdates,
 	appc,
-	titanium
+	titanium,
+	ProductNames
 };

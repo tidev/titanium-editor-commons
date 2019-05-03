@@ -2,6 +2,7 @@ import * as semver from 'semver';
 import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
+import * as util from '../util';
 
 const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Titanium_SDK_Release_Notes';
 
@@ -54,8 +55,12 @@ export async function checkLatestVersion () {
 }
 
 export async function installUpdate (version: string) {
-	return sdk.install({
-		uri: version
-	});
-	// TODO: Write out to ~/.titanium/config.json sdk.selected to update the selected SDK
+	try {
+		await sdk.install({
+			uri: version
+		});
+	} catch (error) {
+		throw new util.InstallError('Failed to install package', error);
+	}
+
 }

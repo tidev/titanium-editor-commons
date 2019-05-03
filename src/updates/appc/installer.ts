@@ -47,12 +47,21 @@ export async function checkLatestVersion () {
 
 export async function installUpdate (version: string) {
 	// todo
-	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json'], { shell: true });
+	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
 	if (code) {
-		throw new util.InstallError('Failed to install package', {
-			code,
+		const metadata = {
+			errorCode: null,
+			exitCode: code,
 			stderr,
-			stdout
-		});
+			stdout,
+			command: `npm install -g appcelerator@${version}`
+		};
+		try {
+			const jsonResponse = JSON.parse(stdout);
+			metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
+		} catch (error) {
+			// squash
+		}
+		throw new util.InstallError('Failed to install package', metadata);
 	}
 }

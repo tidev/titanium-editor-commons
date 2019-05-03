@@ -51,7 +51,7 @@ export async function checkLatestVersion () {
 
 export async function installUpdate (version: string) {
 	// todo
-	const { code, stdout, stderr } = await run('appc', [ 'use', version ], { shell: true });
+	const { code, stdout, stderr } = await run('appc', [ 'use', version ], { shell: true, ignoreExitCode: true });
 	if (code) {
 		throw new InstallError('Failed to install package', {
 			code,
