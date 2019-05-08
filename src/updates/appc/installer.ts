@@ -1,9 +1,8 @@
 
 import { run } from 'appcd-subprocess';
-import * as fs from 'fs-extra';
 import * as libnpm from 'libnpm';
 import * as semver from 'semver';
-import { UpdateInfo } from '..';
+import { UpdateInfo, appc } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
@@ -32,12 +31,25 @@ export async function checkForUpdate () {
 }
 
 export async function checkInstalledVersion () {
-	const filePath = util.getNpmPackagePath('appcelerator');
-	if (!await fs.pathExists(filePath)) {
-		return;
+	// First try running appc cli to get the version
+	try {
+		const { stdout } = await run('appc', [ '--version', '--output', 'json' ], { shell: true });
+		const { NPM } = JSON.parse(stdout);
+		return NPM;
+	} catch (error) {
+		// squelch
 	}
-	const { version } = await fs.readJSON(filePath);
-	return version;
+
+	// If that fails because it's not installed, or we don't have a core, fallback to npm cli which is generally slower
+	try {
+		const { stdout } = await run('npm', [ 'ls', 'appcelerator', '--json', '--depth', '0', '--global' ], { shell: true });
+		const { dependencies: { appcelerator }} = JSON.parse(stdout);
+		return appcelerator.version;
+	} catch (error) {
+		// squelch
+	}
+
+	return;
 }
 
 export async function checkLatestVersion () {
@@ -46,7 +58,6 @@ export async function checkLatestVersion () {
 }
 
 export async function installUpdate (version: string) {
-	// todo
 	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
 	if (code) {
 		const metadata = {

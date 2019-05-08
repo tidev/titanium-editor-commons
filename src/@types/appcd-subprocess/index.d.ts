@@ -1,26 +1,23 @@
 
-
 declare module 'appcd-subprocess' {
 	import { SpawnOptions } from 'child_process';
 
 	interface RunResponse {
-		code: number,
-		stdout: string,
-		stderr: string
+		code: number;
+		stdout: string;
+		stderr: string;
 	}
 	interface RunOptions extends SpawnOptions {
-		ignoreExitCode?: boolean
+		ignoreExitCode?: boolean;
 	}
-	function run(cmd: string, args: string[], opts: RunOptions): RunResponse;
+	function run (cmd: string, args: string[], opts: RunOptions): RunResponse;
 }
-
 
 // export const bat: string;
 
 // export const cmd: string;
 
 // export const exe: string;
-
 
 // export function spawn(params: any): any;
 
