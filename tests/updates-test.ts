@@ -1,34 +1,44 @@
 import { appc, titanium } from '../src/updates/';
-import * as util from '../src/updates/util';
 
 import * as titaniumlib from 'titaniumlib';
 
 import { expect } from 'chai';
+import child_process from 'child_process';
+import { EventEmitter } from 'events';
+import mockFS from 'mock-fs';
 import nock from 'nock';
+import * as os from 'os';
 import * as path from 'path';
 import * as sinon from 'sinon';
-import * as os from 'os';
-import mockFS from 'mock-fs'
-import { mockAppcCoreRequest, mockSDKRequest, mockNpmRequest } from './fixtures/network/network-mocks';
+import stream from 'stream';
+import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
 
 const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-const FIXTURES_DIR = path.join(__dirname, 'fixtures');
+let sandbox: sinon.SinonSandbox;
+
+function createChildMock () {
+	const fakeChild = new EventEmitter() as child_process.ChildProcess;
+	fakeChild.stdout = new EventEmitter() as stream.Readable;
+	fakeChild.stderr = new EventEmitter() as stream.Readable;
+	return fakeChild;
+}
 
 describe('updates', () => {
 
 	beforeEach(() => {
+		sandbox = sinon.createSandbox();
 		mockFS.restore();
-	})
+	});
 
 	afterEach(() => {
 		nock.cleanAll();
-		sinon.restore();
+		sandbox.restore();
 		mockFS.restore();
 	});
 
 	describe('titanium.sdk', () => {
 		it('checkForUpdate with installed SDKS', async function () {
-			const sdkStub = sinon.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -100,7 +110,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with no installed SDKS', async function () {
-			const sdkStub = sinon.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([]);
 
@@ -114,7 +124,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async function () {
-			const sdkStub = sinon.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -167,10 +177,61 @@ describe('updates', () => {
 	});
 
 	describe('appc.installer', () => {
+
 		it('checkForUpdates with install', async () => {
 			mockNpmRequest();
-			const versionStub = sinon.stub(util, 'getNpmPackagePath');
-			versionStub.returns(path.join(FIXTURES_DIR, 'appcelerator', '4.2.12', 'package.json'));
+			const appcChild = createChildMock();
+			sandbox.stub(child_process, 'spawn')
+				.withArgs('appc')
+				.returns(appcChild);
+
+			setTimeout(() => {
+				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"7.1.0-master.13"}');
+				appcChild.emit('close', 0);
+			}, 500);
+			const update = await appc.install.checkForUpdate();
+
+			expect(update.currentVersion).to.equal('4.2.12');
+			expect(update.latestVersion).to.equal('4.2.13');
+			expect(update.productName).to.equal('Appcelerator CLI (npm)');
+			expect(update.hasUpdate).to.equal(true);
+			// console.log(stub.args);
+		});
+
+		it('checkForUpdates with no core', async () => {
+
+			mockNpmRequest();
+			const appcChild = createChildMock();
+			const npmChild = createChildMock();
+
+			const stub = sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('appc')
+				.returns(appcChild);
+
+			stub
+				.withArgs('npm')
+				.returns(npmChild);
+
+			setTimeout(() => {
+				appcChild.stderr.emit('data', '/bin/sh: appc: command not found\n');
+				appcChild.emit('close', 127);
+			}, 500);
+
+			setTimeout(() => {
+				npmChild.stdout.emit('data', `{
+					"dependencies": {
+					  "appcelerator": {
+						"version": "4.2.12",
+						"from": "appcelerator@4.2.11",
+						"resolved": "https://registry.npmjs.org/appcelerator/-/appcelerator-4.2.11.tgz"
+					  }
+					}
+				  }`);
+				npmChild.emit('close', 0);
+			}, 750);
+
 			const update = await appc.install.checkForUpdate();
 
 			expect(update.currentVersion).to.equal('4.2.12');
@@ -181,8 +242,29 @@ describe('updates', () => {
 
 		it('checkForUpdates with no install', async () => {
 			mockNpmRequest();
-			const versionStub = sinon.stub(util, 'getNpmPackagePath');
-			versionStub.returns(path.join(FIXTURES_DIR, 'noExist'));
+			const appcChild = createChildMock();
+			const npmChild = createChildMock();
+			
+			const stub = sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('appc')
+				.returns(appcChild);
+
+			stub
+				.withArgs('npm')
+				.returns(npmChild);
+
+			setTimeout(() => {
+				appcChild.stderr.emit('data', '/bin/sh: appc: command not found');
+				appcChild.emit('close', 127);
+			}, 500);
+
+			setTimeout(() => {
+				npmChild.stdout.emit('data', '{}');
+				npmChild.emit('close', 0);
+			}, 750);
+
 			const update = await appc.install.checkForUpdate();
 
 			expect(update.currentVersion).to.equal(undefined);
@@ -193,8 +275,13 @@ describe('updates', () => {
 
 		it('checkForUpdates with latest already', async () => {
 			mockNpmRequest();
-			const versionStub = sinon.stub(util, 'getNpmPackagePath');
-			versionStub.returns(path.join(FIXTURES_DIR, 'appcelerator', '4.2.13', 'package.json'));
+			const appcChild = createChildMock();
+			sandbox.stub(child_process, 'spawn')
+				.returns(appcChild);
+			setTimeout(() => {
+				appcChild.stdout.emit('data', '{"NPM":"4.2.13","CLI":"7.1.0-master.13"}');
+				appcChild.emit('close', 0);
+			}, 500);
 			const update = await appc.install.checkForUpdate();
 
 			expect(update.currentVersion).to.equal('4.2.13');

@@ -26,7 +26,6 @@
     "@seadub/danger-plugin-junit": "^0.1.1",
     "@types/chai": "^4.1.7",
     "@types/fs-extra": "^5.0.5",
-    "@types/global-modules": "^2.0.0",
     "@types/got": "^9.4.3",
     "@types/mocha": "^5.2.6",
     "@types/mock-fs": "^3.6.30",
@@ -54,7 +53,6 @@
   "dependencies": {
     "appcd-subprocess": "^1.3.0",
     "fs-extra": "^7.0.1",
-    "global-modules": "^2.0.0",
     "got": "^9.6.0",
     "libnpm": "^2.0.1",
     "semver": "^6.0.0",
