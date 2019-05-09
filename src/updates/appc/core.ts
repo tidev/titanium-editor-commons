@@ -10,7 +10,6 @@ import { ProductNames } from '../product-names';
 import { InstallError } from '../util';
 
 const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Appcelerator_CLI_Release_Notes';
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
 export async function checkForUpdate () {
@@ -24,7 +23,7 @@ export async function checkForUpdate () {
 		latestVersion,
 		action: installUpdate,
 		productName: ProductNames.AppcCore,
-		releaseNotes: RELEASE_NOTES,
+		releaseNotes: getReleaseNotes(latestVersion),
 		priority: 10,
 		hasUpdate: false
 	};
@@ -34,6 +33,7 @@ export async function checkForUpdate () {
 	}
 	return updateInfo;
 }
+
 export async function checkInstalledVersion () {
 	if (!await fs.pathExists(filePath)) {
 		return;
@@ -59,4 +59,8 @@ export async function installUpdate (version: string) {
 			stdout
 		});
 	}
+}
+
+export function getReleaseNotes (version: string) {
+	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_${version}.GA_Release_Note`;
 }
