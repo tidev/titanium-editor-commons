@@ -4,8 +4,6 @@ import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
-const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Titanium_SDK_Release_Notes';
-
 export async function checkForUpdate () {
 	const [ currentVersion, latestVersion ] = await Promise.all([
 		checkInstalledVersion(),
@@ -17,7 +15,7 @@ export async function checkForUpdate () {
 		latestVersion: latestVersion.name,
 		action: installUpdate,
 		productName: ProductNames.TitaniumSDK,
-		releaseNotes: RELEASE_NOTES,
+		releaseNotes: getReleaseNotes(latestVersion.name),
 		priority: 100,
 		hasUpdate: false
 	};
@@ -63,4 +61,8 @@ export async function installUpdate (version: string) {
 		throw new util.InstallError('Failed to install package', error);
 	}
 
+}
+
+export function getReleaseNotes(version: string) {
+	return `https://docs.appcelerator.com/platform/latest/#!/guide/Titanium_SDK_${version}_Release_Note`;
 }

@@ -2,11 +2,9 @@
 import { run } from 'appcd-subprocess';
 import * as libnpm from 'libnpm';
 import * as semver from 'semver';
-import { UpdateInfo, appc } from '..';
+import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
-
-const RELEASE_NOTES = 'https://docs.appcelerator.com/platform/latest/?print=/guide/Appcelerator_CLI_Release_Notes';
 
 export async function checkForUpdate () {
 	const [ currentVersion, latestVersion ] = await Promise.all([
@@ -19,7 +17,7 @@ export async function checkForUpdate () {
 		latestVersion,
 		action: installUpdate,
 		productName: ProductNames.AppcInstaller,
-		releaseNotes: RELEASE_NOTES,
+		releaseNotes: getReleaseNotes(),
 		priority: 10,
 		hasUpdate: false
 	};
@@ -75,4 +73,9 @@ export async function installUpdate (version: string) {
 		}
 		throw new util.InstallError('Failed to install package', metadata);
 	}
+}
+
+export function getReleaseNotes () {
+	// There are no public release notes for appc-install, so just point to the latest CLI release notes
+	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_Release_Notes`;
 }
