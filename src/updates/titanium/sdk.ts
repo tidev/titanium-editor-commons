@@ -63,6 +63,6 @@ export async function installUpdate (version: string) {
 
 }
 
-export function getReleaseNotes(version: string) {
+export function getReleaseNotes (version: string) {
 	return `https://docs.appcelerator.com/platform/latest/#!/guide/Titanium_SDK_${version}_Release_Note`;
 }

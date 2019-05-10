@@ -11,7 +11,7 @@
   "scripts": {
     "commit": "git-cz",
     "compile": "tsc -p ./",
-    "lint": "tslint -p tsconfig.json --format stylish",
+    "lint": "tslint --format stylish 'src/**/*.ts' 'tests/**/*.ts'",
     "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",

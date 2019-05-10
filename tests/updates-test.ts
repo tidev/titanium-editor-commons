@@ -37,66 +37,66 @@ describe('updates', () => {
 	});
 
 	describe('titanium.sdk', () => {
-		it('checkForUpdate with installed SDKS', async function () {
+		it('checkForUpdate with installed SDKS', async () => {
 			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
-					"name": "7.0.2.GA",
-					"manifest": {
-						"name": "7.0.2.v20180209105903",
-						"version": "7.0.2",
-						"moduleAPIVersion": {
-							"iphone": "2",
-							"android": "4",
-							"windows": "4"
+					name: '7.0.2.GA',
+					manifest: {
+						name: '7.0.2.v20180209105903',
+						version: '7.0.2',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '4'
 						},
-						"timestamp": "2/9/2018 19:05",
-						"githash": "5ef0c56",
-						"platforms": [
-							"iphone",
-							"android"
+						timestamp: '2/9/2018 19:05',
+						githash: '5ef0c56',
+						platforms: [
+							'iphone',
+							'android'
 						]
 					},
-					"path": "/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA"
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA'
 				},
 				{
-					"name": "7.5.0.GA",
-					"manifest": {
-						"name": "7.5.0.v20181115134726",
-						"version": "7.5.0",
-						"moduleAPIVersion": {
-							"iphone": "2",
-							"android": "4",
-							"windows": "6"
+					name: '7.5.0.GA',
+					manifest: {
+						name: '7.5.0.v20181115134726',
+						version: '7.5.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '6'
 						},
-						"timestamp": "11/15/2018 21:52",
-						"githash": "2e5a7423d0",
-						"platforms": [
-							"iphone",
-							"android"
+						timestamp: '11/15/2018 21:52',
+						githash: '2e5a7423d0',
+						platforms: [
+							'iphone',
+							'android'
 						]
 					},
-					"path": "/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.5.0.GA"
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.5.0.GA'
 				},
 				{
-					"name": "8.1.0.v20190416065710",
-					"manifest": {
-						"name": "8.1.0.v20190416065710",
-						"version": "8.1.0",
-						"moduleAPIVersion": {
-							"iphone": "2",
-							"android": "4",
-							"windows": "7"
+					name: '8.1.0.v20190416065710',
+					manifest: {
+						name: '8.1.0.v20190416065710',
+						version: '8.1.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '7'
 						},
-						"timestamp": "4/16/2019 14:03",
-						"githash": "37f6d88",
-						"platforms": [
-							"iphone",
-							"android"
+						timestamp: '4/16/2019 14:03',
+						githash: '37f6d88',
+						platforms: [
+							'iphone',
+							'android'
 						]
 					},
-					"path": "/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710"
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710'
 				}
 			]);
 
@@ -109,7 +109,7 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 
-		it('checkForUpdate with no installed SDKS', async function () {
+		it('checkForUpdate with no installed SDKS', async () => {
 			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([]);
@@ -123,46 +123,46 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 
-		it('checkForUpdate with latest installed', async function () {
+		it('checkForUpdate with latest installed', async () => {
 			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
-					"name": "8.0.0.GA",
-					"manifest": {
-						"name": "8.0.0.v20190314105657",
-						"version": "8.0.0",
-						"moduleAPIVersion": {
-							"iphone": "2",
-							"android": "4",
-							"windows": "7"
+					name: '8.0.0.GA',
+					manifest: {
+						name: '8.0.0.v20190314105657',
+						version: '8.0.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '7'
 						},
-						"githash": "3726240fa2",
-						"platforms": [
-							"iphone",
-							"android"
+						githash: '3726240fa2',
+						platforms: [
+							'iphone',
+							'android'
 						]
 					},
-					"path": "/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.0.0.GA"
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.0.0.GA'
 				},
 				{
-					"name": "8.1.0.v20190416065710",
-					"manifest": {
-						"name": "8.1.0.v20190416065710",
-						"version": "8.1.0",
-						"moduleAPIVersion": {
-							"iphone": "2",
-							"android": "4",
-							"windows": "7"
+					name: '8.1.0.v20190416065710',
+					manifest: {
+						name: '8.1.0.v20190416065710',
+						version: '8.1.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '7'
 						},
-						"timestamp": "4/16/2019 14:03",
-						"githash": "37f6d88",
-						"platforms": [
-							"iphone",
-							"android"
+						timestamp: '4/16/2019 14:03',
+						githash: '37f6d88',
+						platforms: [
+							'iphone',
+							'android'
 						]
 					},
-					"path": "/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710"
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710'
 				}
 			]);
 
@@ -244,7 +244,7 @@ describe('updates', () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
-			
+
 			const stub = sandbox.stub(child_process, 'spawn');
 
 			stub
@@ -292,7 +292,7 @@ describe('updates', () => {
 	});
 
 	describe('appc.core', () => {
-		it('checkForUpdate with install', async function () {
+		it('checkForUpdate with install', async () => {
 			mockFS({
 				[filePath]: '4.2.0'
 			});
@@ -304,7 +304,7 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 
-		it('checkForUpdate with no install', async function () {
+		it('checkForUpdate with no install', async () => {
 			mockFS({});
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
@@ -314,7 +314,7 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 
-		it('checkForUpdate with latest installed', async function () {
+		it('checkForUpdate with latest installed', async () => {
 			mockFS({
 				[filePath]: '6.6.6'
 			});
