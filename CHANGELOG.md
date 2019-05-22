@@ -1,6 +1,15 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [0.1.2](https://github.com/appcelerator/titanium-editor-commons/compare/v0.1.1...v0.1.2) (2019-05-22)
+
+
+### Bug Fixes
+
+* **updates/appc:** increase priority of appc install ([5ef76f9](https://github.com/appcelerator/titanium-editor-commons/commit/5ef76f9))
+
+
 
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/ewanharris/titanium-editor-commons/compare/v0.1.0...v0.1.1) (2019-05-10)
