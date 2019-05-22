@@ -18,7 +18,7 @@ export async function checkForUpdate () {
 		action: installUpdate,
 		productName: ProductNames.AppcInstaller,
 		releaseNotes: getReleaseNotes(),
-		priority: 10,
+		priority: 1,
 		hasUpdate: false
 	};
 
