@@ -7,10 +7,13 @@ import child_process from 'child_process';
 import { EventEmitter } from 'events';
 import mockFS from 'mock-fs';
 import nock from 'nock';
+import * as os from 'os';
+import * as path from 'path';
 import * as sinon from 'sinon';
 import stream from 'stream';
 import { mockAppcCoreRequest, mockNpmRequest } from './fixtures/network/network-mocks';
 
+const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
 let sandbox: sinon.SinonSandbox;
 
 function createChildMock () {
@@ -78,12 +81,24 @@ describe('environment', () => {
 				}
 			]);
 
+			mockFS({
+				[filePath]: '4.2.0'
+			});
+
+			const appcChild = createChildMock();
+			sandbox.stub(child_process, 'spawn')
+				.returns(appcChild);
+			setTimeout(() => {
+				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
+				appcChild.emit('close', 0);
+			}, 500);
+
 			const env = await environment.validateEnvironment();
 			expect(env.missing).to.deep.equal([]);
 			expect(env.installed).to.deep.equal(
 				[
-					{ name: 'Appcelerator CLI', version: '7.0.11' },
-					{ name: 'Appcelerator CLI (npm)', version: '4.2.13' },
+					{ name: 'Appcelerator CLI', version: '4.2.0' },
+					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
 				]
 			);
@@ -93,23 +108,45 @@ describe('environment', () => {
 
 			sdkStub.returns([]);
 
+			mockFS({
+				[filePath]: '4.2.0'
+			});
+
+			const appcChild = createChildMock();
+			sandbox.stub(child_process, 'spawn')
+				.returns(appcChild);
+			setTimeout(() => {
+				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
+				appcChild.emit('close', 0);
+			}, 500);
+
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Titanium SDK');
 			expect(env.installed).to.deep.equal(
 				[
-					{ name: 'Appcelerator CLI', version: '7.0.11' },
-					{ name: 'Appcelerator CLI (npm)', version: '4.2.13' }
+					{ name: 'Appcelerator CLI', version: '4.2.0' },
+					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' }
 				]
 			);
 		});
 		it('validateEnvironment with no installed core', async () => {
 			mockFS({});
-			mockAppcCoreRequest('6.6.6');
+
+			const appcChild = createChildMock();
+			sandbox.stub(child_process, 'spawn')
+				.withArgs('appc')
+				.returns(appcChild);
+
+			setTimeout(() => {
+				appcChild.stdout.emit('data', '{"NPM":"4.2.12"}');
+				appcChild.emit('close', 0);
+			}, 500);
+
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI');
 			expect(env.installed).to.deep.equal(
 				[
-					{ name: 'Appcelerator CLI (npm)', version: '4.2.13' }
+					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' }
 				]
 			);
 		});
@@ -138,7 +175,10 @@ describe('environment', () => {
 				}
 			]);
 
-			mockNpmRequest();
+			mockFS({
+				[filePath]: '4.2.0'
+			});
+
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
@@ -166,7 +206,7 @@ describe('environment', () => {
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI (npm)');
 			expect(env.installed).to.deep.equal(
 				[
-					{ name: 'Appcelerator CLI', version: '7.0.11' },
+					{ name: 'Appcelerator CLI', version: '4.2.0' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
 				]
 			);
