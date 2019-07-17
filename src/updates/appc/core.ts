@@ -9,7 +9,8 @@ import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import { InstallError } from '../util';
 
-const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+const appcHomeDir = path.join(os.homedir(), '.appcelerator');
+const versionFilePath = path.join(appcHomeDir, 'install', '.version');
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
 export async function checkForUpdate () {
@@ -35,10 +36,12 @@ export async function checkForUpdate () {
 }
 
 export async function checkInstalledVersion () {
-	if (!await fs.pathExists(filePath)) {
+	if (!await fs.pathExists(versionFilePath)) {
 		return;
 	}
-	const version = await fs.readFile(filePath, 'utf8');
+	const cliVersion = await fs.readFile(versionFilePath, 'utf8');
+	const packageJson = path.join(appcHomeDir, 'install', cliVersion, 'packages', 'package.json');
+	const { version } = await fs.readJSON(packageJson);
 	return version;
 }
 

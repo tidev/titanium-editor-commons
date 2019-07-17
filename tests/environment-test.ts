@@ -11,9 +11,9 @@ import * as os from 'os';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import stream from 'stream';
-import { mockAppcCoreRequest, mockNpmRequest } from './fixtures/network/network-mocks';
 
-const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+const appcHomeDir = path.join(os.homedir(), '.appcelerator');
+const versionFilePath = path.join(appcHomeDir, 'install', '.version');
 let sandbox: sinon.SinonSandbox;
 
 function createChildMock () {
@@ -81,8 +81,10 @@ describe('environment', () => {
 				}
 			]);
 
+			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();
@@ -108,8 +110,10 @@ describe('environment', () => {
 
 			sdkStub.returns([]);
 
+			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();
@@ -175,8 +179,10 @@ describe('environment', () => {
 				}
 			]);
 
+			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();
