@@ -1,6 +1,8 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as _ from 'underscore';
+
+import { checkInstalledVersion } from '../updates/appc/core';
+import { CustomError } from '../utils';
 
 import { homedir } from 'os';
 /**
@@ -10,11 +12,10 @@ import { homedir } from 'os';
  */
 export async function loadCompletions (sdk: string) {
 	try {
-		// const sdk = project.sdk()[0];
 		const alloyVersion = await getAlloyVersion();
 		const sdkCompletions = await fs.readJSON(getSDKCompletionsFileName(sdk));
 		const alloyCompletions = await fs.readJSON(getAlloyCompletionsFileName(alloyVersion));
-		_.extend(sdkCompletions.properties, {
+		Object.assign(sdkCompletions.properties, {
 			id: {
 				description: 'TSS id'
 			},
@@ -50,32 +51,22 @@ export function getAlloyCompletionsFileName (version: string) {
 }
 
 /**
- * Matches
- *
- * @param {String} text text to test
- * @param {String} test text to match against
- *
- * @returns {Boolean}
- */
-export function matches (text: string, test: RegExp) {
-	return new RegExp(test, 'i').test(text);
-}
-
-/**
  * Generate completions for an Alloy version.
  *
- * @param {Object} opts - Options
- * @param {Boolean} opts.force - Force generation of completion file.
+ * @param {Boolean} force - Force generation of completion file.
  */
 export async function generateAlloyCompletions (force = false) {
 	const appcPath = path.join(homedir(), '.appcelerator', 'install');
-	const version = await fs.readFile(path.join(appcPath, '.version'), 'utf8');
+	const version = await checkInstalledVersion();
+	if (!version) {
+		throw Error('Unable to find installed alloy version.');
+	}
 	const alloyPath = path.join(appcPath, version, 'package', 'node_modules', 'alloy');
 	const alloyVersion = await getAlloyVersion();
 
 	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion);
 
-	if (!force && fs.existsSync(alloyCompletionsFilename)) {
+	if (!force && await fs.pathExists(alloyCompletionsFilename)) {
 		return;
 	}
 
@@ -128,47 +119,20 @@ export async function generateAlloyCompletions (force = false) {
 		}
 	});
 
-	// // missing types
-	// Object.assign(types, {
-	// 	'Alloy.Abstract.ItemTemplate': {
-	// 		description: 'Template that represents the basic appearance of a list item.',
-	// 		functions: [
-	// 		],
-	// 		properties: [
-	// 			'name',
-	// 			'height'
-	// 		],
-	// 		events: []
-	// 	},
-	// 	'Alloy.Widget': {
-	// 		description: 'Widgets are self-contained components that can be easily dropped into an Alloy project.',
-	// 		functions: [],
-	// 		properties: [
-	// 			'src'
-	// 		],
-	// 		events: []
-	// 	},
-	// 	'Alloy.Require': {
-	// 		description: 'Require alloy controller',
-	// 		functions: [],
-	// 		properties: [
-	// 			'src'
-	// 		],
-	// 		events: []
-	// 	}
-	// });
-
 	const sortedTagDic: any = {};
 	Object.keys(tagDic)
 		.sort()
 		.forEach(k => sortedTagDic[k] = tagDic[k]);
 	try {
 		await fs.ensureDir(path.dirname(alloyCompletionsFilename));
-		await fs.writeFile(alloyCompletionsFilename, JSON.stringify({
+		await fs.writeJSON(alloyCompletionsFilename, {
 			version: 1,
 			alloyVersion,
 			tags: sortedTagDic
-		}, null, 4));
+		},
+		{
+			spaces: '\t'
+		});
 		return alloyVersion;
 	} catch (error) {
 		throw error;
@@ -179,19 +143,20 @@ export async function generateAlloyCompletions (force = false) {
  *
  * Generate completions file for a Titanium SDK.
  *
- * @param {Object} opts - Options.
- * @param {Boolean} [opts.force=false] - Force generation of the completion file. * @param {String} sdkVersion - SDK Version to generate completions for.
+ * @param {Boolean} [force=false] - Force generation of the completion file. 
+ * @param {String} sdkVersion - SDK Version to generate completions for.
+ * @param {String} sdkPath - SDK Path to generate completions for.
  */
 export async function generateSDKCompletions (force: boolean = false, sdkVersion: string, sdkPath: string) {
 	// Make sdkVersion optional and load for selected SDK?
 	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion);
 
-	if (!force && fs.existsSync(sdkCompletionsFilename)) {
+	if (!force && await fs.pathExists(sdkCompletionsFilename)) {
 		return;
 	}
 
 	if (!sdkPath) {
-		throw Error(`The current projects SDK version ${sdkVersion}, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions. ESDKNOTINSTALLED`);
+		throw new CustomError(`The current projects SDK version ${sdkVersion}, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions.`, 'ESDKNOTINSTALLED');
 	}
 
 	const titaniumAPIPath = path.join(sdkPath, 'api.jsca');
@@ -270,6 +235,35 @@ export async function generateSDKCompletions (force: boolean = false, sdkVersion
 			];
 		}
 	}
+	// missing types
+	Object.assign(types, {
+		'Alloy.Abstract.ItemTemplate': {
+			description: 'Template that represents the basic appearance of a list item.',
+			functions: [
+			],
+			properties: [
+				'name',
+				'height'
+			],
+			events: []
+		},
+		'Alloy.Widget': {
+			description: 'Widgets are self-contained components that can be easily dropped into an Alloy project.',
+			functions: [],
+			properties: [
+				'src'
+			],
+			events: []
+		},
+		'Alloy.Require': {
+			description: 'Require alloy controller',
+			functions: [],
+			properties: [
+				'src'
+			],
+			events: []
+		}
+	});
 
 	// missing values
 	props.layout.values = ['\'vertical\'', '\'horizontal\'', '\'composite\''];
@@ -281,8 +275,7 @@ export async function generateSDKCompletions (force: boolean = false, sdkVersion
 
 	try {
 		await fs.ensureDir(path.dirname(sdkCompletionsFilename));
-		await fs.writeJSON(
-			sdkCompletionsFilename,
+		await fs.writeJSON(sdkCompletionsFilename,
 			{
 				version: 1,
 				sdkVersion,
@@ -290,7 +283,7 @@ export async function generateSDKCompletions (force: boolean = false, sdkVersion
 				types
 			},
 			{
-				spaces: 4
+				spaces: '\t'
 			});
 		return sdkVersion;
 	} catch (error) {
@@ -300,7 +293,10 @@ export async function generateSDKCompletions (force: boolean = false, sdkVersion
 
 async function getAlloyVersion () {
 	const appcPath = path.join(homedir(), '.appcelerator', 'install');
-	const appcVersion = await fs.readFile(path.join(appcPath, '.version'), 'utf8');
+	const appcVersion = await checkInstalledVersion();
+	if (!appcVersion) {
+		throw Error('Unable to find installed CLI version.');
+	}
 	const alloyPath = path.join(appcPath, appcVersion, 'package', 'node_modules', 'alloy');
 	const { version: alloyVersion } = await fs.readJSON(path.join(alloyPath, 'package.json'));
 	return alloyVersion;
