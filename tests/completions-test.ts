@@ -1,8 +1,6 @@
 import { generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
 import { CustomError } from '../src/completions/util';
 
-import * as updates from '../updates/';
-
 import { expect } from 'chai';
 import fs from 'fs-extra';
 import mockFS from 'mock-fs';
