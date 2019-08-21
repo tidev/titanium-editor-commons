@@ -7,14 +7,10 @@ import child_process from 'child_process';
 import { EventEmitter } from 'events';
 import mockFS from 'mock-fs';
 import nock from 'nock';
-import * as os from 'os';
+import os from 'os';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import stream from 'stream';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
-
-const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-let sandbox: sinon.SinonSandbox;
 
 function createChildMock () {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -26,19 +22,17 @@ function createChildMock () {
 describe('updates', () => {
 
 	beforeEach(() => {
-		sandbox = sinon.createSandbox();
 		mockFS.restore();
 	});
 
 	afterEach(() => {
 		nock.cleanAll();
-		sandbox.restore();
 		mockFS.restore();
 	});
 
 	describe('titanium.sdk', () => {
 		it('checkForUpdate with installed SDKS', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -110,7 +104,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with no installed SDKS', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([]);
 
@@ -124,7 +118,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -181,7 +175,7 @@ describe('updates', () => {
 		it('checkForUpdates with install', async () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.withArgs('appc')
 				.returns(appcChild);
 
@@ -204,7 +198,7 @@ describe('updates', () => {
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
-			const stub = sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
 				.withArgs('appc')
@@ -245,7 +239,7 @@ describe('updates', () => {
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
-			const stub = sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
 				.withArgs('appc')
@@ -276,7 +270,7 @@ describe('updates', () => {
 		it('checkForUpdates with latest already', async () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
 				appcChild.stdout.emit('data', '{"NPM":"4.2.13","CLI":"7.1.0-master.13"}');
@@ -293,6 +287,8 @@ describe('updates', () => {
 
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
+			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+
 			mockFS({
 				[filePath]: '4.2.0'
 			});
@@ -315,6 +311,8 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
+			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+
 			mockFS({
 				[filePath]: '6.6.6'
 			});
