@@ -32,7 +32,8 @@ describe('environment', () => {
 	describe('validateEnvironment', () => {
 		it('validateEnvironment with all installed components ', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
 
 			sdkStub.returns([
 				{
@@ -76,7 +77,8 @@ describe('environment', () => {
 			]);
 
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();
@@ -99,12 +101,14 @@ describe('environment', () => {
 		});
 		it('validateEnvironment with no installed SDKS', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
 
 			sdkStub.returns([]);
 
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();
@@ -147,7 +151,8 @@ describe('environment', () => {
 		});
 		it('validateEnvironment with no installed appc npm', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
 
 			sdkStub.returns([
 				{
@@ -172,7 +177,8 @@ describe('environment', () => {
 			]);
 
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const appcChild = createChildMock();

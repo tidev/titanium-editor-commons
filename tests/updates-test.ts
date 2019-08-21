@@ -287,10 +287,12 @@ describe('updates', () => {
 
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
-			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
 
 			mockFS({
-				[filePath]: '4.2.0'
+				[versionFilePath]: '4.2.0',
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
@@ -311,10 +313,13 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
 
 			mockFS({
-				[filePath]: '6.6.6'
+				[versionFilePath]: '6.6.6',
+				[packageJson]: '{ "version": "6.6.6" }'
+
 			});
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
@@ -322,6 +327,23 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('6.6.6');
 			expect(update.productName).to.equal('Appcelerator CLI');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('checkForUpdate with different version file and package.json (dev environment)', async () => {
+			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+
+			mockFS({
+				[versionFilePath]: '6.6.6',
+				[packageJson]: '{ "version": "4.2.0" }'
+
+			});
+			mockAppcCoreRequest('6.6.6');
+			const update = await appc.core.checkForUpdate();
+			expect(update.currentVersion).to.equal('4.2.0');
+			expect(update.latestVersion).to.equal('6.6.6');
+			expect(update.productName).to.equal('Appcelerator CLI');
+			expect(update.hasUpdate).to.equal(true);
 		});
 	});
 });

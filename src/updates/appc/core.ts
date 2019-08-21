@@ -34,11 +34,13 @@ export async function checkForUpdate () {
 }
 
 export async function checkInstalledVersion () {
-	const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-	if (!await fs.pathExists(filePath)) {
+	const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
+	if (!await fs.pathExists(versionFilePath)) {
 		return;
 	}
-	const version = await fs.readFile(filePath, 'utf8');
+	const cliVersion = await fs.readFile(versionFilePath, 'utf8');
+	const packageJson = path.join(os.homedir(), '.appcelerator', 'install', cliVersion, 'packages', 'package.json');
+	const { version } = await fs.readJSON(packageJson);
 	return version;
 }
 
