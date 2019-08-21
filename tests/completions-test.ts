@@ -26,6 +26,7 @@ describe.only('updates', () => {
 	describe('completions.generateAlloyCompletions', () => {
 		it('Generate Alloy Completions', async () => {
 			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
+			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
 			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
 			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
 
@@ -38,7 +39,8 @@ describe.only('updates', () => {
 				},
 				[alloyTagsPath]: mockFS.directory({
 					items: parsers
-				})
+				}),
+				[packageJson]: '{ "version": "4.2.0" }'
 
 			});
 
@@ -56,6 +58,7 @@ describe.only('updates', () => {
 		});
 		it('Generate Alloy Completions with pre-existing completions', async () => {
 			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
+			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
 			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
 			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
 			const completionsPath = path.join(os.homedir(), '.titanium', 'completions', 'alloy', '0.2.0');
@@ -73,6 +76,7 @@ describe.only('updates', () => {
 				[completionsPath]: {
 					'completions-v1.json': ''
 				},
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const completions = await generateAlloyCompletions(false);
@@ -107,9 +111,11 @@ describe.only('updates', () => {
 			expect(completions).to.equal(undefined);
 		});
 	});
-	describe.only('completions.generateSDKCompletions', () => {
-		it('Generate SDK Completions', async () => {
+
+	describe('completions.loadCompletions', () => {
+		it('Load Completions', async () => {
 			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
+			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
 			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
 			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
 
@@ -125,7 +131,8 @@ describe.only('updates', () => {
 				}),
 				[FIXTURES_DIR]: {
 					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR , 'api.jsca'))
-				}
+				},
+				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const sdkCompletions = await generateSDKCompletions(true, '8.1.0.GA', FIXTURES_DIR, 1);
