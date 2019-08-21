@@ -1,10 +1,11 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { checkInstalledVersion } from '../updates/appc/core';
+import { core } from '../updates/appc';
+
 import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
 
-import { homedir } from 'os';
+import os from 'os';
 
 const completionsVersion = 1;
 
@@ -40,8 +41,8 @@ interface Type {
  * @param {Boolean} force - Force generation of completion file.
  */
 export async function generateAlloyCompletions (force: boolean) {
-	const appcPath = path.join(homedir(), '.appcelerator', 'install');
-	const version = await checkInstalledVersion();
+	const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
+	const version = await core.checkInstalledVersion();
 	if (!version) {
 		throw Error('Unable to find installed alloy version.');
 	}

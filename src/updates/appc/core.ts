@@ -2,14 +2,13 @@
 import { run } from 'appcd-subprocess';
 import * as fs from 'fs-extra';
 import got from 'got';
-import * as os from 'os';
+import os from 'os';
 import * as path from 'path';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import { InstallError } from '../util';
 
-const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
 export async function checkForUpdate () {
@@ -35,6 +34,7 @@ export async function checkForUpdate () {
 }
 
 export async function checkInstalledVersion () {
+	const filePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
 	if (!await fs.pathExists(filePath)) {
 		return;
 	}

@@ -1,9 +1,9 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import { checkInstalledVersion } from '../updates/appc/core';
+import * as core from '../updates/appc/core';
 
-import { homedir } from 'os';
+import os from 'os';
 
 export class CustomError extends Error {
 
@@ -15,8 +15,8 @@ export class CustomError extends Error {
 }
 
 export async function getAlloyVersion () {
-	const appcPath = path.join(homedir(), '.appcelerator', 'install');
-	const appcVersion = await checkInstalledVersion();
+	const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
+	const appcVersion = await core.checkInstalledVersion();
 	if (!appcVersion) {
 		throw Error('Unable to find installed CLI version.');
 	}
@@ -26,9 +26,9 @@ export async function getAlloyVersion () {
 }
 
 export function getSDKCompletionsFileName (sdkVersion: string, completionsVersion: number) {
-	return path.join(homedir(), '.titanium', 'completions', 'titanium', sdkVersion, `completions${completionsVersion}.json`);
+	return path.join(os.homedir(), '.titanium', 'completions', 'titanium', sdkVersion, `completions-v${completionsVersion}.json`);
 }
 
 export function getAlloyCompletionsFileName (alloyVersion: string, completionsVersion: number) {
-	return path.join(homedir(), '.titanium', 'completions', 'alloy', alloyVersion, `completions${completionsVersion}.json`);
+	return path.join(os.homedir(), '.titanium', 'completions', 'alloy', alloyVersion, `completions-v${completionsVersion}.json`);
 }
