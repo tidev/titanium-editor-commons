@@ -189,7 +189,6 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('4.2.13');
 			expect(update.productName).to.equal('Appcelerator CLI (npm)');
 			expect(update.hasUpdate).to.equal(true);
-			// console.log(stub.args);
 		});
 
 		it('checkForUpdates with no core', async () => {
@@ -287,13 +286,19 @@ describe('updates', () => {
 
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('4.2.0');
@@ -313,14 +318,19 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[versionFilePath]: '6.6.6',
-				[packageJson]: '{ "version": "6.6.6" }'
-
+				[installPath]: {
+					'.version': '6.6.6',
+					'6.6.6': {
+						'package': {
+							'package.json': '{ "version": "6.6.6" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('6.6.6');
@@ -330,14 +340,19 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with different version file and package.json (dev environment)', async () => {
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[versionFilePath]: '6.6.6',
-				[packageJson]: '{ "version": "4.2.0" }'
-
+				[installPath]: {
+					'.version': '6.6.6',
+					'6.6.6': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('4.2.0');

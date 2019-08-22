@@ -39,7 +39,7 @@ export async function checkInstalledVersion () {
 		return;
 	}
 	const cliVersion = await fs.readFile(versionFilePath, 'utf8');
-	const packageJson = path.join(os.homedir(), '.appcelerator', 'install', cliVersion, 'packages', 'package.json');
+	const packageJson = path.join(os.homedir(), '.appcelerator', 'install', cliVersion, 'package', 'package.json');
 	const { version } = await fs.readJSON(packageJson);
 	return version;
 }

@@ -11,7 +11,7 @@ import { parsers } from './fixtures/parsers';
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
 
-describe.only('updates', () => {
+describe('completions', () => {
 
 	beforeEach(() => {
 		mockFS.restore();
@@ -23,23 +23,31 @@ describe.only('updates', () => {
 
 	describe('completions.generateAlloyCompletions', () => {
 		it('Generate Alloy Completions', async () => {
-			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
-			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
-			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
-			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[appcPath]: {
-					'.version': '4.2.0'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }',
+							'node_modules': {
+								'alloy': {
+									'package.json': '{"version": "0.2.0"}',
+									'Alloy': {
+										'commands': {
+											'compile': {
+												'parsers': mockFS.directory({
+													items: parsers
+												}),
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				},
-				[alloyPath]: {
-					'package.json': '{"version": "0.2.0"}'
-				},
-				[alloyTagsPath]: mockFS.directory({
-					items: parsers
-				}),
-				[packageJson]: '{ "version": "4.2.0" }'
-
 			});
 
 			const completions = await generateAlloyCompletions(true);
@@ -55,26 +63,36 @@ describe.only('updates', () => {
 			}
 		});
 		it('Generate Alloy Completions with pre-existing completions', async () => {
-			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
-			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
-			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
-			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
+
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 			const completionsPath = path.join(os.homedir(), '.titanium', 'completions', 'alloy', '0.2.0');
 
 			mockFS({
-				[appcPath]: {
-					'.version': '4.2.0'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }',
+							'node_modules': {
+								'alloy': {
+									'package.json': '{"version": "0.2.0"}',
+									'Alloy': {
+										'commands': {
+											'compile': {
+												'parsers': mockFS.directory({
+													items: parsers
+												}),
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				},
-				[alloyPath]: {
-					'package.json': '{"version": "0.2.0"}'
-				},
-				[alloyTagsPath]: mockFS.directory({
-					items: parsers
-				}),
 				[completionsPath]: {
 					'completions-v1.json': ''
 				},
-				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const completions = await generateAlloyCompletions(false);
@@ -105,6 +123,7 @@ describe.only('updates', () => {
 					'completions-v1.json': ''
 				},
 			});
+
 			const completions = await generateSDKCompletions(false, '8.1.0.GA', FIXTURES_DIR, 1);
 			expect(completions).to.equal(undefined);
 		});
@@ -112,25 +131,34 @@ describe.only('updates', () => {
 
 	describe('completions.loadCompletions', () => {
 		it('Load Completions', async () => {
-			const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
-			const packageJson = path.join(appcPath, '4.2.0', 'packages', 'package.json');
-			const alloyPath = path.join(appcPath, '4.2.0', 'package', 'node_modules', 'alloy');
-			const alloyTagsPath = path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[appcPath]: {
-					'.version': '4.2.0'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }',
+							'node_modules': {
+								'alloy': {
+									'package.json': '{"version": "0.2.0"}',
+									'Alloy':{
+										'commands':{
+											'compile': {
+												'parsers': mockFS.directory({
+													items: parsers
+												}),
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				},
-				[alloyPath]: {
-					'package.json': '{"version": "0.2.0"}'
-				},
-				[alloyTagsPath]: mockFS.directory({
-					items: parsers
-				}),
 				[FIXTURES_DIR]: {
-					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR , 'api.jsca'))
+					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'api.jsca'))
 				},
-				[packageJson]: '{ "version": "4.2.0" }'
 			});
 
 			const sdkCompletions = await generateSDKCompletions(true, '8.1.0.GA', FIXTURES_DIR, 1);

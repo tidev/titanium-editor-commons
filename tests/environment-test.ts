@@ -32,8 +32,7 @@ describe('environment', () => {
 	describe('validateEnvironment', () => {
 		it('validateEnvironment with all installed components ', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([
 				{
@@ -77,8 +76,14 @@ describe('environment', () => {
 			]);
 
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
@@ -101,14 +106,19 @@ describe('environment', () => {
 		});
 		it('validateEnvironment with no installed SDKS', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([]);
 
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
@@ -151,8 +161,7 @@ describe('environment', () => {
 		});
 		it('validateEnvironment with no installed appc npm', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
-			const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
-			const packageJson = path.join(os.homedir(), '.appcelerator', 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([
 				{
@@ -177,8 +186,14 @@ describe('environment', () => {
 			]);
 
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
