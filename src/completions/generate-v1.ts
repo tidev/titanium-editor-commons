@@ -3,11 +3,10 @@ import * as path from 'path';
 
 import { core } from '../updates/appc';
 
+import { CompletionsFormat } from './index';
 import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
 
 import os from 'os';
-
-const completionsVersion = 1;
 
 interface TagDictionary {
 	[key: string]: Tag;
@@ -49,7 +48,7 @@ export async function generateAlloyCompletions (force: boolean) {
 	const alloyPath = path.join(appcPath, version, 'package', 'node_modules', 'alloy');
 	const alloyVersion = await getAlloyVersion();
 
-	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, completionsVersion);
+	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, CompletionsFormat.v1);
 
 	if (!force && await fs.pathExists(alloyCompletionsFilename)) {
 		return;
@@ -128,13 +127,13 @@ export async function generateAlloyCompletions (force: boolean) {
  *
  * Generate completions file for a Titanium SDK.
  *
- * @param {Boolean} [force=false] - Force generation of the completion file. 
+ * @param {Boolean} force=false - Force generation of the completion file. 
  * @param {String} sdkVersion - SDK Version to generate completions for.
  * @param {String} sdkPath - SDK Path to generate completions for.
  */
 export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string) {
 	// Make sdkVersion optional and load for selected SDK?
-	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, completionsVersion);
+	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v1);
 
 	if (!force && await fs.pathExists(sdkCompletionsFilename)) {
 		return;

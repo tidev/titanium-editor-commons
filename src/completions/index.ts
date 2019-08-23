@@ -42,7 +42,7 @@ export async function loadCompletions (sdkVersion: string, completionsVersion: C
 }
 export async function generateAlloyCompletions (force: boolean = false, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
 	if (completionsVersion === CompletionsFormat.v1) {
-		return await generateV1.generateAlloyCompletions(force);
+		return generateV1.generateAlloyCompletions(force);
 	} else {
 		throw new Error(`Unsupported format version specified ${completionsVersion}`);
 	}
@@ -50,7 +50,7 @@ export async function generateAlloyCompletions (force: boolean = false, completi
 
 export async function generateSDKCompletions (force: boolean = false, sdkVersion: string, sdkPath: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
 	if (completionsVersion === CompletionsFormat.v1) {
-		return await generateV1.generateSDKCompletions(force, sdkVersion, sdkPath);
+		return generateV1.generateSDKCompletions(force, sdkVersion, sdkPath);
 	} else {
 		throw new Error(`Unsupported format version specified ${completionsVersion}`);
 	}
