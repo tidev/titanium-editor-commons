@@ -7,14 +7,9 @@ import child_process from 'child_process';
 import { EventEmitter } from 'events';
 import mockFS from 'mock-fs';
 import nock from 'nock';
-import * as os from 'os';
+import os from 'os';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import stream from 'stream';
-
-const appcHomeDir = path.join(os.homedir(), '.appcelerator');
-const versionFilePath = path.join(appcHomeDir, 'install', '.version');
-let sandbox: sinon.SinonSandbox;
 
 function createChildMock () {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -26,19 +21,18 @@ function createChildMock () {
 describe('environment', () => {
 
 	beforeEach(() => {
-		sandbox = sinon.createSandbox();
 		mockFS.restore();
 	});
 
 	afterEach(() => {
 		nock.cleanAll();
-		sandbox.restore();
 		mockFS.restore();
 	});
 
 	describe('validateEnvironment', () => {
 		it('validateEnvironment with all installed components ', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([
 				{
@@ -81,14 +75,19 @@ describe('environment', () => {
 				}
 			]);
 
-			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
 				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
@@ -106,18 +105,24 @@ describe('environment', () => {
 			);
 		});
 		it('validateEnvironment with no installed SDKS', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([]);
 
-			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
 				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
@@ -137,7 +142,7 @@ describe('environment', () => {
 			mockFS({});
 
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.withArgs('appc')
 				.returns(appcChild);
 
@@ -155,7 +160,8 @@ describe('environment', () => {
 			);
 		});
 		it('validateEnvironment with no installed appc npm', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			sdkStub.returns([
 				{
@@ -179,16 +185,21 @@ describe('environment', () => {
 				}
 			]);
 
-			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
 
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
-			const stub = sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
 				.withArgs('appc')

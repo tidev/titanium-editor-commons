@@ -7,15 +7,10 @@ import child_process from 'child_process';
 import { EventEmitter } from 'events';
 import mockFS from 'mock-fs';
 import nock from 'nock';
-import * as os from 'os';
+import os from 'os';
 import * as path from 'path';
-import * as sinon from 'sinon';
 import stream from 'stream';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
-
-const appcHomeDir = path.join(os.homedir(), '.appcelerator');
-const versionFilePath = path.join(appcHomeDir, 'install', '.version');
-let sandbox: sinon.SinonSandbox;
 
 function createChildMock () {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -27,19 +22,17 @@ function createChildMock () {
 describe('updates', () => {
 
 	beforeEach(() => {
-		sandbox = sinon.createSandbox();
 		mockFS.restore();
 	});
 
 	afterEach(() => {
 		nock.cleanAll();
-		sandbox.restore();
 		mockFS.restore();
 	});
 
 	describe('titanium.sdk', () => {
 		it('checkForUpdate with installed SDKS', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -111,7 +104,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with no installed SDKS', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([]);
 
@@ -125,7 +118,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const sdkStub = sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 
 			sdkStub.returns([
 				{
@@ -182,7 +175,7 @@ describe('updates', () => {
 		it('checkForUpdates with install', async () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.withArgs('appc')
 				.returns(appcChild);
 
@@ -196,7 +189,6 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('4.2.13');
 			expect(update.productName).to.equal('Appcelerator CLI (npm)');
 			expect(update.hasUpdate).to.equal(true);
-			// console.log(stub.args);
 		});
 
 		it('checkForUpdates with no core', async () => {
@@ -205,7 +197,7 @@ describe('updates', () => {
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
-			const stub = sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
 				.withArgs('appc')
@@ -246,7 +238,7 @@ describe('updates', () => {
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
 
-			const stub = sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
 				.withArgs('appc')
@@ -277,7 +269,7 @@ describe('updates', () => {
 		it('checkForUpdates with latest already', async () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
-			sandbox.stub(child_process, 'spawn')
+			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
 				appcChild.stdout.emit('data', '{"NPM":"4.2.13","CLI":"7.1.0-master.13"}');
@@ -294,11 +286,19 @@ describe('updates', () => {
 
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
-			const packageJson = path.join(appcHomeDir, 'install', '4.2.0', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
+
 			mockFS({
-				[versionFilePath]: '4.2.0',
-				[packageJson]: '{ "version": "4.2.0" }'
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('4.2.0');
@@ -318,13 +318,19 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const packageJson = path.join(appcHomeDir, 'install', '6.6.6', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[versionFilePath]: '6.6.6',
-				[packageJson]: '{ "version": "6.6.6" }'
-
+				[installPath]: {
+					'.version': '6.6.6',
+					'6.6.6': {
+						'package': {
+							'package.json': '{ "version": "6.6.6" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('6.6.6');
@@ -334,13 +340,19 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with different version file and package.json (dev environment)', async () => {
-			const packageJson = path.join(appcHomeDir, 'install', '6.6.6', 'packages', 'package.json');
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[versionFilePath]: '6.6.6',
-				[packageJson]: '{ "version": "4.2.0" }'
-
+				[installPath]: {
+					'.version': '6.6.6',
+					'6.6.6': {
+						'package': {
+							'package.json': '{ "version": "4.2.0" }'
+						}
+					}
+				},
 			});
+
 			mockAppcCoreRequest('6.6.6');
 			const update = await appc.core.checkForUpdate();
 			expect(update.currentVersion).to.equal('4.2.0');
