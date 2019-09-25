@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { core } from '../updates/appc';
 
-import { CompletionsFormat } from './index';
+import { CompletionsFormat, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
 import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
 
 import os from 'os';

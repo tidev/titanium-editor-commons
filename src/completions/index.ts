@@ -66,6 +66,30 @@ export enum CompletionsFormat {
 	v2 = 2
 }
 
+export interface TagDictionary {
+	[key: string]: Tag;
+}
+export interface Tag {
+	apiName: string;
+}
+
+export interface PropertiesDictionary {
+	[key: string]: Property;
+}
+export interface Property {
+	description: string;
+	type: string;
+	values?: string[];
+}
+export interface TypeDictionary {
+	[key: string]: Type;
+}
+export interface Type {
+	description: string;
+	events: string[];
+	functions: string[];
+	properties: string[];
+}
 export {
 	getSDKCompletionsFileName,
 	getAlloyCompletionsFileName
