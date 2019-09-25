@@ -8,32 +8,6 @@ import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKComple
 
 import os from 'os';
 
-interface TagDictionary {
-	[key: string]: Tag;
-}
-interface Tag {
-	apiName: string;
-}
-
-interface PropertiesDictionary {
-	[key: string]: Property;
-}
-interface Property {
-	description: string;
-	type: string;
-	values?: string[];
-}
-
-interface TypeDictionary {
-	[key: string]: Type;
-}
-interface Type {
-	description: string;
-	events: string[];
-	functions: string[];
-	properties: string[];
-}
-
 /**
  * Generate completions for an Alloy version.
  *
@@ -57,7 +31,7 @@ export async function generateAlloyCompletions (force: boolean) {
 	const alloyAPIPath = path.join(alloyPath, 'docs', 'api.jsca');
 	const api = await fs.readJSON(alloyAPIPath);
 
-	const { props, types } = await getValues(api);
+	const { props, types } = await parseJSCA(api);
 
 	const alloyTags = await fs.readdir(path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers'));
 	const tagDic: TagDictionary = {};
@@ -128,7 +102,7 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 	const titaniumAPIPath = path.join(sdkPath, 'api.jsca');
 	const api = await fs.readJSON(titaniumAPIPath);
 
-	const { props, types } = await getValues(api);
+	const { props, types } = await parseJSCA(api);
 
 	const sortedProps: PropertiesDictionary = {};
 	Object.keys(props)
@@ -153,7 +127,7 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 	}
 }
 
-async function getValues (api: any) {
+async function parseJSCA (api: any) {
 	const types: TypeDictionary = {};
 	const props: PropertiesDictionary = {};
 
