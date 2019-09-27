@@ -19,8 +19,8 @@ export function mockAppcCoreRequest (version: string) {
 }
 
 export function mockSDKRequest (file: string) {
-	nock('https://s3-us-west-2.amazonaws.com')
-		.get('/appc-mobilesdk-server/releases.json')
+	nock('https://appc-mobilesdk-server.s3-us-west-2.amazonaws.com')
+		.get('/releases.json')
 		.replyWithFile(200, path.join(__dirname, file));
 
 }
