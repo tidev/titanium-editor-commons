@@ -292,7 +292,7 @@ describe('updates', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }'
 						}
 					}
@@ -324,7 +324,7 @@ describe('updates', () => {
 				[installPath]: {
 					'.version': '6.6.6',
 					'6.6.6': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "6.6.6" }'
 						}
 					}
@@ -346,7 +346,7 @@ describe('updates', () => {
 				[installPath]: {
 					'.version': '6.6.6',
 					'6.6.6': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }'
 						}
 					}

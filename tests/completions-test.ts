@@ -29,15 +29,15 @@ describe('completions', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }',
 							'node_modules': {
-								'alloy': {
+								alloy: {
 									'package.json': '{"version": "0.2.0"}',
 									'Alloy': {
-										'commands': {
-											'compile': {
-												'parsers': mockFS.directory({
+										commands: {
+											compile: {
+												parsers: mockFS.directory({
 													items: parsers
 												}),
 											}
@@ -71,15 +71,15 @@ describe('completions', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }',
 							'node_modules': {
-								'alloy': {
+								alloy: {
 									'package.json': '{"version": "0.2.0"}',
 									'Alloy': {
-										'commands': {
-											'compile': {
-												'parsers': mockFS.directory({
+										commands: {
+											compile: {
+												parsers: mockFS.directory({
 													items: parsers
 												}),
 											}
@@ -142,15 +142,15 @@ describe('completions', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }',
 							'node_modules': {
-								'alloy': {
+								alloy: {
 									'package.json': '{"version": "0.2.0"}',
-									'Alloy':{
-										'commands':{
-											'compile': {
-												'parsers': mockFS.directory({
+									'Alloy': {
+										commands: {
+											compile: {
+												parsers: mockFS.directory({
 													items: parsers
 												}),
 											}
@@ -188,15 +188,15 @@ describe('completions', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }',
 							'node_modules': {
-								'alloy': {
+								alloy: {
 									'package.json': '{"version": "0.2.0"}',
 									'Alloy': {
-										'commands': {
-											'compile': {
-												'parsers': mockFS.directory({
+										commands: {
+											compile: {
+												parsers: mockFS.directory({
 													items: parsers
 												}),
 											}

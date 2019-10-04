@@ -32,7 +32,7 @@
   "scripts": {
     "commit": "git-cz",
     "compile": "tsc -p ./",
-    "lint": "tslint -p tsconfig.json --format stylish",
+    "lint": "tslint -p tslint-tsconfig.json --format stylish",
     "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",
