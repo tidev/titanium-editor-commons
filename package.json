@@ -8,10 +8,31 @@
     "Ewan Harris <eharris@axway.com>"
   ],
   "license": "Apache-2.0",
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "*.ts": "npm run lint"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
   "scripts": {
     "commit": "git-cz",
     "compile": "tsc -p ./",
-    "lint": "tslint --format stylish 'src/**/*.ts' 'tests/**/*.ts'",
+    "lint": "tslint -p tsconfig.json --format stylish",
     "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",
