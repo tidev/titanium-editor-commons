@@ -15,9 +15,7 @@
     }
   },
   "lint-staged": {
-    "linters": {
       "*.ts": "npm run lint"
-    }
   },
   "config": {
     "commitizen": {
