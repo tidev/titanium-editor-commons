@@ -79,7 +79,7 @@ describe('environment', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }'
 						}
 					}
@@ -114,7 +114,7 @@ describe('environment', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }'
 						}
 					}
@@ -189,7 +189,7 @@ describe('environment', () => {
 				[installPath]: {
 					'.version': '4.2.0',
 					'4.2.0': {
-						'package': {
+						package: {
 							'package.json': '{ "version": "4.2.0" }'
 						}
 					}

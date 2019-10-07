@@ -3,7 +3,7 @@ import * as path from 'path';
 
 import { core } from '../updates/appc';
 
-import { CompletionsFormat, PropertiesDictionary, TagDictionary, TypeDictionary  } from './index';
+import { CompletionsFormat, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
 import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
 
 import os from 'os';
@@ -22,16 +22,17 @@ export async function generateAlloyCompletions (force: boolean) {
 	const alloyPath = path.join(appcPath, version, 'package', 'node_modules', 'alloy');
 	const alloyVersion = await getAlloyVersion();
 
-	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, CompletionsFormat.v1);
+	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, CompletionsFormat.v2);
 
 	if (!force && await fs.pathExists(alloyCompletionsFilename)) {
 		return;
 	}
 
-	// TODO: Generate completions from this?
-	// const alloyApi = await fs.readJSON(path.join(alloyPath, 'docs', 'api.jsca'));
+	const alloyAPIPath = path.join(alloyPath, 'docs', 'api.jsca');
+	const api = await fs.readJSON(alloyAPIPath);
 
-	// generate tag list
+	const { props, types } = await parseJSCA(api);
+
 	const alloyTags = await fs.readdir(path.join(alloyPath, 'Alloy', 'commands', 'compile', 'parsers'));
 	const tagDic: TagDictionary = {};
 	for (const tag of alloyTags) {
@@ -51,42 +52,23 @@ export async function generateAlloyCompletions (force: boolean) {
 		}
 	}
 
-	// add missing tags
-	Object.assign(tagDic, {
-		View: {
-			apiName: 'Ti.UI.View'
-		},
-		Templates: {},
-		HeaderView: {},
-		FooterView: {},
-		ScrollView: {
-			apiName: 'Ti.UI.ScrollView'
-		},
-		Slider: {
-			apiName: 'Ti.UI.Slider'
-		},
-		TableViewRow: {
-			apiName: 'Ti.UI.TableViewRow'
-		},
-		Alloy: {},
-		ActivityIndicator: {
-			apiName: 'Ti.UI.ActivityIndicator'
-		},
-		WebView: {
-			apiName: 'Ti.UI.WebView'
-		}
-	});
-
 	const sortedTagDic: TagDictionary = {};
 	Object.keys(tagDic)
 		.sort()
 		.forEach(k => sortedTagDic[k] = tagDic[k]);
+
+	const sortedProps: PropertiesDictionary = {};
+	Object.keys(props)
+		.sort()
+		.forEach(k => sortedProps[k] = props[k]);
 	try {
 		await fs.ensureDir(path.dirname(alloyCompletionsFilename));
 		await fs.writeJSON(alloyCompletionsFilename, {
-			version: 1,
+			version: CompletionsFormat.v2,
 			alloyVersion,
-			tags: sortedTagDic
+			properties: sortedProps,
+			tags: sortedTagDic,
+			types
 		},
 		{
 			spaces: '\t'
@@ -107,7 +89,7 @@ export async function generateAlloyCompletions (force: boolean) {
  */
 export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string) {
 	// Make sdkVersion optional and load for selected SDK?
-	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v1);
+	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v2);
 
 	if (!force && await fs.pathExists(sdkCompletionsFilename)) {
 		return;
@@ -119,7 +101,33 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 
 	const titaniumAPIPath = path.join(sdkPath, 'api.jsca');
 	const api = await fs.readJSON(titaniumAPIPath);
-	// property list
+
+	const { props, types } = await parseJSCA(api);
+
+	const sortedProps: PropertiesDictionary = {};
+	Object.keys(props)
+		.sort()
+		.forEach(k => sortedProps[k] = props[k]);
+
+	try {
+		await fs.ensureDir(path.dirname(sdkCompletionsFilename));
+		await fs.writeJSON(sdkCompletionsFilename,
+			{
+				version: CompletionsFormat.v2,
+				sdkVersion,
+				properties: sortedProps,
+				types
+			},
+			{
+				spaces: '\t'
+			});
+		return sdkVersion;
+	} catch (error) {
+		throw error;
+	}
+}
+
+async function parseJSCA (api: any) {
 	const types: TypeDictionary = {};
 	const props: PropertiesDictionary = {};
 
@@ -129,6 +137,7 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 		}
 
 		const propertyNamesOfType = [];
+
 		for (const prop of type.properties) {
 			if (prop.permission !== 'read-only' && prop.name.indexOf('Modules.') !== 0) {
 
@@ -139,7 +148,7 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 					Object.assign(props[prop.name], {
 						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
 					});
-					if (prop.constants.length) {
+					if (prop.constants) {
 						const values: string[] = props[prop.name].values ? props[prop.name].values!.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [...new Set(values)];
 					}
@@ -148,7 +157,8 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 						description: prop.description.replace(/<p>|<\/p>/g, ''),
 						type: prop.type
 					};
-					if (prop.constants.length) {
+
+					if (prop.constants) {
 						props[prop.name].values = prop.constants;
 					}
 				}
@@ -167,7 +177,6 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 		};
 	}
 
-	// Alias
 	for (const [key, prop] of Object.entries(props)) {
 		if (prop.type === 'Boolean') {
 			prop.values = ['true', 'false'];
@@ -194,58 +203,13 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 			];
 		}
 	}
-	// missing types
-	Object.assign(types, {
-		'Alloy.Abstract.ItemTemplate': {
-			description: 'Template that represents the basic appearance of a list item.',
-			functions: [
-			],
-			properties: [
-				'name',
-				'height'
-			],
-			events: []
-		},
-		'Alloy.Widget': {
-			description: 'Widgets are self-contained components that can be easily dropped into an Alloy project.',
-			functions: [],
-			properties: [
-				'src'
-			],
-			events: []
-		},
-		'Alloy.Require': {
-			description: 'Require alloy controller',
-			functions: [],
-			properties: [
-				'src'
-			],
-			events: []
-		}
-	});
 
 	// missing values
-	props.layout.values = ['\'vertical\'', '\'horizontal\'', '\'composite\''];
-
-	const sortedProps: PropertiesDictionary = {};
-	Object.keys(props)
-		.sort()
-		.forEach(k => sortedProps[k] = props[k]);
-
-	try {
-		await fs.ensureDir(path.dirname(sdkCompletionsFilename));
-		await fs.writeJSON(sdkCompletionsFilename,
-			{
-				version: 1,
-				sdkVersion,
-				properties: sortedProps,
-				types
-			},
-			{
-				spaces: '\t'
-			});
-		return sdkVersion;
-	} catch (error) {
-		throw error;
+	if (props.layout) {
+		props.layout.values = ['\'vertical\'', '\'horizontal\'', '\'composite\''];
 	}
+
+	return {
+		props, types
+	};
 }
