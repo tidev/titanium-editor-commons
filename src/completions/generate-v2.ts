@@ -3,12 +3,12 @@ import * as path from 'path';
 
 import { core } from '../updates/appc';
 
-import { CompletionsFormat, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
+import { CompletionsFormat, JSCA, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
 import { CustomError, getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
 
 import os from 'os';
 
-async function parseJSCA (api: any) {
+async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; types: TypeDictionary }> {
 	const types: TypeDictionary = {};
 	const props: PropertiesDictionary = {};
 
@@ -30,13 +30,14 @@ async function parseJSCA (api: any) {
 						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
 					});
 					if (prop.constants) {
-						const values: string[] = props[prop.name].values ? props[prop.name].values!.concat(prop.constants) : prop.constants;
+						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}
 				} else {
 					props[prop.name] = {
 						description: prop.description.replace(/<p>|<\/p>/g, ''),
-						type: prop.type
+						type: prop.type,
+						values: []
 					};
 
 					if (prop.constants) {
@@ -66,11 +67,11 @@ async function parseJSCA (api: any) {
 			prop.values = prop.values.map((val: string) => {
 				const splitedName = val.split('.');
 				const typeName = splitedName.slice(0, -1).join('.');
-				const tiUIProps = api.types.find((type: { name: string }) => type.name === typeName).properties;
-				const curPropInfo = tiUIProps.find((property: { name: string }) => property.name === splitedName[splitedName.length - 1]);
+				const tiUIProps = api.types.find((type) => type.name === typeName);
+				const curPropInfo = tiUIProps && tiUIProps.properties.find((property: { name: string }) => property.name === splitedName[splitedName.length - 1]);
 
 				let shortName: string = val.replace(/Titanium\./g, 'Ti.');
-				if (curPropInfo.deprecated) {
+				if (curPropInfo && curPropInfo.deprecated) {
 					shortName += '|deprecated';
 				}
 				return shortName;
@@ -91,7 +92,8 @@ async function parseJSCA (api: any) {
 	}
 
 	return {
-		props, types
+		props,
+		types
 	};
 }
 
@@ -100,7 +102,7 @@ async function parseJSCA (api: any) {
  *
  * @param {Boolean} force - Force generation of completion file.
  */
-export async function generateAlloyCompletions (force: boolean) {
+export async function generateAlloyCompletions (force: boolean): Promise<string|undefined> {
 	const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
 	const version = await core.checkInstalledVersion();
 	if (!version) {
@@ -171,7 +173,7 @@ export async function generateAlloyCompletions (force: boolean) {
  * @param {String} sdkVersion - SDK Version to generate completions for.
  * @param {String} sdkPath - SDK Path to generate completions for.
  */
-export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string) {
+export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string): Promise<string|undefined> {
 	// Make sdkVersion optional and load for selected SDK?
 	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v2);
 

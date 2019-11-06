@@ -1,3 +1,40 @@
+interface BranchData {
+	defaultBranch: string;
+	branches: string[];
+}
+
+interface BuildData {
+	[key: string]: {
+		date: Date;
+		githash: string;
+		ts: string;
+		url: string;
+		version: string;
+	};
+}
+
+interface ReleaseInfo {
+	[key: string]: {
+		name: string;
+		url: string;
+		version: string;
+	};
+}
+
+declare class TitaniumSDK {
+	name: string;
+	manifest: {
+		githash: string;
+		moduleAPIVersion: {
+			[key: string]: string;
+		};
+		name: string;
+		platforms: string[];
+		timestamp: string;
+		version: string;
+	};
+	path: string;
+}
 
 declare module 'titaniumlib' {
 	namespace sdk {
@@ -10,18 +47,18 @@ declare module 'titaniumlib' {
 			uri?: string;
 		}
 
-		function getBranches (): any;
+		function getBranches (): Promise<BranchData>;
 
-		function getBuilds (branch: string): any;
+		function getBuilds (branch?: string): Promise<BuildData>;
 
-		function getInstalledSDKs (force?: boolean): any;
+		function getInstalledSDKs (force?: boolean): TitaniumSDK[];
 
-		function getPaths (): any;
+		function getPaths (): string[];
 
-		function getReleases (noLatest?: boolean): any;
+		function getReleases (noLatest?: boolean): Promise<ReleaseInfo>;
 
-		function install (params?: InstallParams): any;
+		function install (params?: InstallParams): Promise<string>;
 
-		function uninstall (nameOrPath: string): any;
+		function uninstall (nameOrPath: string): Promise<TitaniumSDK[]>;
 	}
 }

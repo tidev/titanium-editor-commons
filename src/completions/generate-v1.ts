@@ -13,7 +13,7 @@ import os from 'os';
  *
  * @param {Boolean} force - Force generation of completion file.
  */
-export async function generateAlloyCompletions (force: boolean) {
+export async function generateAlloyCompletions (force: boolean): Promise<string|undefined> {
 	const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
 	const version = await core.checkInstalledVersion();
 	if (!version) {
@@ -102,7 +102,7 @@ export async function generateAlloyCompletions (force: boolean) {
  * @param {String} sdkVersion - SDK Version to generate completions for.
  * @param {String} sdkPath - SDK Path to generate completions for.
  */
-export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string) {
+export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string): Promise<string|undefined> {
 	// Make sdkVersion optional and load for selected SDK?
 	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v1);
 
@@ -137,13 +137,14 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
 					});
 					if (prop.constants.length) {
-						const values: string[] = props[prop.name].values ? props[prop.name].values!.concat(prop.constants) : prop.constants;
+						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}
 				} else {
 					props[prop.name] = {
 						description: prop.description.replace(/<p>|<\/p>/g, ''),
-						type: prop.type
+						type: prop.type,
+						values: []
 					};
 					if (prop.constants.length) {
 						props[prop.name].values = prop.constants;

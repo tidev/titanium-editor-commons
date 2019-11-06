@@ -6,7 +6,7 @@ import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
-export async function checkInstalledVersion () {
+export async function checkInstalledVersion (): Promise<string|undefined> {
 	// First try running appc cli to get the version
 	try {
 		const { stdout } = await run('appc', [ '--version', '--output', 'json' ], { shell: true });
@@ -28,12 +28,12 @@ export async function checkInstalledVersion () {
 	return;
 }
 
-export async function checkLatestVersion () {
+export async function checkLatestVersion (): Promise<string> {
 	const { version } = await libnpm.manifest('appcelerator@latest');
 	return version;
 }
 
-export async function installUpdate (version: string) {
+export async function installUpdate (version: string): Promise<void> {
 	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
 	if (code) {
 		const metadata = {
@@ -53,13 +53,13 @@ export async function installUpdate (version: string) {
 	}
 }
 
-export function getReleaseNotes () {
+export function getReleaseNotes (): string {
 	// There are no public release notes for appc-install, so just point to the latest CLI release notes
 	return 'https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_Release_Notes';
 }
 
-export async function checkForUpdate () {
-	const [ currentVersion, latestVersion ] = await Promise.all([
+export async function checkForUpdate (): Promise<UpdateInfo> {
+	const [ currentVersion, latestVersion ] = await Promise.all<string|undefined, string>([
 		checkInstalledVersion(),
 		checkLatestVersion()
 	]);

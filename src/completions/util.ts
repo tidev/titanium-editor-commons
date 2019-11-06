@@ -14,7 +14,7 @@ export class CustomError extends Error {
 	}
 }
 
-export async function getAlloyVersion () {
+export async function getAlloyVersion (): Promise<string> {
 	const appcPath = path.join(os.homedir(), '.appcelerator', 'install');
 	const appcVersion = await core.checkInstalledVersion();
 	if (!appcVersion) {
@@ -25,10 +25,10 @@ export async function getAlloyVersion () {
 	return alloyVersion;
 }
 
-export function getSDKCompletionsFileName (sdkVersion: string, completionsVersion: number) {
+export function getSDKCompletionsFileName (sdkVersion: string, completionsVersion: number): string {
 	return path.join(os.homedir(), '.titanium', 'completions', 'titanium', sdkVersion, `completions-v${completionsVersion}.json`);
 }
 
-export function getAlloyCompletionsFileName (alloyVersion: string, completionsVersion: number) {
+export function getAlloyCompletionsFileName (alloyVersion: string, completionsVersion: number): string {
 	return path.join(os.homedir(), '.titanium', 'completions', 'alloy', alloyVersion, `completions-v${completionsVersion}.json`);
 }

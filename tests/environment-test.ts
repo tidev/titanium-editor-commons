@@ -12,7 +12,7 @@ import os from 'os';
 import * as path from 'path';
 import stream from 'stream';
 
-function createChildMock () {
+function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
 	fakeChild.stdout = new EventEmitter() as stream.Readable;
 	fakeChild.stderr = new EventEmitter() as stream.Readable;
