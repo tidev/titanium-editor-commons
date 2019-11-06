@@ -5,16 +5,16 @@ export function mockAppcCoreRequest (version: string) {
 	nock('https://registry.platform.axway.com')
 		.get('/api/appc/latest')
 		.reply(200, {
-			'key': 'result',
+			key: 'result',
 			'request-id': '6c4fb0e4-a84c-4e46-8d21-c4dee184a84d',
-			'result': [
+			result: [
 				{
 					id: '55d62d2a6c03980c1d58fc47',
 					name: 'appc-cli/appcelerator',
 					version
 				}
 			],
-			'success': true
+			success: true
 		});
 }
 

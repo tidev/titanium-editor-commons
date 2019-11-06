@@ -31,10 +31,10 @@ describe('completions', () => {
 					'4.2.0': {
 						package: {
 							'package.json': '{ "version": "4.2.0" }',
-							'node_modules': {
+							node_modules: {
 								alloy: {
 									'package.json': '{"version": "0.2.0"}',
-									'Alloy': {
+									Alloy: {
 										commands: {
 											compile: {
 												parsers: mockFS.directory({
@@ -73,10 +73,10 @@ describe('completions', () => {
 					'4.2.0': {
 						package: {
 							'package.json': '{ "version": "4.2.0" }',
-							'node_modules': {
+							node_modules: {
 								alloy: {
 									'package.json': '{"version": "0.2.0"}',
-									'Alloy': {
+									Alloy: {
 										commands: {
 											compile: {
 												parsers: mockFS.directory({
@@ -144,10 +144,10 @@ describe('completions', () => {
 					'4.2.0': {
 						package: {
 							'package.json': '{ "version": "4.2.0" }',
-							'node_modules': {
+							node_modules: {
 								alloy: {
 									'package.json': '{"version": "0.2.0"}',
-									'Alloy': {
+									Alloy: {
 										commands: {
 											compile: {
 												parsers: mockFS.directory({
@@ -190,10 +190,10 @@ describe('completions', () => {
 					'4.2.0': {
 						package: {
 							'package.json': '{ "version": "4.2.0" }',
-							'node_modules': {
+							node_modules: {
 								alloy: {
 									'package.json': '{"version": "0.2.0"}',
-									'Alloy': {
+									Alloy: {
 										commands: {
 											compile: {
 												parsers: mockFS.directory({
@@ -202,7 +202,7 @@ describe('completions', () => {
 											}
 										}
 									},
-									'docs': {
+									docs: {
 										'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'alloy-api.jsca'))
 									}
 								}

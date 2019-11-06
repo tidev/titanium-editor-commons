@@ -21,7 +21,7 @@ export async function validateEnvironment () {
 		installed: [],
 		missing: []
 	};
-	const [coreVersion, installVersion, sdkVersion] = await Promise.all([
+	const [ coreVersion, installVersion, sdkVersion ] = await Promise.all([
 		await updates.appc.core.checkInstalledVersion(),
 		await updates.appc.install.checkInstalledVersion(),
 		await updates.titanium.sdk.checkInstalledVersion()

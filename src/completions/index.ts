@@ -41,7 +41,7 @@ export async function loadCompletions (sdkVersion: string, completionsVersion: C
 		throw error;
 	}
 }
-export async function generateAlloyCompletions (force: boolean = false, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
+export async function generateAlloyCompletions (force = false, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
 	if (completionsVersion === CompletionsFormat.v1) {
 		return generateV1.generateAlloyCompletions(force);
 	} else if (completionsVersion === CompletionsFormat.v2) {
@@ -51,7 +51,7 @@ export async function generateAlloyCompletions (force: boolean = false, completi
 	}
 }
 
-export async function generateSDKCompletions (force: boolean = false, sdkVersion: string, sdkPath: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
+export async function generateSDKCompletions (force = false, sdkVersion: string, sdkPath: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
 	if (completionsVersion === CompletionsFormat.v1) {
 		return generateV1.generateSDKCompletions(force, sdkVersion, sdkPath);
 	} else if (completionsVersion === CompletionsFormat.v2) {
