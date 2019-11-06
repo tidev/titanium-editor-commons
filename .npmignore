@@ -2,7 +2,6 @@
 .gitignore
 src/
 tsconfig.json
-tslint.json
 tests/
 .nyc_output/
 coverage/
@@ -10,3 +9,5 @@ junit_report.xml
 Jenkinsfile
 .DS_Store
 dangerfile.js
+.eslintrc
+test-tsconfig.json

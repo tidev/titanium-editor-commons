@@ -1,0 +1,9 @@
+{
+	"extends": [ "axway/env-node", "axway/+mocha", "axway/+typescript"],
+	"parserOptions": {
+		"project": "./test-tsconfig.json"
+	},
+	"rules": {
+		"node/no-unsupported-features/es-syntax": "off"
+	}
+}
