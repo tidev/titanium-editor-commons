@@ -41,7 +41,7 @@ export async function checkInstalledVersion () {
 	// If that fails because it's not installed, or we don't have a core, fallback to npm cli which is generally slower
 	try {
 		const { stdout } = await run('npm', [ 'ls', 'appcelerator', '--json', '--depth', '0', '--global' ], { shell: true });
-		const { dependencies: { appcelerator }} = JSON.parse(stdout);
+		const { dependencies: { appcelerator } } = JSON.parse(stdout);
 		return appcelerator.version;
 	} catch (error) {
 		// squelch

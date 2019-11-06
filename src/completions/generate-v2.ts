@@ -83,7 +83,7 @@ export async function generateAlloyCompletions (force: boolean) {
  *
  * Generate completions file for a Titanium SDK.
  *
- * @param {Boolean} force=false - Force generation of the completion file. 
+ * @param {Boolean} force=false - Force generation of the completion file.
  * @param {String} sdkVersion - SDK Version to generate completions for.
  * @param {String} sdkPath - SDK Path to generate completions for.
  */
@@ -150,7 +150,7 @@ async function parseJSCA (api: any) {
 					});
 					if (prop.constants) {
 						const values: string[] = props[prop.name].values ? props[prop.name].values!.concat(prop.constants) : prop.constants;
-						props[prop.name].values = [...new Set(values)];
+						props[prop.name].values = [ ...new Set(values) ];
 					}
 				} else {
 					props[prop.name] = {
@@ -167,26 +167,26 @@ async function parseJSCA (api: any) {
 
 		types[type.name.replace(/Titanium\./g, 'Ti.')] = {
 			description: type.description.replace(/<p>|<\/p>/g, ''),
-			functions: type.functions.map((f: { deprecated: boolean; name: string; }) => {
+			functions: type.functions.map((f: { deprecated: boolean; name: string }) => {
 				return (f.deprecated) ? f.name + '|deprecated' : f.name;
 			}),
 			properties: propertyNamesOfType,
-			events: type.events.map((e: { deprecated: boolean; name: string; }) => {
+			events: type.events.map((e: { deprecated: boolean; name: string }) => {
 				return (e.deprecated) ? e.name + '|deprecated' : e.name;
 			})
 		};
 	}
 
-	for (const [key, prop] of Object.entries(props)) {
+	for (const [ key, prop ] of Object.entries(props)) {
 		if (prop.type === 'Boolean') {
-			prop.values = ['true', 'false'];
+			prop.values = [ 'true', 'false' ];
 		} else if (prop.values) {
 			// alias Titanium -> Ti
 			prop.values = prop.values.map((val: string) => {
 				const splitedName = val.split('.');
 				const typeName = splitedName.slice(0, -1).join('.');
-				const tiUIProps = api.types.find((type: { name: string; }) => type.name === typeName).properties;
-				const curPropInfo = tiUIProps.find((property: { name: string; }) => property.name === splitedName[splitedName.length - 1]);
+				const tiUIProps = api.types.find((type: { name: string }) => type.name === typeName).properties;
+				const curPropInfo = tiUIProps.find((property: { name: string }) => property.name === splitedName[splitedName.length - 1]);
 
 				let shortName: string = val.replace(/Titanium\./g, 'Ti.');
 				if (curPropInfo.deprecated) {
@@ -206,7 +206,7 @@ async function parseJSCA (api: any) {
 
 	// missing values
 	if (props.layout) {
-		props.layout.values = ['\'vertical\'', '\'horizontal\'', '\'composite\''];
+		props.layout.values = [ '\'vertical\'', '\'horizontal\'', '\'composite\'' ];
 	}
 
 	return {
