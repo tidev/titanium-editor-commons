@@ -1,9 +1,8 @@
 import * as updates from '../updates';
-import { UpdateInfo } from '../updates';
 
 interface Missing {
 	name: string;
-	getInstallInfo (): Promise<UpdateInfo>;
+	getInstallInfo (): Promise<updates.UpdateInfo>;
 }
 
 interface Installed {

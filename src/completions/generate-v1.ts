@@ -81,20 +81,17 @@ export async function generateAlloyCompletions (force: boolean) {
 	Object.keys(tagDic)
 		.sort()
 		.forEach(k => sortedTagDic[k] = tagDic[k]);
-	try {
-		await fs.ensureDir(path.dirname(alloyCompletionsFilename));
-		await fs.writeJSON(alloyCompletionsFilename, {
-			version: 1,
-			alloyVersion,
-			tags: sortedTagDic
-		},
-		{
-			spaces: '\t'
-		});
-		return alloyVersion;
-	} catch (error) {
-		throw error;
-	}
+
+	await fs.ensureDir(path.dirname(alloyCompletionsFilename));
+	await fs.writeJSON(alloyCompletionsFilename, {
+		version: 1,
+		alloyVersion,
+		tags: sortedTagDic
+	},
+	{
+		spaces: '\t'
+	});
+	return alloyVersion;
 }
 
 /**
@@ -232,20 +229,16 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 		.sort()
 		.forEach(k => sortedProps[k] = props[k]);
 
-	try {
-		await fs.ensureDir(path.dirname(sdkCompletionsFilename));
-		await fs.writeJSON(sdkCompletionsFilename,
-			{
-				version: 1,
-				sdkVersion,
-				properties: sortedProps,
-				types
-			},
-			{
-				spaces: '\t'
-			});
-		return sdkVersion;
-	} catch (error) {
-		throw error;
-	}
+	await fs.ensureDir(path.dirname(sdkCompletionsFilename));
+	await fs.writeJSON(sdkCompletionsFilename,
+		{
+			version: 1,
+			sdkVersion,
+			properties: sortedProps,
+			types
+		},
+		{
+			spaces: '\t'
+		});
+	return sdkVersion;
 }

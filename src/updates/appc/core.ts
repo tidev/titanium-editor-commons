@@ -11,28 +11,6 @@ import { InstallError } from '../util';
 
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
-export async function checkForUpdate () {
-	const [ currentVersion, latestVersion ] = await Promise.all([
-		checkInstalledVersion(),
-		checkLatestVersion()
-	]);
-
-	const updateInfo: UpdateInfo = {
-		currentVersion,
-		latestVersion,
-		action: installUpdate,
-		productName: ProductNames.AppcCore,
-		releaseNotes: getReleaseNotes(latestVersion),
-		priority: 10,
-		hasUpdate: false
-	};
-
-	if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
-		updateInfo.hasUpdate = true;
-	}
-	return updateInfo;
-}
-
 export async function checkInstalledVersion () {
 	const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
 	if (!await fs.pathExists(versionFilePath)) {
@@ -65,4 +43,26 @@ export async function installUpdate (version: string) {
 
 export function getReleaseNotes (version: string) {
 	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_${version}.GA_Release_Note`;
+}
+
+export async function checkForUpdate () {
+	const [ currentVersion, latestVersion ] = await Promise.all([
+		checkInstalledVersion(),
+		checkLatestVersion()
+	]);
+
+	const updateInfo: UpdateInfo = {
+		currentVersion,
+		latestVersion,
+		action: installUpdate,
+		productName: ProductNames.AppcCore,
+		releaseNotes: getReleaseNotes(latestVersion),
+		priority: 10,
+		hasUpdate: false
+	};
+
+	if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
+		updateInfo.hasUpdate = true;
+	}
+	return updateInfo;
 }

@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-namespace: off */
 import os from 'os';
 import * as path from 'path';
 import * as sinon from 'sinon';
