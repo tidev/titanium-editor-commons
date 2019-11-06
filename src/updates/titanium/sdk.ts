@@ -1,6 +1,7 @@
 import * as semver from 'semver';
 import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
+import { CustomError } from '../../completions/util';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
@@ -9,6 +10,10 @@ export async function checkForUpdate () {
 		checkInstalledVersion(),
 		checkLatestVersion()
 	]);
+
+	if (!latestVersion) {
+		throw new CustomError('Failed to find latest SDK version', 'ESDKUPDATECHECKFAILED');
+	}
 
 	const updateInfo: UpdateInfo = {
 		currentVersion: currentVersion ? currentVersion.name : '',
