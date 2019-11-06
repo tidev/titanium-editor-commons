@@ -6,28 +6,6 @@ import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
-export async function checkForUpdate () {
-	const [ currentVersion, latestVersion ] = await Promise.all([
-		checkInstalledVersion(),
-		checkLatestVersion()
-	]);
-
-	const updateInfo: UpdateInfo = {
-		currentVersion,
-		latestVersion,
-		action: installUpdate,
-		productName: ProductNames.AppcInstaller,
-		releaseNotes: getReleaseNotes(),
-		priority: 1,
-		hasUpdate: false
-	};
-
-	if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
-		updateInfo.hasUpdate = true;
-	}
-	return updateInfo;
-}
-
 export async function checkInstalledVersion () {
 	// First try running appc cli to get the version
 	try {
@@ -77,5 +55,27 @@ export async function installUpdate (version: string) {
 
 export function getReleaseNotes () {
 	// There are no public release notes for appc-install, so just point to the latest CLI release notes
-	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_Release_Notes`;
+	return 'https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_Release_Notes';
+}
+
+export async function checkForUpdate () {
+	const [ currentVersion, latestVersion ] = await Promise.all([
+		checkInstalledVersion(),
+		checkLatestVersion()
+	]);
+
+	const updateInfo: UpdateInfo = {
+		currentVersion,
+		latestVersion,
+		action: installUpdate,
+		productName: ProductNames.AppcInstaller,
+		releaseNotes: getReleaseNotes(),
+		priority: 1,
+		hasUpdate: false
+	};
+
+	if (!currentVersion || semver.gt(latestVersion, currentVersion)) {
+		updateInfo.hasUpdate = true;
+	}
+	return updateInfo;
 }

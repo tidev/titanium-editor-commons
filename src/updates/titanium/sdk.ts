@@ -5,32 +5,6 @@ import { CustomError } from '../../completions/util';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
-export async function checkForUpdate () {
-	const [ currentVersion, latestVersion ] = await Promise.all([
-		checkInstalledVersion(),
-		checkLatestVersion()
-	]);
-
-	if (!latestVersion) {
-		throw new CustomError('Failed to find latest SDK version', 'ESDKUPDATECHECKFAILED');
-	}
-
-	const updateInfo: UpdateInfo = {
-		currentVersion: currentVersion ? currentVersion.name : '',
-		latestVersion: latestVersion.name,
-		action: installUpdate,
-		productName: ProductNames.TitaniumSDK,
-		releaseNotes: getReleaseNotes(latestVersion.name),
-		priority: 100,
-		hasUpdate: false
-	};
-
-	if (!currentVersion || semver.gt(latestVersion.version, currentVersion.version)) {
-		updateInfo.hasUpdate = true;
-	}
-
-	return updateInfo;
-}
 export async function checkInstalledVersion () {
 	let latestSDK;
 	for (const { manifest, name } of sdk.getInstalledSDKs(true)) {
@@ -70,4 +44,31 @@ export async function installUpdate (version: string) {
 
 export function getReleaseNotes (version: string) {
 	return `https://docs.appcelerator.com/platform/latest/#!/guide/Titanium_SDK_${version}_Release_Note`;
+}
+
+export async function checkForUpdate () {
+	const [ currentVersion, latestVersion ] = await Promise.all([
+		checkInstalledVersion(),
+		checkLatestVersion()
+	]);
+
+	if (!latestVersion) {
+		throw new CustomError('Failed to find latest SDK version', 'ESDKUPDATECHECKFAILED');
+	}
+
+	const updateInfo: UpdateInfo = {
+		currentVersion: currentVersion ? currentVersion.name : '',
+		latestVersion: latestVersion.name,
+		action: installUpdate,
+		productName: ProductNames.TitaniumSDK,
+		releaseNotes: getReleaseNotes(latestVersion.name),
+		priority: 100,
+		hasUpdate: false
+	};
+
+	if (!currentVersion || semver.gt(latestVersion.version, currentVersion.version)) {
+		updateInfo.hasUpdate = true;
+	}
+
+	return updateInfo;
 }

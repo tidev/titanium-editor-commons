@@ -1,3 +1,5 @@
+/* eslint @typescript-eslint/camelcase: off */
+
 import { appc, titanium } from '../src/updates/';
 
 import * as titaniumlib from 'titaniumlib';
