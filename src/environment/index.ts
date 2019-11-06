@@ -15,7 +15,7 @@ interface EnvironmentInfo {
 	missing: Missing[];
 }
 
-export async function validateEnvironment () {
+export async function validateEnvironment (): Promise<EnvironmentInfo> {
 	const environmentInfo: EnvironmentInfo = {
 		installed: [],
 		missing: []

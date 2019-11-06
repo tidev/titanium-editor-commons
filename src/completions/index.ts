@@ -13,9 +13,11 @@ export enum CompletionsFormat {
 /**
  * Load completions list
  *
+ * @param {String} sdkVersion - SDK Version to load completions for.
+ * @param {CompletionsFormat} completionsVersion - Completions format to load
  * @returns {Object}
  */
-export async function loadCompletions (sdkVersion: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
+export async function loadCompletions (sdkVersion: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<{ alloy: AlloyCompletions; titanium: TitaniumCompletions }> {
 	const alloyVersion = await getAlloyVersion();
 	const sdkCompletions = await fs.readJSON(getSDKCompletionsFileName(sdkVersion, completionsVersion));
 	const alloyCompletions = await fs.readJSON(getAlloyCompletionsFileName(alloyVersion, completionsVersion));
@@ -42,7 +44,14 @@ export async function loadCompletions (sdkVersion: string, completionsVersion: C
 		titanium: sdkCompletions
 	};
 }
-export async function generateAlloyCompletions (force = false, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
+
+/**
+ * Generate the Alloy completions file,
+ * @param {Boolean} [force=false] - Generate the completions file even if it exists.
+ * @param {CompletionsFormat} [completionsVersion=CompletionsFormat.v1] - Completions format to generate.
+ * @returns {String|undefined}
+ */
+export async function generateAlloyCompletions (force = false, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<string|undefined> {
 	if (completionsVersion === CompletionsFormat.v1) {
 		return generateV1.generateAlloyCompletions(force);
 	} else if (completionsVersion === CompletionsFormat.v2) {
@@ -52,7 +61,15 @@ export async function generateAlloyCompletions (force = false, completionsVersio
 	}
 }
 
-export async function generateSDKCompletions (force = false, sdkVersion: string, sdkPath: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1) {
+/**
+ * Generate the SDK completions file,
+ * @param {Boolean} [force=false] - Generate the completions file even if it exists.
+ * @param {String} sdkVersion - SDK Version to generate completions for.
+ * @param {String} sdkPath - Path to the SDK.
+ * @param {CompletionsFormat} [completionsVersion=CompletionsFormat.v1] - Completions format to generate.
+ * @returns {String|undefined}
+ */
+export async function generateSDKCompletions (force = false, sdkVersion: string, sdkPath: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<string|undefined> {
 	if (completionsVersion === CompletionsFormat.v1) {
 		return generateV1.generateSDKCompletions(force, sdkVersion, sdkPath);
 	} else if (completionsVersion === CompletionsFormat.v2) {
@@ -75,7 +92,7 @@ export interface PropertiesDictionary {
 export interface Property {
 	description: string;
 	type: string;
-	values?: string[];
+	values: string[];
 }
 export interface TypeDictionary {
 	[key: string]: Type;
@@ -86,6 +103,116 @@ export interface Type {
 	functions: string[];
 	properties: string[];
 }
+
+interface AlloyCompletions {
+	version: CompletionsFormat;
+	alloyVersion: string;
+	tags: TagDictionary;
+}
+
+interface TitaniumCompletions {
+	version: CompletionsFormat;
+	sdkVersion: string;
+	properties: PropertiesDictionary;
+	types: TypeDictionary;
+}
+
+interface JSCAAlias {
+	descripton: string;
+	name: string;
+	type: string;
+}
+
+interface JSCAExample {
+	title: string;
+	code: string;
+}
+
+interface JSCAEvent {
+	name: string;
+	deprecated: boolean;
+	description: string;
+	properties: JSCAProperty[];
+}
+
+interface JSCAProperty {
+	name: string;
+	availability: string;
+	constants: string[];
+	examples: JSCAExample[];
+	isClassProperty: boolean;
+	isInstanceProperty: boolean;
+	isInternal: boolean;
+	since: JSCASince[];
+	type: string;
+	userAgents: JSCAUserAgent[];
+	permission: string;
+	description: string;
+	deprecated: boolean;
+}
+
+interface JSCAReturn {
+	type: string;
+	description: string;
+	constants: string;
+}
+
+interface JSCASince {
+	name: string;
+	version: string;
+}
+
+interface JSCAUserAgent {
+	platform: string;
+}
+
+interface JSCAFunction {
+	name: string;
+	deprecated: boolean;
+	description: string;
+	events: JSCAEvent[];
+	examples: JSCAExample[];
+	exceptions: string[];
+	isClassProperty: boolean;
+	isConstructor: boolean;
+	isInstanceProperty: boolean;
+	isInternal: boolean;
+	isMethod: boolean;
+	parameters: JSCAParameter[];
+	references: string;
+	returnTypes: JSCAReturn[];
+	since: JSCASince[];
+	userAgents: JSCAUserAgent[];
+}
+
+interface JSCAParameter {
+	name: string;
+	constants: string[];
+	description: string;
+	type: string;
+	deprecated: boolean;
+	usage: 'required' | 'optional' | 'one-or-more';
+}
+
+interface JSCAType {
+	name: string;
+	description: string;
+	deprecated: boolean;
+	events: JSCAEvent[];
+	examples: string[];
+	functions: JSCAFunction[];
+	inherits: string;
+	isInternal: boolean;
+	properties: JSCAProperty[];
+	remarks: string[];
+	since: JSCASince[];
+	userAgents: JSCAUserAgent[];
+}
+export interface JSCA {
+	types: JSCAType[];
+	aliases: JSCAAlias[];
+}
+
 export {
 	getSDKCompletionsFileName,
 	getAlloyCompletionsFileName

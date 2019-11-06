@@ -11,7 +11,7 @@ import { InstallError } from '../util';
 
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
-export async function checkInstalledVersion () {
+export async function checkInstalledVersion (): Promise<string|undefined> {
 	const versionFilePath = path.join(os.homedir(), '.appcelerator', 'install', '.version');
 	if (!await fs.pathExists(versionFilePath)) {
 		return;
@@ -22,14 +22,14 @@ export async function checkInstalledVersion () {
 	return version;
 }
 
-export async function checkLatestVersion () {
+export async function checkLatestVersion (): Promise<string> {
 	const { body } = await got(LATEST_URL, {
 		json: true
 	});
 	return body.result[0].version;
 }
 
-export async function installUpdate (version: string) {
+export async function installUpdate (version: string): Promise<void> {
 	// todo
 	const { code, stdout, stderr } = await run('appc', [ 'use', version ], { shell: true, ignoreExitCode: true });
 	if (code) {
@@ -41,12 +41,12 @@ export async function installUpdate (version: string) {
 	}
 }
 
-export function getReleaseNotes (version: string) {
+export function getReleaseNotes (version: string): string {
 	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_${version}.GA_Release_Note`;
 }
 
-export async function checkForUpdate () {
-	const [ currentVersion, latestVersion ] = await Promise.all([
+export async function checkForUpdate (): Promise<UpdateInfo> {
+	const [ currentVersion, latestVersion ] = await Promise.all<string|undefined, string>([
 		checkInstalledVersion(),
 		checkLatestVersion()
 	]);

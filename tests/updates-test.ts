@@ -14,7 +14,7 @@ import * as path from 'path';
 import stream from 'stream';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
 
-function createChildMock () {
+function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
 	fakeChild.stdout = new EventEmitter() as stream.Readable;
 	fakeChild.stderr = new EventEmitter() as stream.Readable;
@@ -137,7 +137,8 @@ describe('updates', () => {
 						platforms: [
 							'iphone',
 							'android'
-						]
+						],
+						timestamp: '4/2/2019 17:36'
 					},
 					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.0.0.GA'
 				},

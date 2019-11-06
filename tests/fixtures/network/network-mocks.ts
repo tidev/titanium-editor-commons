@@ -1,7 +1,7 @@
 import nock from 'nock';
 import * as path from 'path';
 
-export function mockAppcCoreRequest (version: string) {
+export function mockAppcCoreRequest (version: string): void {
 	nock('https://registry.platform.axway.com')
 		.get('/api/appc/latest')
 		.reply(200, {
@@ -18,14 +18,14 @@ export function mockAppcCoreRequest (version: string) {
 		});
 }
 
-export function mockSDKRequest (file: string) {
+export function mockSDKRequest (file: string): void {
 	nock('https://appc-mobilesdk-server.s3-us-west-2.amazonaws.com')
 		.get('/releases.json')
 		.replyWithFile(200, path.join(__dirname, file));
 
 }
 
-export function mockNpmRequest () {
+export function mockNpmRequest (): void {
 	nock('https://registry.npmjs.org')
 		.get('/appcelerator')
 		.replyWithFile(200, path.join(__dirname, 'npm-response.json'));
