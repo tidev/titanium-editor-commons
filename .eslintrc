@@ -4,6 +4,10 @@
 		"project": "./test-tsconfig.json"
 	},
 	"rules": {
-		"node/no-unsupported-features/es-syntax": "off"
+		"node/no-unsupported-features/es-syntax": ["warn", {
+			"ignores": [
+				"modules"
+			]
+		}]
 	}
 }
