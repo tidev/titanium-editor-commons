@@ -57,10 +57,6 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 		checkLatestVersion()
 	]);
 
-	if (!latestVersion) {
-		throw new CustomError('Failed to find latest SDK version', 'ESDKUPDATECHECKFAILED');
-	}
-
 	const updateInfo: UpdateInfo = {
 		currentVersion: currentVersion ? currentVersion.name : '',
 		latestVersion: latestVersion.name,
