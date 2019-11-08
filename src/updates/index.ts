@@ -12,7 +12,7 @@ interface UpdateInfo {
 	action (version: string): void;
 }
 
-async function checkAllUpdates (): Promise<Array<UpdateInfo|undefined>> {
+async function checkAllUpdates (): Promise<UpdateInfo[]> {
 	const updates = await Promise.all([
 		appc.core.checkForUpdate(),
 		appc.install.checkForUpdate(),
