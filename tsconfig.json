@@ -12,7 +12,8 @@
       "src/@types",
       "node_modules/@types"
     ],
-    "sourceMap": true
+    "sourceMap": true,
+    "noUnusedLocals": true
   },
   "include": [
     "src/**/*.ts"
