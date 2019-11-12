@@ -1,7 +1,6 @@
 import * as semver from 'semver';
 import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
-import { CustomError } from '../../completions/util';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
 
