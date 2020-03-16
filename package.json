@@ -52,7 +52,7 @@
     "@types/got": "^9.6.9",
     "@types/mocha": "^7.0.2",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^8.10.54",
+    "@types/node": "^13.9.1",
     "@types/semver": "^6.2.0",
     "@types/sinon": "^7.5.0",
     "@types/tmp": "^0.1.0",
