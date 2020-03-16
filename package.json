@@ -65,7 +65,7 @@
     "eslint": "^6.6.0",
     "eslint-config-axway": "^4.4.0",
     "eslint-plugin-mocha": "^6.2.1",
-    "husky": "^3.0.9",
+    "husky": "^4.2.3",
     "lint-staged": "^9.4.2",
     "mocha": "^7.1.0",
     "mocha-jenkins-reporter": "^0.4.2",
