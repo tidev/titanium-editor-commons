@@ -80,7 +80,7 @@
   },
   "dependencies": {
     "appcd-subprocess": "^3.0.1",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.0",
     "got": "^9.6.0",
     "libnpm": "^3.0.1",
     "semver": "^7.1.3",
