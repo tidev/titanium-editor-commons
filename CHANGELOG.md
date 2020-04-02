@@ -2,7 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/appcelerator/titanium-editor-commons/compare/v0.4.2...v0.5.0) (2020-04-02)
+
+Dependency updates
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** Minimum node version is now 10.0.0
+
+* **deps:** update dependencies ([c3174bc](https://github.com/appcelerator/titanium-editor-commons/commit/c3174bc92f36ad03c4e2a4314fdccee662628d6b))
+
 ### [0.4.2](https://github.com/appcelerator/titanium-editor-commons/compare/v0.4.1...v0.4.2) (2019-11-22)
+
+Dependency updates
 
 ### [0.4.1](https://github.com/appcelerator/titanium-editor-commons/compare/v0.4.0...v0.4.1) (2019-10-07)
 
