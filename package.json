@@ -79,7 +79,7 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "appcd-subprocess": "^3.0.1",
+    "appcd-subprocess": "^4.0.0",
     "fs-extra": "^9.0.0",
     "got": "^9.6.0",
     "libnpm": "^3.0.1",
