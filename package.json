@@ -50,7 +50,7 @@
     "@types/chai": "^4.2.4",
     "@types/fs-extra": "^9.0.0",
     "@types/got": "^9.6.9",
-    "@types/mocha": "^7.0.2",
+    "@types/mocha": "^8.0.0",
     "@types/mock-fs": "^4.10.0",
     "@types/node": "^8.10.54",
     "@types/semver": "^7.1.0",
