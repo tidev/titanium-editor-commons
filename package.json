@@ -67,7 +67,7 @@
     "eslint-plugin-mocha": "^6.2.1",
     "husky": "^4.2.3",
     "lint-staged": "^10.1.0",
-    "mocha": "^7.1.0",
+    "mocha": "^8.0.1",
     "mocha-jenkins-reporter": "^0.4.2",
     "mock-fs": "^4.10.3",
     "nock": "^13.0.0",
