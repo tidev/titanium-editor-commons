@@ -1,4 +1,3 @@
-
 import { run } from 'appcd-subprocess';
 import * as fs from 'fs-extra';
 import got from 'got';

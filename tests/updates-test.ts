@@ -1,6 +1,6 @@
 /* eslint @typescript-eslint/camelcase: off */
 
-import { appc, titanium } from '../src/updates/';
+import { appc, titanium, node } from '../src/updates/';
 
 import * as titaniumlib from 'titaniumlib';
 
@@ -364,4 +364,41 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 	});
+	describe('node.installer', () => {
+		it('validateEnvironment with no node installed', async () => {
+
+			global.sandbox.stub(child_process, 'exec').yields(new Error('Please install node to continue.'));
+
+			const env = await node.install.checkNodeInstalled();
+			expect(env).to.equal(false);
+
+		});
+		it('validateEnvironment with node installed', async () => {
+
+			global.sandbox.stub(child_process, 'exec').yields(null, 'v12.18.1');
+
+			const env = await node.install.checkNodeVersion();
+			expect(env).to.deep.equal('v12.18.1');
+
+		});
+		it('validateEnvironment with older version of node', async () => {
+
+			global.sandbox.stub(child_process, 'exec').yields(null, 'v8.7.0');
+
+			try {
+				await node.install.checkNodeVersion();
+			} catch (error) {
+				expect(error).to.be.instanceOf(Error);
+				expect(error.message).to.equal('Please install node to continue.');
+			}
+
+		});
+		it('Get node version Url', async () => {
+
+			const url = await node.install.getNodeVersionUrl('v12.18.1');
+			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.1/');
+
+		});
+	});
 });
+

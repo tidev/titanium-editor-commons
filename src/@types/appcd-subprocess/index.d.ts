@@ -1,4 +1,3 @@
-
 declare module 'appcd-subprocess' {
 	import { SpawnOptions } from 'child_process';
 
