@@ -12,7 +12,7 @@ import nock from 'nock';
 import os from 'os';
 import * as path from 'path';
 import stream from 'stream';
-import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
+import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest, mockNodeRequest } from './fixtures/network/network-mocks';
 
 function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -364,41 +364,70 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(true);
 		});
 	});
-	describe('node.installer', () => {
+	describe('node', () => {
 		it('validateEnvironment with no node installed', async () => {
 
 			global.sandbox.stub(child_process, 'exec').yields(new Error('Please install node to continue.'));
 
-			const env = await node.install.checkNodeInstalled();
-			expect(env).to.equal(false);
+			const env = await node.checkInstalledVersion();
+			expect(env).be.undefined;
 
 		});
 		it('validateEnvironment with node installed', async () => {
 
 			global.sandbox.stub(child_process, 'exec').yields(null, 'v12.18.1');
 
-			const env = await node.install.checkNodeVersion();
+			const env = await node.checkInstalledVersion();
 			expect(env).to.deep.equal('v12.18.1');
 
 		});
 		it('validateEnvironment with older version of node', async () => {
 
+			let err;
+
 			global.sandbox.stub(child_process, 'exec').yields(null, 'v8.7.0');
 
 			try {
-				await node.install.checkNodeVersion();
+				await node.checkInstalledVersion();
 			} catch (error) {
-				expect(error).to.be.instanceOf(Error);
-				expect(error.message).to.equal('Please install node to continue.');
+				err = error;
 			}
+
+			expect(err).to.be.instanceOf(Error);
+			expect(err.message).to.equal('Titanium requires node 10.13 or greater.');
 
 		});
 		it('Get node version Url', async () => {
 
-			const url = await node.install.getNodeVersionUrl('v12.18.1');
+			const url = await node.installUpdate('v12.18.1');
 			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.1/');
+
+		});
+		it('Get update with older version (v8.7.0)', async () => {
+
+			mockNodeRequest();
+
+			global.sandbox.stub(child_process, 'exec').yields(null, 'v8.7.0');
+
+			const url = await node.checkLatestVersion();
+			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.2/');
+
+		});
+		it('Check for updates with non available', async () => {
+
+			mockNodeRequest();
+
+			global.sandbox.stub(child_process, 'exec').yields(null, 'v12.18.2');
+
+			const url = await node.checkLatestVersion();
+			expect(url).be.undefined;
+
+		});
+		it('Get node release notes', async () => {
+
+			const url = await node.getReleaseNotes('v10.13.0');
+			expect(url).to.deep.equal('https://nodejs.org/en/blog/release/v10.13.0/');
 
 		});
 	});
 });
-
