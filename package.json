@@ -34,6 +34,7 @@
     "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
     "test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
   },
   "repository": {
