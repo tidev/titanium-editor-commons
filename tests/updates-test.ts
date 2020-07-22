@@ -13,6 +13,7 @@ import os from 'os';
 import * as path from 'path';
 import stream from 'stream';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest } from './fixtures/network/network-mocks';
+import * as sinon from 'sinon';
 
 function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -179,11 +180,11 @@ describe('updates', () => {
 			mockNpmRequest();
 			const appcChild = createChildMock();
 			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('appc')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			setTimeout(() => {
-				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"7.1.0-master.13"}');
+				appcChild.stdout?.emit('data', '{"NPM":"4.2.12","CLI":"7.1.0-master.13"}');
 				appcChild.emit('close', 0);
 			}, 500);
 			const update = await appc.install.checkForUpdate();
@@ -203,20 +204,20 @@ describe('updates', () => {
 			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
-				.withArgs('appc')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			stub
-				.withArgs('npm')
+				.withArgs('npm', sinon.match.any, sinon.match.any)
 				.returns(npmChild);
 
 			setTimeout(() => {
-				appcChild.stderr.emit('data', '/bin/sh: appc: command not found\n');
+				appcChild.stderr?.emit('data', '/bin/sh: appc: command not found\n');
 				appcChild.emit('close', 127);
 			}, 500);
 
 			setTimeout(() => {
-				npmChild.stdout.emit('data', `{
+				npmChild.stdout?.emit('data', `{
 					"dependencies": {
 					  "appcelerator": {
 						"version": "4.2.12",
@@ -244,20 +245,20 @@ describe('updates', () => {
 			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
-				.withArgs('appc')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			stub
-				.withArgs('npm')
+				.withArgs('npm', sinon.match.any, sinon.match.any)
 				.returns(npmChild);
 
 			setTimeout(() => {
-				appcChild.stderr.emit('data', '/bin/sh: appc: command not found');
+				appcChild.stderr?.emit('data', '/bin/sh: appc: command not found');
 				appcChild.emit('close', 127);
 			}, 500);
 
 			setTimeout(() => {
-				npmChild.stdout.emit('data', '{}');
+				npmChild.stdout?.emit('data', '{}');
 				npmChild.emit('close', 0);
 			}, 750);
 
@@ -275,7 +276,7 @@ describe('updates', () => {
 			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
-				appcChild.stdout.emit('data', '{"NPM":"4.2.13","CLI":"7.1.0-master.13"}');
+				appcChild.stdout?.emit('data', '{"NPM":"4.2.13","CLI":"7.1.0-master.13"}');
 				appcChild.emit('close', 0);
 			}, 500);
 			const update = await appc.install.checkForUpdate();

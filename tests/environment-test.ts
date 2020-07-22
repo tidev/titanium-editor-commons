@@ -11,6 +11,7 @@ import nock from 'nock';
 import os from 'os';
 import * as path from 'path';
 import stream from 'stream';
+import * as sinon from 'sinon';
 
 function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -91,7 +92,7 @@ describe('environment', () => {
 			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
-				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
+				appcChild.stdout?.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
 				appcChild.emit('close', 0);
 			}, 500);
 
@@ -126,7 +127,7 @@ describe('environment', () => {
 			global.sandbox.stub(child_process, 'spawn')
 				.returns(appcChild);
 			setTimeout(() => {
-				appcChild.stdout.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
+				appcChild.stdout?.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
 				appcChild.emit('close', 0);
 			}, 500);
 
@@ -144,11 +145,11 @@ describe('environment', () => {
 
 			const appcChild = createChildMock();
 			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('appc')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			setTimeout(() => {
-				appcChild.stdout.emit('data', '{"NPM":"4.2.12"}');
+				appcChild.stdout?.emit('data', '{"NPM":"4.2.12"}');
 				appcChild.emit('close', 0);
 			}, 500);
 
@@ -203,20 +204,20 @@ describe('environment', () => {
 			const stub = global.sandbox.stub(child_process, 'spawn');
 
 			stub
-				.withArgs('appc')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			stub
-				.withArgs('npm')
+				.withArgs('npm', sinon.match.any, sinon.match.any)
 				.returns(npmChild);
 
 			setTimeout(() => {
-				appcChild.stderr.emit('data', '/bin/sh: appc: command not found');
+				appcChild.stderr?.emit('data', '/bin/sh: appc: command not found');
 				appcChild.emit('close', 127);
 			}, 500);
 
 			setTimeout(() => {
-				npmChild.stdout.emit('data', '{}');
+				npmChild.stdout?.emit('data', '{}');
 				npmChild.emit('close', 0);
 			}, 750);
 
