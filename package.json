@@ -34,6 +34,7 @@
     "prepack": "npm run compile",
     "release": "standard-version",
     "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
     "test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
   },
   "repository": {
@@ -52,7 +53,7 @@
     "@types/got": "^9.6.9",
     "@types/mocha": "^8.0.0",
     "@types/mock-fs": "^4.10.0",
-    "@types/node": "^8.10.54",
+    "@types/node": "~12.12.50",
     "@types/semver": "^7.1.0",
     "@types/sinon": "^9.0.0",
     "@types/tmp": "^0.2.0",
