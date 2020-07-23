@@ -4,10 +4,10 @@ import * as path from 'path';
 import * as semver from 'semver';
 import got from 'got';
 
-function getVersion(): string | undefined {
+async function getVersion(): Promise<string | undefined> {
 	let version = '';
 	try {
-		exec('node --version', function (err, stdout) {
+		await exec('node --version', function (err, stdout) {
 			if (err) {
 				throw err;
 			}
@@ -20,8 +20,8 @@ function getVersion(): string | undefined {
 	return version;
 }
 
-export function checkInstalledVersion(): string | undefined {
-	const version = getVersion();
+export async function checkInstalledVersion(): Promise<string | undefined> {
+	const version = await getVersion();
 
 	if (version && !semver.satisfies(version, '>=10.13')) {
 		throw new Error('Titanium requires node 10.13 or greater.');
@@ -47,7 +47,7 @@ export async function checkLatestVersion(sdkPath?: string): Promise<string | und
 	const versions = body.map(((element: { version: string }) => element.version));
 
 	const LatestVersion: string | null = semver.maxSatisfying(versions, supportedVersions);
-	const currentVersion = getVersion();
+	const currentVersion = await getVersion();
 
 	if (currentVersion && LatestVersion && semver.lt(currentVersion, LatestVersion)) {
 
