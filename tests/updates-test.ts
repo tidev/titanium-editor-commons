@@ -368,7 +368,15 @@ describe('updates', () => {
 	describe('node', () => {
 		it('validateEnvironment with no node installed', async () => {
 
-			global.sandbox.stub(child_process, 'exec').yields(new Error('Please install node to continue.'));
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1/n');
+				nodeChild.emit('close', 0);
+			}, 500);
 
 			const env = await node.checkInstalledVersion();
 			expect(env).be.undefined;
@@ -376,17 +384,33 @@ describe('updates', () => {
 		});
 		it('validateEnvironment with node installed', async () => {
 
-			global.sandbox.stub(child_process, 'exec').yields(null, 'v12.18.1');
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
 
 			const env = await node.checkInstalledVersion();
-			expect(env).to.deep.equal('v12.18.1');
+			expect(env).to.deep.equal('12.18.1');
 
 		});
 		it('validateEnvironment with older version of node', async () => {
 
 			let err;
 
-			global.sandbox.stub(child_process, 'exec').yields(null, 'v8.7.0');
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v8.7.0');
+				nodeChild.emit('close', 0);
+			}, 500);
 
 			try {
 				await node.checkInstalledVersion();
@@ -408,7 +432,15 @@ describe('updates', () => {
 
 			mockNodeRequest();
 
-			global.sandbox.stub(child_process, 'exec').yields(null, 'v8.7.0');
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v8.7.0');
+				nodeChild.emit('close', 0);
+			}, 500);
 
 			const url = await node.checkLatestVersion();
 			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.2/');
@@ -418,7 +450,15 @@ describe('updates', () => {
 
 			mockNodeRequest();
 
-			global.sandbox.stub(child_process, 'exec').yields(null, 'v12.18.2');
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.2');
+				nodeChild.emit('close', 0);
+			}, 500);
 
 			const url = await node.checkLatestVersion();
 			expect(url).be.undefined;

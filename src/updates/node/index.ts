@@ -1,19 +1,16 @@
-import { exec } from 'child_process';
+import { run } from 'appcd-subprocess';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import * as semver from 'semver';
 import got from 'got';
 
 async function getVersion(): Promise<string | undefined> {
-	let version = '';
+	let version;
 	try {
-		await exec('node --version', function (err, stdout) {
-			if (err) {
-				throw err;
-			}
-			version = stdout;
-		});
-	} catch (e) {
+		const { stdout } = await run('node', [ '--version' ], { shell: true });
+		version = semver.clean(stdout) || undefined;
+
+	} catch (error) {
 		return;
 	}
 
