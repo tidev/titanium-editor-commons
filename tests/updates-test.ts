@@ -422,12 +422,6 @@ describe('updates', () => {
 			expect(err.message).to.equal('Titanium requires node 10.13 or greater.');
 
 		});
-		it('Get node version Url', async () => {
-
-			const url = await node.installUpdate('v12.18.1');
-			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.1/');
-
-		});
 		it('Get update with older version (v8.7.0)', async () => {
 
 			mockNodeRequest();
@@ -443,25 +437,7 @@ describe('updates', () => {
 			}, 500);
 
 			const url = await node.checkLatestVersion();
-			expect(url).to.deep.equal('https://nodejs.org/dist/v12.18.2/');
-
-		});
-		it('Check for updates with non available', async () => {
-
-			mockNodeRequest();
-
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v12.18.2');
-				nodeChild.emit('close', 0);
-			}, 500);
-
-			const url = await node.checkLatestVersion();
-			expect(url).be.undefined;
+			expect(url).to.deep.equal('v12.18.2');
 
 		});
 		it('Get node release notes', async () => {
