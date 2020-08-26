@@ -20,11 +20,27 @@ export async function validateEnvironment (): Promise<EnvironmentInfo> {
 		installed: [],
 		missing: []
 	};
-	const [ coreVersion, installVersion, sdkVersion ] = await Promise.all([
+	const [ nodeVersion, coreVersion, installVersion, sdkVersion ] = await Promise.all([
+		await updates.node.checkInstalledVersion(),
 		await updates.appc.core.checkInstalledVersion(),
 		await updates.appc.install.checkInstalledVersion(),
 		await updates.titanium.sdk.checkInstalledVersion()
 	]);
+
+	if (nodeVersion) {
+		environmentInfo.installed.push({
+			name: updates.ProductNames.Node,
+			version: nodeVersion
+		});
+	} else {
+		environmentInfo.missing.push({
+			name: updates.ProductNames.Node,
+			getInstallInfo: () => {
+				return updates.node.checkForUpdate();
+			}
+		});
+		return environmentInfo;
+	}
 
 	if (coreVersion) {
 		environmentInfo.installed.push({

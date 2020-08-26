@@ -69,7 +69,7 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 		action: installUpdate,
 		productName: ProductNames.AppcInstaller,
 		releaseNotes: getReleaseNotes(),
-		priority: 1,
+		priority: 10,
 		hasUpdate: false
 	};
 

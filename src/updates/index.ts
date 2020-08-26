@@ -15,6 +15,7 @@ interface UpdateInfo {
 
 async function checkAllUpdates (): Promise<UpdateInfo[]> {
 	const updates = await Promise.all([
+		node.checkForUpdate(),
 		appc.core.checkForUpdate(),
 		appc.install.checkForUpdate(),
 		titanium.sdk.checkForUpdate()
