@@ -13,9 +13,13 @@ interface UpdateInfo {
 	action (version: string): void;
 }
 
-async function checkAllUpdates (): Promise<UpdateInfo[]> {
+export interface SupportedVersions {
+	nodeJS: string;
+}
+
+async function checkAllUpdates(supportedVersions?: SupportedVersions): Promise<UpdateInfo[]> {
 	const updates = await Promise.all([
-		node.checkForUpdate(),
+		node.checkForUpdate(supportedVersions?.nodeJS),
 		appc.core.checkForUpdate(),
 		appc.install.checkForUpdate(),
 		titanium.sdk.checkForUpdate()

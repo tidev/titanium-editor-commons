@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
 import * as semver from 'semver';
 import * as util from '../util';
 import { run } from 'appcd-subprocess';
@@ -22,25 +21,17 @@ async function getVersion(): Promise<string | undefined> {
 	return version;
 }
 
-export async function checkInstalledVersion(): Promise<string | undefined> {
+export async function checkInstalledVersion(semverRange = '>=10.13'): Promise<string | undefined> {
 	const version = await getVersion();
 
-	if (version && !semver.satisfies(version, '>=10.13')) {
-		throw new Error('Titanium requires node 10.13 or greater.');
+	if (version && !semver.satisfies(version, semverRange)) {
+		throw new Error(`Titanium requires Node.js ${semverRange}`);
 	}
 
 	return version;
 }
 
-export async function checkLatestVersion(sdkPath?: string): Promise<string> {
-
-	let supportedVersions = '10.x || 12.x';
-
-	if (sdkPath) {
-		const packageJSON = path.join(sdkPath, 'package.json');
-		const { vendorDependencies } = await fs.readJSON(packageJSON);
-		supportedVersions = vendorDependencies.node;
-	}
+export async function checkLatestVersion(supportedVersions = '10.x || 12.x'): Promise<string> {
 
 	const { body } = await got('https://nodejs.org/download/release/index.json', {
 		json: true
@@ -48,34 +39,34 @@ export async function checkLatestVersion(sdkPath?: string): Promise<string> {
 
 	const versions = body.map(((element: { version: string }) => element.version));
 
-	const LatestVersion = semver.maxSatisfying(versions, supportedVersions) as string;
+	let latestVersion: string|null = semver.maxSatisfying(versions, supportedVersions) as string;
 
-	return LatestVersion;
+	latestVersion = semver.clean(latestVersion);
+
+	if (!latestVersion) {
+		throw new Error(`No versions satisfy the supported version ${supportedVersions}`);
+	}
+
+	return latestVersion;
 
 }
 
 export async function installUpdate(version: string): Promise<void> {
-	let url = `https://nodejs.org/dist/v${semver.clean(version)}/node-v${semver.clean(version)}`;
 	let extension = '.pkg';
-
-	if (!semver.satisfies(version, '>=10.13')) {
-		throw new Error('Titanium requires node 10.13 or greater.');
-	}
 
 	if (process.platform === 'win32') {
 		extension = ((process.arch === 'x64') ? '-x64.msi' : '-x86.msi');
 	}
 
-	url += extension;
+	const url = `https://nodejs.org/dist/v${semver.clean(version)}/node-v${semver.clean(version)}${extension}`;
 
 	const pipeline = promisify(stream.pipeline);
 
-	await pipeline(
-		got.stream(url),
-		fs.createWriteStream(`${os.tmpdir()}file${extension}`)
-	);
-
 	try {
+		await pipeline(
+			got.stream(url),
+			fs.createWriteStream(`${os.tmpdir()}file${extension}`)
+		);
 		await fs.ensureFile(`${os.tmpdir()}file${extension}`);
 	} catch (err) {
 		throw new Error('Node.js failed to download');
@@ -96,7 +87,7 @@ export async function installUpdate(version: string): Promise<void> {
 			throw new util.InstallError('Failed to install package', metadata);
 		}
 
-	} else {
+	} else if (process.platform === 'darwin') {
 
 		const { code, stdout, stderr } = await run('installer', [ '-pkg', `${os.tmpdir()}file${extension}`, '-target', '/' ], { shell: true, ignoreExitCode: true });
 
@@ -115,6 +106,8 @@ export async function installUpdate(version: string): Promise<void> {
 			throw new util.InstallError('Failed to install package', metadata);
 		}
 
+	} else {
+		throw new Error('Failed to download due to unsupported platform');
 	}
 }
 
@@ -124,10 +117,10 @@ export function getReleaseNotes(version: string): string {
 
 }
 
-export async function checkForUpdate(): Promise<UpdateInfo> {
+export async function checkForUpdate(supportedVersions?: string): Promise<UpdateInfo> {
 	const [ currentVersion, latestVersion ] = await Promise.all<string | undefined, string>([
 		checkInstalledVersion(),
-		checkLatestVersion()
+		checkLatestVersion(supportedVersions)
 	]);
 
 	const updateInfo: UpdateInfo = {

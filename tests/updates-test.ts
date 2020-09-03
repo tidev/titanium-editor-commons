@@ -419,7 +419,7 @@ describe('updates', () => {
 			}
 
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Titanium requires node 10.13 or greater.');
+			expect(err.message).to.equal('Titanium requires Node.js 10.13 or greater.');
 
 		});
 		it('Get update with older version (v8.7.0)', async () => {
@@ -438,6 +438,56 @@ describe('updates', () => {
 
 			const url = await node.checkLatestVersion();
 			expect(url).to.deep.equal('v12.18.2');
+
+		});
+
+		it('Check for update with update availale', async () => {
+
+			mockNodeRequest();
+
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			const update = await node.checkForUpdate();
+
+			expect(update.currentVersion).to.deep.equal('12.18.1');
+			expect(update.latestVersion).to.deep.equal('v12.18.2');
+			expect(update.action).to.be.instanceOf(Function);
+			expect(update.productName).to.deep.equal('Node.js');
+			expect(update.priority).to.deep.equal(1);
+			expect(update.hasUpdate).to.deep.equal(true);
+
+		});
+
+		it('Check for update with up to date version', async () => {
+
+			mockNodeRequest();
+
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.2');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			const update = await node.checkForUpdate();
+
+			expect(update.currentVersion).to.deep.equal('12.18.2');
+			expect(update.latestVersion).to.deep.equal('v12.18.2');
+			expect(update.action).to.be.instanceOf(Function);
+			expect(update.productName).to.deep.equal('Node.js');
+			expect(update.priority).to.deep.equal(1);
+			expect(update.hasUpdate).to.deep.equal(false);
 
 		});
 		it('Get node release notes', async () => {
