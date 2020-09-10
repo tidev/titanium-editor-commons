@@ -374,7 +374,6 @@ describe('updates', () => {
 				.returns(nodeChild);
 
 			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v12.18.1/n');
 				nodeChild.emit('close', 0);
 			}, 500);
 
@@ -419,7 +418,23 @@ describe('updates', () => {
 			}
 
 			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Titanium requires Node.js 10.13 or greater.');
+			expect(err.message).to.equal('Titanium requires Node.js >=10.13');
+
+		});
+		it('validateEnvironment with new supported SDK ranges', async () => {
+
+			const nodeChild = createChildMock();
+			global.sandbox.stub(child_process, 'spawn')
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v8.7.0');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			const env = await node.checkInstalledVersion('>=8.X');
+			expect(env).to.deep.equal('8.7.0');
 
 		});
 		it('Get update with older version (v8.7.0)', async () => {
@@ -437,7 +452,7 @@ describe('updates', () => {
 			}, 500);
 
 			const url = await node.checkLatestVersion();
-			expect(url).to.deep.equal('v12.18.2');
+			expect(url).to.deep.equal('12.18.2');
 
 		});
 
@@ -458,7 +473,7 @@ describe('updates', () => {
 			const update = await node.checkForUpdate();
 
 			expect(update.currentVersion).to.deep.equal('12.18.1');
-			expect(update.latestVersion).to.deep.equal('v12.18.2');
+			expect(update.latestVersion).to.deep.equal('12.18.2');
 			expect(update.action).to.be.instanceOf(Function);
 			expect(update.productName).to.deep.equal('Node.js');
 			expect(update.priority).to.deep.equal(1);
@@ -483,7 +498,7 @@ describe('updates', () => {
 			const update = await node.checkForUpdate();
 
 			expect(update.currentVersion).to.deep.equal('12.18.2');
-			expect(update.latestVersion).to.deep.equal('v12.18.2');
+			expect(update.latestVersion).to.deep.equal('12.18.2');
 			expect(update.action).to.be.instanceOf(Function);
 			expect(update.productName).to.deep.equal('Node.js');
 			expect(update.priority).to.deep.equal(1);
