@@ -1,4 +1,3 @@
-
 import { run } from 'appcd-subprocess';
 import * as fs from 'fs-extra';
 import got from 'got';
@@ -57,7 +56,7 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 		action: installUpdate,
 		productName: ProductNames.AppcCore,
 		releaseNotes: getReleaseNotes(latestVersion),
-		priority: 10,
+		priority: 20,
 		hasUpdate: false
 	};
 

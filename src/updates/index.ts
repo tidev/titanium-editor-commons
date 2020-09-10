@@ -1,5 +1,6 @@
 import * as appc from './appc';
 import { ProductNames } from './product-names';
+import * as node from './node';
 import * as titanium from './titanium';
 
 interface UpdateInfo {
@@ -12,8 +13,13 @@ interface UpdateInfo {
 	action (version: string): void;
 }
 
-async function checkAllUpdates (): Promise<UpdateInfo[]> {
+export interface SupportedVersions {
+	nodeJS: string;
+}
+
+async function checkAllUpdates(supportedVersions?: SupportedVersions): Promise<UpdateInfo[]> {
 	const updates = await Promise.all([
+		node.checkForUpdate(supportedVersions?.nodeJS),
 		appc.core.checkForUpdate(),
 		appc.install.checkForUpdate(),
 		titanium.sdk.checkForUpdate()
@@ -26,6 +32,7 @@ export {
 	UpdateInfo,
 	checkAllUpdates,
 	appc,
+	node,
 	titanium,
 	ProductNames
 };

@@ -1,4 +1,3 @@
-
 import { run } from 'appcd-subprocess';
 import * as libnpm from 'libnpm';
 import * as semver from 'semver';
@@ -70,7 +69,7 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 		action: installUpdate,
 		productName: ProductNames.AppcInstaller,
 		releaseNotes: getReleaseNotes(),
-		priority: 1,
+		priority: 10,
 		hasUpdate: false
 	};
 

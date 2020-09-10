@@ -15,11 +15,29 @@ interface EnvironmentInfo {
 	missing: Missing[];
 }
 
-export async function validateEnvironment (): Promise<EnvironmentInfo> {
+export async function validateEnvironment(supportedVersions?: updates.SupportedVersions): Promise<EnvironmentInfo> {
 	const environmentInfo: EnvironmentInfo = {
 		installed: [],
 		missing: []
 	};
+
+	const nodeVersion = await updates.node.checkInstalledVersion();
+
+	if (nodeVersion) {
+		environmentInfo.installed.push({
+			name: updates.ProductNames.Node,
+			version: nodeVersion
+		});
+	} else {
+		environmentInfo.missing.push({
+			name: updates.ProductNames.Node,
+			getInstallInfo: () => {
+				return updates.node.checkForUpdate(supportedVersions?.nodeJS);
+			}
+		});
+		return environmentInfo;
+	}
+
 	const [ coreVersion, installVersion, sdkVersion ] = await Promise.all([
 		await updates.appc.core.checkInstalledVersion(),
 		await updates.appc.install.checkInstalledVersion(),

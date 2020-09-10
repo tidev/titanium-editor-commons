@@ -30,3 +30,10 @@ export function mockNpmRequest (): void {
 		.get('/appcelerator')
 		.replyWithFile(200, path.join(__dirname, 'npm-response.json'));
 }
+
+export function mockNodeRequest(): void {
+	nock('https://nodejs.org')
+		.get('/download/release/index.json')
+		.replyWithFile(200, path.join(__dirname, 'node-response.json'));
+
+}

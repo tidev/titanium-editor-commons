@@ -12,6 +12,7 @@ import os from 'os';
 import * as path from 'path';
 import stream from 'stream';
 import * as sinon from 'sinon';
+import { node } from '../src/updates';
 
 function createChildMock (): child_process.ChildProcess {
 	const fakeChild = new EventEmitter() as child_process.ChildProcess;
@@ -32,7 +33,7 @@ describe('environment', () => {
 	});
 
 	describe('validateEnvironment', () => {
-		it('validateEnvironment with all installed components ', async () => {
+		it('validateEnvironment with all installed component ', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
@@ -96,10 +97,14 @@ describe('environment', () => {
 				appcChild.emit('close', 0);
 			}, 500);
 
+			global.sandbox.stub(node, 'checkInstalledVersion')
+				.resolves('12.18.2');
+
 			const env = await environment.validateEnvironment();
 			expect(env.missing).to.deep.equal([]);
 			expect(env.installed).to.deep.equal(
 				[
+					{ name: 'Node.js', version: '12.18.2' },
 					{ name: 'Appcelerator CLI', version: '4.2.0' },
 					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
@@ -124,17 +129,32 @@ describe('environment', () => {
 			});
 
 			const appcChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
+			const nodeChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+			stub
+				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
 			setTimeout(() => {
 				appcChild.stdout?.emit('data', '{"NPM":"4.2.12","CLI":"4.2.0"}');
 				appcChild.emit('close', 0);
-			}, 500);
+			}, 750);
 
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Titanium SDK');
 			expect(env.installed).to.deep.equal(
 				[
+					{ name: 'Node.js', version: '12.18.1' },
 					{ name: 'Appcelerator CLI', version: '4.2.0' },
 					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' }
 				]
@@ -144,19 +164,32 @@ describe('environment', () => {
 			mockFS({});
 
 			const appcChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
+			const nodeChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+			stub
 				.withArgs('appc', sinon.match.any, sinon.match.any)
 				.returns(appcChild);
 
 			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			setTimeout(() => {
 				appcChild.stdout?.emit('data', '{"NPM":"4.2.12"}');
 				appcChild.emit('close', 0);
-			}, 500);
+			}, 750);
 
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI');
 			expect(env.installed).to.deep.equal(
 				[
+					{ name: 'Node.js', version: '12.18.1' },
 					{ name: 'Appcelerator CLI (npm)', version: '4.2.12' }
 				]
 			);
@@ -200,8 +233,13 @@ describe('environment', () => {
 
 			const appcChild = createChildMock();
 			const npmChild = createChildMock();
+			const nodeChild = createChildMock();
 
 			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
 
 			stub
 				.withArgs('appc', sinon.match.any, sinon.match.any)
@@ -212,19 +250,25 @@ describe('environment', () => {
 				.returns(npmChild);
 
 			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			setTimeout(() => {
 				appcChild.stderr?.emit('data', '/bin/sh: appc: command not found');
 				appcChild.emit('close', 127);
-			}, 500);
+			}, 750);
 
 			setTimeout(() => {
 				npmChild.stdout?.emit('data', '{}');
 				npmChild.emit('close', 0);
-			}, 750);
+			}, 1000);
 
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI (npm)');
 			expect(env.installed).to.deep.equal(
 				[
+					{ name: 'Node.js', version: '12.18.1' },
 					{ name: 'Appcelerator CLI', version: '4.2.0' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
 				]
