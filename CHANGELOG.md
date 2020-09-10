@@ -1,3 +1,18 @@
+# [1.0.0](https://github.com/appcelerator/titanium-editor-commons/compare/v0.4.2...v1.0.0) (2020-09-10)
+
+
+* chore(deps)!: update dependencies ([e27d041](https://github.com/appcelerator/titanium-editor-commons/commit/e27d041960339e26bcf4e61e64b5268274397c08))
+
+
+### Features
+
+* **updates:** support installing and detecting nodejs ([#175](https://github.com/appcelerator/titanium-editor-commons/issues/175)) ([11b9bbf](https://github.com/appcelerator/titanium-editor-commons/commit/11b9bbf40a09720b561809447f20ac6e6da985c2))
+
+
+### BREAKING CHANGES
+
+* Minimum node version is now 10.0.0
+
 # Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
