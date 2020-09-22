@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.0...v1.0.1) (2020-09-22)
+
+
+### Bug Fixes
+
+* **update:** make nodejs supported versions optional ([#208](https://github.com/appcelerator/titanium-editor-commons/issues/208)) ([a20b335](https://github.com/appcelerator/titanium-editor-commons/commit/a20b335b99b6fa37f7b3b6fa471c322e9ab6150f))
+
 # [1.0.0](https://github.com/appcelerator/titanium-editor-commons/compare/v0.4.2...v1.0.0) (2020-09-10)
 
 

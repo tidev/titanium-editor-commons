@@ -1,6 +1,6 @@
 {
   "name": "titanium-editor-commons",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "author": "Axway, Inc. <npmjs@appcelerator.com>",
@@ -120,9 +120,12 @@
       "@semantic-release/changelog",
       "@semantic-release/npm",
       "@semantic-release/git",
-      [ "@semantic-release/github", {
-        "successComment": false
-      }]
+      [
+        "@semantic-release/github",
+        {
+          "successComment": false
+        }
+      ]
     ]
   }
 }
