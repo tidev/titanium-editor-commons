@@ -14,7 +14,7 @@ interface UpdateInfo {
 }
 
 export interface SupportedVersions {
-	nodeJS: string;
+	nodeJS?: string;
 }
 
 async function checkAllUpdates(supportedVersions?: SupportedVersions): Promise<UpdateInfo[]> {
