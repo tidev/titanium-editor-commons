@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/camelcase: off */
 import { environment } from '../src';
 
 import * as titaniumlib from 'titaniumlib';

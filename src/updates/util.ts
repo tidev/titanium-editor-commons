@@ -1,10 +1,19 @@
+interface InstallErrorMetadata {
+	code?: number;
+	errorCode?: string;
+	exitCode?: number;
+	stderr: string;
+	stdout: string;
+	command?: string;
+}
+
 export class InstallError extends Error {
 	public code: string;
-	public metadata: object;
+	public metadata: InstallErrorMetadata;
 
 	constructor (
 		message: string,
-		metadata: object
+		metadata: InstallErrorMetadata
 	) {
 		super(message);
 
