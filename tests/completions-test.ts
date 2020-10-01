@@ -1,4 +1,3 @@
-/* eslint @typescript-eslint/camelcase: off */
 import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
 import { CustomError } from '../src/completions/util';
 

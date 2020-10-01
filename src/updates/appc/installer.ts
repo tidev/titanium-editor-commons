@@ -36,7 +36,7 @@ export async function installUpdate (version: string): Promise<void> {
 	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
 	if (code) {
 		const metadata = {
-			errorCode: null,
+			errorCode: '',
 			exitCode: code,
 			stderr,
 			stdout,
