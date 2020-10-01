@@ -378,7 +378,7 @@ describe('updates', () => {
 			}, 500);
 
 			const env = await node.checkInstalledVersion();
-			expect(env).be.undefined;
+			expect(env).to.equal(undefined);
 
 		});
 		it('validateEnvironment with node installed', async () => {
@@ -397,30 +397,6 @@ describe('updates', () => {
 			expect(env).to.deep.equal('12.18.1');
 
 		});
-		it('validateEnvironment with older version of node', async () => {
-
-			let err;
-
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v8.7.0');
-				nodeChild.emit('close', 0);
-			}, 500);
-
-			try {
-				await node.checkInstalledVersion();
-			} catch (error) {
-				err = error;
-			}
-
-			expect(err).to.be.instanceOf(Error);
-			expect(err.message).to.equal('Titanium requires Node.js >=10.13');
-
-		});
 		it('validateEnvironment with new supported SDK ranges', async () => {
 
 			const nodeChild = createChildMock();
@@ -433,7 +409,7 @@ describe('updates', () => {
 				nodeChild.emit('close', 0);
 			}, 500);
 
-			const env = await node.checkInstalledVersion('>=8.X');
+			const env = await node.checkInstalledVersion();
 			expect(env).to.deep.equal('8.7.0');
 
 		});
