@@ -21,12 +21,8 @@ async function getVersion(): Promise<string | undefined> {
 	return version;
 }
 
-export async function checkInstalledVersion(semverRange = '>=10.13'): Promise<string | undefined> {
+export async function checkInstalledVersion(): Promise<string | undefined> {
 	const version = await getVersion();
-
-	if (version && !semver.satisfies(version, semverRange)) {
-		throw new Error(`Titanium requires Node.js ${semverRange}`);
-	}
 
 	return version;
 }
@@ -97,7 +93,7 @@ export async function installUpdate(version: string): Promise<void> {
 				exitCode: code,
 				stderr,
 				stdout,
-				command: `sudo installer -pkg ${os.tmpdir()}file${extension} -target /`
+				command: `installer -pkg ${os.tmpdir()}file${extension} -target /`
 			};
 			if (stdout === 'installer: Must be run as root to install this package.\n') {
 				metadata.errorCode = 'EACCES';
