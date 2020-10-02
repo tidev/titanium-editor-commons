@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.1...v1.0.2) (2020-10-02)
+
+
+### Bug Fixes
+
+* **env/node:** remove installed version check and sudo ([#215](https://github.com/appcelerator/titanium-editor-commons/issues/215)) ([6c27bf7](https://github.com/appcelerator/titanium-editor-commons/commit/6c27bf7aeb4e3617213744d3a20eb3665e9766be))
+
 ## [1.0.1](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.0...v1.0.1) (2020-09-22)
 
 
