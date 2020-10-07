@@ -20,7 +20,7 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 		const propertyNamesOfType = [];
 
 		for (const prop of type.properties) {
-			if (prop.permission !== 'read-only' && prop.name.indexOf('Modules.') !== 0) {
+			if (prop.name.indexOf('Modules.') !== 0) {
 
 				propertyNamesOfType.push(prop.name);
 
