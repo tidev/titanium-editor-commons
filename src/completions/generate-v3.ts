@@ -20,7 +20,7 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 		const propertyNamesOfType = [];
 
 		for (const prop of type.properties) {
-			if (prop.permission !== 'read-only' && prop.name.indexOf('Modules.') !== 0) {
+			if (prop.name.indexOf('Modules.') !== 0) {
 
 				propertyNamesOfType.push(prop.name);
 
@@ -29,7 +29,7 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 					Object.assign(props[prop.name], {
 						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
 					});
-					if (prop.constants) {
+					if (prop.constants.length) {
 						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}
@@ -37,7 +37,9 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 					props[prop.name] = {
 						description: prop.description.replace(/<p>|<\/p>/g, ''),
 						type: prop.type,
+						readOnly: ((prop.permission !== 'read-only')),
 						values: []
+
 					};
 
 					if (prop.constants) {
@@ -111,7 +113,7 @@ export async function generateAlloyCompletions (force: boolean): Promise<string|
 	const alloyPath = path.join(appcPath, version, 'package', 'node_modules', 'alloy');
 	const alloyVersion = await getAlloyVersion();
 
-	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, CompletionsFormat.v2);
+	const alloyCompletionsFilename = getAlloyCompletionsFileName(alloyVersion, CompletionsFormat.v3);
 
 	if (!force && await fs.pathExists(alloyCompletionsFilename)) {
 		return;
@@ -153,7 +155,7 @@ export async function generateAlloyCompletions (force: boolean): Promise<string|
 
 	await fs.ensureDir(path.dirname(alloyCompletionsFilename));
 	await fs.writeJSON(alloyCompletionsFilename, {
-		version: CompletionsFormat.v2,
+		version: CompletionsFormat.v3,
 		alloyVersion,
 		properties: sortedProps,
 		tags: sortedTagDic,
@@ -175,7 +177,7 @@ export async function generateAlloyCompletions (force: boolean): Promise<string|
  */
 export async function generateSDKCompletions (force: boolean, sdkVersion: string, sdkPath: string): Promise<string|undefined> {
 	// Make sdkVersion optional and load for selected SDK?
-	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v2);
+	const sdkCompletionsFilename = getSDKCompletionsFileName(sdkVersion, CompletionsFormat.v3);
 
 	if (!force && await fs.pathExists(sdkCompletionsFilename)) {
 		return;
@@ -198,7 +200,7 @@ export async function generateSDKCompletions (force: boolean, sdkVersion: string
 	await fs.ensureDir(path.dirname(sdkCompletionsFilename));
 	await fs.writeJSON(sdkCompletionsFilename,
 		{
-			version: CompletionsFormat.v2,
+			version: CompletionsFormat.v3,
 			sdkVersion,
 			properties: sortedProps,
 			types
