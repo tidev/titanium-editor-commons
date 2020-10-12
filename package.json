@@ -35,7 +35,7 @@
     "release": "semantic-release",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
+    "test": "npm run lint && JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
   },
   "repository": {
     "type": "git",
