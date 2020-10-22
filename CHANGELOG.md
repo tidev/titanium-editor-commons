@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.2...v1.0.3) (2020-10-22)
+
+
+### Bug Fixes
+
+* **completions:** add properties that are read only ([#222](https://github.com/appcelerator/titanium-editor-commons/issues/222)) ([f17899f](https://github.com/appcelerator/titanium-editor-commons/commit/f17899fa8a9032724c067d133c354fd572f57f1c))
+
 ## [1.0.2](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.1...v1.0.2) (2020-10-02)
 
 
