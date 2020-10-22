@@ -4,10 +4,12 @@ import { getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName
 
 import * as generateV1 from './generate-v1';
 import * as generateV2 from './generate-v2';
+import * as generateV3 from './generate-v3';
 
 export enum CompletionsFormat {
 	v1 = 1,
-	v2 = 2
+	v2 = 2,
+	v3 = 3
 }
 
 /**
@@ -74,6 +76,8 @@ export async function generateSDKCompletions (force = false, sdkVersion: string,
 		return generateV1.generateSDKCompletions(force, sdkVersion, sdkPath);
 	} else if (completionsVersion === CompletionsFormat.v2) {
 		return generateV2.generateSDKCompletions(force, sdkVersion, sdkPath);
+	} else if (completionsVersion === CompletionsFormat.v3) {
+		return generateV3.generateSDKCompletions(force, sdkVersion, sdkPath);
 	} else {
 		throw new Error(`Unsupported format version specified ${completionsVersion}`);
 	}
@@ -93,6 +97,7 @@ export interface Property {
 	description: string;
 	type: string;
 	values: string[];
+	readOnly?:boolean;
 }
 export interface TypeDictionary {
 	[key: string]: Type;
