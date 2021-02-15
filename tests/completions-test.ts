@@ -228,4 +228,53 @@ describe('completions', () => {
 			expect(completions.titanium.version).to.equal(2);
 		});
 	});
+
+	describe('completions.loadCompletions V3', () => {
+		it('Load Completions', async () => {
+			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
+
+			mockFS({
+				[installPath]: {
+					'.version': '4.2.0',
+					'4.2.0': {
+						package: {
+							'package.json': '{ "version": "4.2.0" }',
+							node_modules: {
+								alloy: {
+									'package.json': '{"version": "0.2.0"}',
+									Alloy: {
+										commands: {
+											compile: {
+												parsers: mockFS.directory({
+													items: parsers
+												}),
+											}
+										}
+									},
+									docs: {
+										'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'alloy-api.jsca'))
+									}
+								}
+							}
+						}
+					}
+				},
+				[FIXTURES_DIR]: {
+					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'ti-api.jsca'))
+				},
+			});
+
+			const sdkCompletions = await generateSDKCompletions(true, '8.1.0.GA', FIXTURES_DIR, CompletionsFormat.v3);
+			expect(sdkCompletions).to.equal('8.1.0.GA');
+
+			const alloyCompletions = await generateAlloyCompletions(true, CompletionsFormat.v3);
+			expect(alloyCompletions).to.equal('0.2.0');
+
+			const completions = await loadCompletions('8.1.0.GA', CompletionsFormat.v3);
+			expect(completions.alloy.alloyVersion).to.equal('0.2.0');
+			expect(completions.alloy.version).to.equal(3);
+			expect(completions.titanium.sdkVersion).to.equal('8.1.0.GA');
+			expect(completions.titanium.version).to.equal(3);
+		});
+	});
 });
