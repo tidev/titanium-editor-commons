@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.3...v1.0.4) (2021-02-15)
+
+
+### Bug Fixes
+
+* **completions:** expose alloy v3 completions ([ac2cac7](https://github.com/appcelerator/titanium-editor-commons/commit/ac2cac74a87bcef5402eacee3a2cc59bbe8b24e9))
+
 ## [1.0.3](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.2...v1.0.3) (2020-10-22)
 
 
