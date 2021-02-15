@@ -29,7 +29,7 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 					Object.assign(props[prop.name], {
 						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
 					});
-					if (prop.constants.length) {
+					if (prop.constants?.length) {
 						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}

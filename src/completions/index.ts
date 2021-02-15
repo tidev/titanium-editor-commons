@@ -58,6 +58,8 @@ export async function generateAlloyCompletions (force = false, completionsVersio
 		return generateV1.generateAlloyCompletions(force);
 	} else if (completionsVersion === CompletionsFormat.v2) {
 		return generateV2.generateAlloyCompletions(force);
+	} else if (completionsVersion === CompletionsFormat.v3) {
+		return generateV3.generateAlloyCompletions(force);
 	} else {
 		throw new Error(`Unsupported format version specified ${completionsVersion}`);
 	}
