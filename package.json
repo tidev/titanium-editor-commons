@@ -8,12 +8,6 @@
     "Ewan Harris <eharris@axway.com>"
   ],
   "license": "Apache-2.0",
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-    }
-  },
   "lint-staged": {
     "*.ts": "npm run lint"
   },
@@ -35,7 +29,10 @@
     "release": "semantic-release",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "test": "npm run lint && JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter"
+    "test": "npm run lint && JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter",
+    "postinstall": "husky install",
+    "prepublishOnly": "pinst --disable",
+    "postpublish": "pinst --enable"
   },
   "repository": {
     "type": "git",
@@ -75,6 +72,7 @@
     "mock-fs": "^4.10.3",
     "nock": "^13.0.0",
     "nyc": "^15.0.0",
+    "pinst": "^2.1.6",
     "semantic-release": "^17.1.1",
     "sinon": "^9.0.1",
     "tmp": "^0.2.0",
