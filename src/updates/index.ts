@@ -1,3 +1,4 @@
+import * as alloy from './alloy';
 import * as appc from './appc';
 import { ProductNames } from './product-names';
 import * as node from './node';
@@ -17,13 +18,20 @@ export interface SupportedVersions {
 	nodeJS?: string;
 }
 
-async function checkAllUpdates(supportedVersions?: SupportedVersions): Promise<UpdateInfo[]> {
-	const updates = await Promise.all([
+async function checkAllUpdates(supportedVersions?: SupportedVersions, useAppcTooling = true): Promise<UpdateInfo[]> {
+	// Setup the always required checks and then add the ones dependent on the tooling we use
+	const updateChecks = [
 		node.checkForUpdate(supportedVersions?.nodeJS),
-		appc.core.checkForUpdate(),
-		appc.install.checkForUpdate(),
 		titanium.sdk.checkForUpdate()
-	]);
+	];
+
+	if (useAppcTooling) {
+		updateChecks.push(appc.core.checkForUpdate(), appc.install.checkForUpdate());
+	} else {
+		updateChecks.push(alloy.checkForUpdate(), titanium.cli.checkForUpdate());
+	}
+
+	const updates = await Promise.all(updateChecks);
 
 	return updates.filter(update => update && update.hasUpdate);
 }
@@ -31,6 +39,7 @@ async function checkAllUpdates(supportedVersions?: SupportedVersions): Promise<U
 export {
 	UpdateInfo,
 	checkAllUpdates,
+	alloy,
 	appc,
 	node,
 	titanium,

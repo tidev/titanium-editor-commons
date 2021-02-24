@@ -28,7 +28,11 @@ export function mockSDKRequest (file: string): void {
 export function mockNpmRequest (): void {
 	nock('https://registry.npmjs.org')
 		.get('/appcelerator')
-		.replyWithFile(200, path.join(__dirname, 'npm-response.json'));
+		.replyWithFile(200, path.join(__dirname, 'appcelerator-npm-response.json'))
+		.get('/alloy')
+		.replyWithFile(200, path.join(__dirname, 'alloy-npm-response.json'))
+		.get('/titanium')
+		.replyWithFile(200, path.join(__dirname, 'titanium-npm-response.json'));
 }
 
 export function mockNodeRequest(): void {

@@ -1,4 +1,4 @@
-import { appc, titanium, node } from '../src/updates/';
+import { appc, titanium, node, alloy } from '../src/updates/';
 
 import * as titaniumlib from 'titaniumlib';
 
@@ -484,6 +484,177 @@ describe('updates', () => {
 			const url = await node.getReleaseNotes('v10.13.0');
 			expect(url).to.deep.equal('https://nodejs.org/en/blog/release/v10.13.0/');
 
+		});
+	});
+
+	describe('alloy', () => {
+		it('checkForUpdates with no core', async () => {
+
+			mockNpmRequest();
+			const npmChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', `{
+					"dependencies": {
+					  "alloy": {
+						"version": "1.15.2",
+						"from": "alloy@1.15.2",
+						"resolved": "https://registry.npmjs.org/alloy/-/alloy-1.15.2.tgz"
+					  }
+					}
+				  }`);
+				npmChild.emit('close', 0);
+			}, 750);
+
+			const update = await alloy.checkForUpdate();
+
+			expect(update.currentVersion).to.equal('1.15.2');
+			expect(update.latestVersion).to.equal('1.15.4');
+			expect(update.productName).to.equal('Alloy');
+			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('checkForUpdates with no install', async () => {
+			mockNpmRequest();
+			const npmChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', '{}');
+				npmChild.emit('close', 0);
+			}, 750);
+
+			const update = await alloy.checkForUpdate();
+
+			expect(update.currentVersion).to.equal(undefined);
+			expect(update.latestVersion).to.equal('1.15.4');
+			expect(update.productName).to.equal('Alloy');
+			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('checkForUpdates with latest already', async () => {
+			mockNpmRequest();
+			const npmChild = createChildMock();
+			const stub = global.sandbox.stub(child_process, 'spawn');
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', `{
+					"dependencies": {
+					"alloy": {
+						"version": "1.15.4",
+						"from": "alloy@1.15.4",
+						"resolved": "https://registry.npmjs.org/alloy/-/alloy-1.15.4.tgz"
+					}
+					}
+				}`);
+				npmChild.emit('close', 0);
+			}, 750);
+			const update = await alloy.checkForUpdate();
+
+			expect(update.currentVersion).to.equal('1.15.4');
+			expect(update.latestVersion).to.equal('1.15.4');
+			expect(update.productName).to.equal('Alloy');
+			expect(update.hasUpdate).to.equal(false);
+		});
+	});
+
+	describe('titanium.cli', () => {
+		it('checkForUpdates with no core', async () => {
+
+			mockNpmRequest();
+			const npmChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', `{
+					"dependencies": {
+					  "titanium": {
+						"version": "5.2.4",
+						"from": "titanium@5.2.4",
+						"resolved": "https://registry.npmjs.org/titanium/-/titanium-5.2.4.tgz"
+					  }
+					}
+				  }`);
+				npmChild.emit('close', 0);
+			}, 750);
+
+			const update = await titanium.cli.checkForUpdate();
+
+			expect(update.currentVersion).to.equal('5.2.4');
+			expect(update.latestVersion).to.equal('5.3.0');
+			expect(update.productName).to.equal('Titanium CLI');
+			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('checkForUpdates with no install', async () => {
+			mockNpmRequest();
+			const npmChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', '{}');
+				npmChild.emit('close', 0);
+			}, 750);
+
+			const update = await titanium.cli.checkForUpdate();
+
+			expect(update.currentVersion).to.equal(undefined);
+			expect(update.latestVersion).to.equal('5.3.0');
+			expect(update.productName).to.equal('Titanium CLI');
+			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('checkForUpdates with latest already', async () => {
+			mockNpmRequest();
+			const npmChild = createChildMock();
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', `{
+					"dependencies": {
+						"titanium": {
+						"version": "5.3.0",
+						"from": "titanium@5.3.0",
+						"resolved": "https://registry.npmjs.org/titanium/-/titanium-5.3.0.tgz"
+						}
+					}
+					}`);
+				npmChild.emit('close', 0);
+			}, 750);
+			const update = await titanium.cli.checkForUpdate();
+
+			expect(update.currentVersion).to.equal('5.3.0');
+			expect(update.latestVersion).to.equal('5.3.0');
+			expect(update.productName).to.equal('Titanium CLI');
+			expect(update.hasUpdate).to.equal(false);
 		});
 	});
 });
