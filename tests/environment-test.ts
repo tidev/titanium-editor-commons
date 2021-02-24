@@ -110,6 +110,7 @@ describe('environment', () => {
 				]
 			);
 		});
+
 		it('validateEnvironment with no installed SDKS', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
@@ -159,6 +160,7 @@ describe('environment', () => {
 				]
 			);
 		});
+
 		it('validateEnvironment with no installed core', async () => {
 			mockFS({});
 
@@ -193,6 +195,7 @@ describe('environment', () => {
 				]
 			);
 		});
+
 		it('validateEnvironment with no installed appc npm', async () => {
 			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
 			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
@@ -269,6 +272,171 @@ describe('environment', () => {
 				[
 					{ name: 'Node.js', version: '12.18.1' },
 					{ name: 'Appcelerator CLI', version: '4.2.0' },
+					{ name: 'Titanium SDK', version: '7.5.0.GA' }
+				]
+			);
+		});
+
+		it('validateEnvironment with no Node.js', async () => {
+			const nodeChild = createChildMock();
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			setTimeout(() => {
+				nodeChild.stderr?.emit('data', '/bin/sh: node: command not found');
+				nodeChild.emit('close', 127);
+			}, 750);
+
+			const env = await environment.validateEnvironment();
+			expect(env.missing.length).to.deep.equal(1);
+			expect(env.missing[0].name).to.deep.equal('Node.js');
+			expect(env.installed.length).to.equal(0);
+		});
+
+		it('should detect Titanium and Alloy CLI when useAppcTooling is false', async () => {
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+
+			sdkStub.returns([
+				{
+					name: '7.5.0.GA',
+					manifest: {
+						name: '7.5.0.v20181115134726',
+						version: '7.5.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '6'
+						},
+						timestamp: '11/15/2018 21:52',
+						githash: '2e5a7423d0',
+						platforms: [
+							'iphone',
+							'android'
+						]
+					},
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.5.0.GA'
+				}
+			]);
+
+			const titaniumChild = createChildMock();
+			const alloyChild = createChildMock();
+			const nodeChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			stub
+				.withArgs('npm', [ 'ls', 'titanium', '--json', '--depth', '0', '--global' ], sinon.match.any)
+				.returns(titaniumChild);
+
+			stub
+				.withArgs('npm', [ 'ls', 'alloy', '--json', '--depth', '0', '--global' ], sinon.match.any)
+				.returns(alloyChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			setTimeout(() => {
+				titaniumChild.stdout?.emit('data', `{
+					"dependencies": {
+						"titanium": {
+						"version": "5.3.0",
+						"from": "titanium@5.3.0",
+						"resolved": "https://registry.npmjs.org/titanium/-/titanium-5.3.0.tgz"
+						}
+					}
+					}`);
+				titaniumChild.emit('close', 0);
+			}, 1000);
+
+			setTimeout(() => {
+				alloyChild.stdout?.emit('data', `{
+					"dependencies": {
+						"alloy": {
+							"version": "1.15.2",
+							"from": "alloy@1.15.2",
+							"resolved": "https://registry.npmjs.org/alloy/-/alloy-1.15.2.tgz"
+						}
+					}
+				}`);
+				alloyChild.emit('close', 0);
+			}, 1500);
+
+			const env = await environment.validateEnvironment(undefined, false);
+			expect(env.missing.length).to.equal(0);
+			expect(env.installed).to.deep.equal(
+				[
+					{ name: 'Node.js', version: '12.18.1' },
+					{ name: 'Alloy', version: '1.15.2' },
+					{ name: 'Titanium CLI', version: '5.3.0' },
+					{ name: 'Titanium SDK', version: '7.5.0.GA' }
+				]
+			);
+		});
+
+		it('should detect Titanium and Alloy CLI when useAppcTooling is false, not installed', async () => {
+			const sdkStub = global.sandbox.stub(titaniumlib.sdk, 'getInstalledSDKs');
+
+			sdkStub.returns([
+				{
+					name: '7.5.0.GA',
+					manifest: {
+						name: '7.5.0.v20181115134726',
+						version: '7.5.0',
+						moduleAPIVersion: {
+							iphone: '2',
+							android: '4',
+							windows: '6'
+						},
+						timestamp: '11/15/2018 21:52',
+						githash: '2e5a7423d0',
+						platforms: [
+							'iphone',
+							'android'
+						]
+					},
+					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.5.0.GA'
+				}
+			]);
+
+			const npmChild = createChildMock();
+			const nodeChild = createChildMock();
+
+			const stub = global.sandbox.stub(child_process, 'spawn');
+
+			stub
+				.withArgs('node', sinon.match.any, sinon.match.any)
+				.returns(nodeChild);
+
+			stub
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.returns(npmChild);
+
+			setTimeout(() => {
+				nodeChild.stdout?.emit('data', 'v12.18.1');
+				nodeChild.emit('close', 0);
+			}, 500);
+
+			setTimeout(() => {
+				npmChild.stdout?.emit('data', '');
+				npmChild.emit('close', 0);
+			}, 1000);
+
+			const env = await environment.validateEnvironment(undefined, false);
+			expect(env.missing.length).to.equal(2);
+			expect(env.missing[0].name).to.equal('Alloy');
+			expect(env.missing[1].name).to.equal('Titanium CLI');
+			expect(env.installed).to.deep.equal(
+				[
+					{ name: 'Node.js', version: '12.18.1' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
 				]
 			);

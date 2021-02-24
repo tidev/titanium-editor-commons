@@ -15,7 +15,7 @@ interface EnvironmentInfo {
 	missing: Missing[];
 }
 
-export async function validateEnvironment(supportedVersions?: updates.SupportedVersions): Promise<EnvironmentInfo> {
+export async function validateEnvironment(supportedVersions?: updates.SupportedVersions, useAppcTooling = true): Promise<EnvironmentInfo> {
 	const environmentInfo: EnvironmentInfo = {
 		installed: [],
 		missing: []
@@ -38,39 +38,75 @@ export async function validateEnvironment(supportedVersions?: updates.SupportedV
 		return environmentInfo;
 	}
 
-	const [ coreVersion, installVersion, sdkVersion ] = await Promise.all([
-		await updates.appc.core.checkInstalledVersion(),
-		await updates.appc.install.checkInstalledVersion(),
-		await updates.titanium.sdk.checkInstalledVersion()
-	]);
+	if (useAppcTooling) {
+		const [ coreVersion, installVersion ] = await Promise.all([
+			updates.appc.core.checkInstalledVersion(),
+			updates.appc.install.checkInstalledVersion()
+		]);
 
-	if (coreVersion) {
-		environmentInfo.installed.push({
-			name: updates.ProductNames.AppcCore,
-			version: coreVersion
-		});
+		if (coreVersion) {
+			environmentInfo.installed.push({
+				name: updates.ProductNames.AppcCore,
+				version: coreVersion
+			});
+		} else {
+			environmentInfo.missing.push({
+				name: updates.ProductNames.AppcCore,
+				getInstallInfo: () => {
+					return updates.appc.core.checkForUpdate();
+				}
+			});
+		}
+
+		if (installVersion) {
+			environmentInfo.installed.push({
+				name: updates.ProductNames.AppcInstaller,
+				version: installVersion
+			});
+		} else {
+			environmentInfo.missing.push({
+				name: updates.ProductNames.AppcInstaller,
+				getInstallInfo: () => {
+					return updates.appc.install.checkForUpdate();
+				}
+			});
+		}
 	} else {
-		environmentInfo.missing.push({
-			name: updates.ProductNames.AppcCore,
-			getInstallInfo: () => {
-				return updates.appc.core.checkForUpdate();
-			}
-		});
+		const [ alloyVersion, cliVersion ] = await Promise.all([
+			updates.alloy.checkInstalledVersion(),
+			updates.titanium.cli.checkInstalledVersion(),
+		]);
+
+		if (alloyVersion) {
+			environmentInfo.installed.push({
+				name: updates.ProductNames.Alloy,
+				version: alloyVersion
+			});
+		} else {
+			environmentInfo.missing.push({
+				name: updates.ProductNames.Alloy,
+				getInstallInfo: () => {
+					return updates.alloy.checkForUpdate();
+				}
+			});
+		}
+
+		if (cliVersion) {
+			environmentInfo.installed.push({
+				name: updates.ProductNames.TitaniumCLI,
+				version: cliVersion
+			});
+		} else {
+			environmentInfo.missing.push({
+				name: updates.ProductNames.TitaniumCLI,
+				getInstallInfo: () => {
+					return updates.titanium.cli.checkForUpdate();
+				}
+			});
+		}
 	}
 
-	if (installVersion) {
-		environmentInfo.installed.push({
-			name: updates.ProductNames.AppcInstaller,
-			version: installVersion
-		});
-	} else {
-		environmentInfo.missing.push({
-			name: updates.ProductNames.AppcInstaller,
-			getInstallInfo: () => {
-				return updates.appc.install.checkForUpdate();
-			}
-		});
-	}
+	const sdkVersion = await updates.titanium.sdk.checkInstalledVersion();
 
 	if (sdkVersion) {
 		environmentInfo.installed.push({
