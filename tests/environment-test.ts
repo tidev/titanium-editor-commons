@@ -101,8 +101,8 @@ describe('environment', () => {
 			const stub = global.sandbox.stub(child_process, 'spawn');
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
-			mockNpmCli(stub, 'alloy', '1.15.2');
-			mockNpmCli(stub, 'titanium', '5.3.0', 750);
+			mockNpmCli(stub, 'alloy', '1.15.2', 750);
+			mockNpmCli(stub, 'titanium', '5.3.0', 1000);
 
 			const env = await environment.validateEnvironment(undefined, false);
 			expect(env.missing.length).to.equal(0);
