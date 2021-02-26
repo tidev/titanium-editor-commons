@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.4...v1.1.0) (2021-02-26)
+
+
+### Features
+
+* **environment:** add environment check for Titanium and Alloy npm packages ([84a114e](https://github.com/appcelerator/titanium-editor-commons/commit/84a114eaea6d214298805b65d6d0fce592493188))
+* **updates:** add update logic for Titanium and Alloy npm packages ([8135922](https://github.com/appcelerator/titanium-editor-commons/commit/813592247b576ed86b1634a8f89017737ef2b91b))
+
 ## [1.0.4](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.3...v1.0.4) (2021-02-15)
 
 
