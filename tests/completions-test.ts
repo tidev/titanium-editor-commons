@@ -1,15 +1,88 @@
 import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
 import { CustomError } from '../src/completions/util';
 
-import { expect } from 'chai';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import fs from 'fs-extra';
 import mockFS from 'mock-fs';
 import os from 'os';
 import * as path from 'path';
 
 import { parsers } from './fixtures/parsers';
+import globalDirectories from 'global-dirs';
 
+chai.use(chaiAsPromised);
+const expect = chai.expect;
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
+
+function mockAppcCli (noInstall = false) {
+	const installPath = path.join(os.homedir(), '.appcelerator', 'install');
+	if (noInstall) {
+		return {
+			[installPath]: {}
+		};
+	} else {
+		return {
+			[installPath]: {
+				'.version': '4.2.0',
+				'4.2.0': {
+					package: {
+						'package.json': '{ "version": "4.2.0" }',
+						node_modules: {
+							alloy: {
+								'package.json': '{"version": "0.2.0"}',
+								Alloy: {
+									commands: {
+										compile: {
+											parsers: mockFS.directory({
+												items: parsers
+											}),
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			},
+		};
+	}
+}
+
+function mockNpmAlloy (noInstall = false) {
+	const installPath = globalDirectories.npm.packages;
+	if (noInstall) {
+		return {
+			[installPath]: {}
+		};
+	} else {
+		return {
+			[installPath]: {
+				alloy: {
+					'package.json': '{"version": "0.2.0"}',
+					Alloy: {
+						commands: {
+							compile: {
+								parsers: mockFS.directory({
+									items: parsers
+								}),
+							}
+						}
+					}
+				}
+			}
+		};
+	}
+}
+
+function mockCompletions () {
+	const completionsPath = path.join(os.homedir(), '.titanium', 'completions', 'alloy', '0.2.0');
+	return {
+		[completionsPath]: {
+			'completions-v1.json': ''
+		}
+	};
+}
 
 describe('completions', () => {
 
@@ -22,79 +95,25 @@ describe('completions', () => {
 	});
 
 	describe('completions.generateAlloyCompletions', () => {
-		it('Generate Alloy Completions', async () => {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
-
-			mockFS({
-				[installPath]: {
-					'.version': '4.2.0',
-					'4.2.0': {
-						package: {
-							'package.json': '{ "version": "4.2.0" }',
-							node_modules: {
-								alloy: {
-									'package.json': '{"version": "0.2.0"}',
-									Alloy: {
-										commands: {
-											compile: {
-												parsers: mockFS.directory({
-													items: parsers
-												}),
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-			});
-
+		it('Generate Alloy Completions from appc cli', async () => {
+			mockFS(mockAppcCli());
 			const completions = await generateAlloyCompletions(true);
 			expect(completions).to.equal('0.2.0');
 
 		});
-		it('Generate Alloy Completions without alloy installed', async () => {
-			try {
-				await generateAlloyCompletions(true);
-			} catch (error) {
-				expect(error).to.be.instanceOf(Error);
-				expect(error.message).to.equal('Unable to find installed alloy version.');
-			}
+		it('Generate AlloyCompletions from npm', async () => {
+			mockFS({ ...mockAppcCli(true), ...mockNpmAlloy() });
+			const completions = await generateAlloyCompletions(true);
+			expect(completions).to.equal('0.2.0');
 		});
+
+		it('Generate Alloy Completions without alloy installed', async () => {
+			mockFS({ ...mockAppcCli(true), ...mockNpmAlloy(true) });
+			expect(generateAlloyCompletions(true)).to.be.rejectedWith(Error, 'Unable to find installed alloy version.');
+		});
+
 		it('Generate Alloy Completions with pre-existing completions', async () => {
-
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
-			const completionsPath = path.join(os.homedir(), '.titanium', 'completions', 'alloy', '0.2.0');
-
-			mockFS({
-				[installPath]: {
-					'.version': '4.2.0',
-					'4.2.0': {
-						package: {
-							'package.json': '{ "version": "4.2.0" }',
-							node_modules: {
-								alloy: {
-									'package.json': '{"version": "0.2.0"}',
-									Alloy: {
-										commands: {
-											compile: {
-												parsers: mockFS.directory({
-													items: parsers
-												}),
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				[completionsPath]: {
-					'completions-v1.json': ''
-				},
-			});
-
+			mockFS({ ...mockAppcCli(), ...mockCompletions() });
 			const completions = await generateAlloyCompletions(false);
 			expect(completions).to.equal(undefined);
 		});
