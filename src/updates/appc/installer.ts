@@ -15,16 +15,7 @@ export async function checkInstalledVersion (): Promise<string|undefined> {
 		// squelch
 	}
 
-	// If that fails because it's not installed, or we don't have a core, fallback to npm cli which is generally slower
-	try {
-		const { stdout } = await run('npm', [ 'ls', 'appcelerator', '--json', '--depth', '0', '--global' ], { shell: true });
-		const { dependencies: { appcelerator } } = JSON.parse(stdout);
-		return appcelerator.version;
-	} catch (error) {
-		// squelch
-	}
-
-	return;
+	return util.checkInstalledNpmPackageVersion('appcelerator');
 }
 
 export async function checkLatestVersion (): Promise<string> {
@@ -33,23 +24,7 @@ export async function checkLatestVersion (): Promise<string> {
 }
 
 export async function installUpdate (version: string): Promise<void> {
-	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `appcelerator@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
-	if (code) {
-		const metadata = {
-			errorCode: '',
-			exitCode: code,
-			stderr,
-			stdout,
-			command: `npm install -g appcelerator@${version}`
-		};
-		try {
-			const jsonResponse = JSON.parse(stdout);
-			metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
-		} catch (error) {
-			// squash
-		}
-		throw new util.InstallError('Failed to install package', metadata);
-	}
+	return util.installNpmPackage('appcelerator', version);
 }
 
 export function getReleaseNotes (): string {
