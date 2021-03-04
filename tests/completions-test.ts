@@ -108,7 +108,7 @@ describe('completions', () => {
 		mockFS.restore();
 	});
 
-	describe.only('completions.generateAlloyCompletions', () => {
+	describe('completions.generateAlloyCompletions', () => {
 		it('Generate Alloy Completions from appc cli', async () => {
 			mockFS(mockAppcCli());
 			const completions = await generateAlloyCompletions(true);
