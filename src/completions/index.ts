@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 
-import { getAlloyCompletionsFileName, getAlloyVersion, getSDKCompletionsFileName } from './util';
+import { findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
 
 import * as generateV1 from './generate-v1';
 import * as generateV2 from './generate-v2';
@@ -20,7 +20,7 @@ export enum CompletionsFormat {
  * @returns {Object}
  */
 export async function loadCompletions (sdkVersion: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<{ alloy: AlloyCompletions; titanium: TitaniumCompletions }> {
-	const alloyVersion = await getAlloyVersion();
+	const { alloyVersion } = await findAlloy();
 	const sdkCompletions = await fs.readJSON(getSDKCompletionsFileName(sdkVersion, completionsVersion));
 	const alloyCompletions = await fs.readJSON(getAlloyCompletionsFileName(alloyVersion, completionsVersion));
 	Object.assign(sdkCompletions.properties, {
