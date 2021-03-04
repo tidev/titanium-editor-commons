@@ -32,7 +32,7 @@ export class InstallError extends Error {
  */
 export async function checkInstalledNpmPackageVersion (name: string): Promise<string|undefined> {
 	try {
-		const { stdout } = await run('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true });
+		const { stdout } = await run('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true, env: { ...process.env, NODE_ENV: undefined } });
 		const { dependencies } = JSON.parse(stdout);
 		return dependencies[name]?.version;
 	} catch (error) {
