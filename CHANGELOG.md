@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.1.0...v1.2.0) (2021-04-06)
+
+
+### Bug Fixes
+
+* **updates:** set NODE_ENV environment variable so that npm does not filter ([16bdc2b](https://github.com/appcelerator/titanium-editor-commons/commit/16bdc2b538d96efef520d141b7ce8013b2165dd4))
+
+
+### Features
+
+* **completions:** support loading alloy from global npm modules ([5a6faa4](https://github.com/appcelerator/titanium-editor-commons/commit/5a6faa49fd144c1c8f2cf437854caee4080273e0))
+
 # [1.1.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.0.4...v1.1.0) (2021-02-26)
 
 
