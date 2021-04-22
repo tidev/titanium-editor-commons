@@ -1,4 +1,4 @@
-import { run } from 'appcd-subprocess';
+import { exec } from '../../util';
 import * as fs from 'fs-extra';
 import got from 'got';
 import os from 'os';
@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
-import { InstallError } from '../util';
+import execa from 'execa';
 
 const LATEST_URL = 'https://registry.platform.axway.com/api/appc/latest';
 
@@ -28,16 +28,8 @@ export async function checkLatestVersion (): Promise<string> {
 	return body.result[0].version;
 }
 
-export async function installUpdate (version: string): Promise<void> {
-	// todo
-	const { code, stdout, stderr } = await run('appc', [ 'use', version ], { shell: true, ignoreExitCode: true });
-	if (code) {
-		throw new InstallError('Failed to install package', {
-			code,
-			stderr,
-			stdout
-		});
-	}
+export async function installUpdate (version: string): Promise<execa.ExecaReturnValue> {
+	return exec('appc', [ 'use', version ], { shell: true });
 }
 
 export function getReleaseNotes (version: string): string {

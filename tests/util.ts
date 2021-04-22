@@ -1,23 +1,9 @@
 import * as titaniumlib from 'titaniumlib';
 import * as path from 'path';
 import * as os from 'os';
-import child_process from 'child_process';
-import { EventEmitter } from 'events';
 import mockFS from 'mock-fs';
-import stream from 'stream';
 import sinon from 'sinon';
-
-/**
- * Creates a mock child process with stdout and stderr properties to output to
- *
- * @returns {child_process.ChildProcess}
- */
-export function createChildMock (): child_process.ChildProcess {
-	const fakeChild = new EventEmitter() as child_process.ChildProcess;
-	fakeChild.stdout = new EventEmitter() as stream.Readable;
-	fakeChild.stderr = new EventEmitter() as stream.Readable;
-	return fakeChild;
-}
+import execa from 'execa';
 
 /**
  * Mocks the main appc cli executable and outputs the specified core and installer versions
@@ -29,17 +15,10 @@ export function createChildMock (): child_process.ChildProcess {
  * @param {boolean} mockVersionFile - Whether to mock the appc cli version file
  */
 export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, installerVersion?: string, waitTime = 500, mockVersionFile = false): void {
-	const appcChild = createChildMock();
-
 	if (coreVersion && installerVersion) {
 		stub
 			.withArgs('appc', sinon.match.any, sinon.match.any)
-			.returns(appcChild);
-
-		setTimeout(() => {
-			appcChild.stdout?.emit('data', `{"NPM":"${installerVersion}","CLI":"${coreVersion}"}`);
-			appcChild.emit('close', 0);
-		}, waitTime);
+			.resolves({ stdout: `{"NPM":"${installerVersion}","CLI":"${coreVersion}"}` } as execa.ExecaReturnValue);
 
 		if (mockVersionFile) {
 			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
@@ -56,10 +35,9 @@ export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, instal
 		}
 		return;
 	} else {
-		setTimeout(() => {
-			appcChild.stderr?.emit('data', '/bin/sh: appc: command not found\n');
-			appcChild.emit('close', 127);
-		}, waitTime);
+		stub
+			.withArgs('appc', sinon.match.any, sinon.match.any)
+			.rejects({ stderr: '/bin/sh: appc: command not found\n' });
 
 		mockNpmCli(stub, 'appcelerator', installerVersion, waitTime + 250);
 
@@ -89,28 +67,25 @@ export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, instal
  * @param {number} [waitTime=500] - Time to wait before outputting data
  */
 export function mockNpmCli (stub: sinon.SinonStub, packageName: string, version?: string, waitTime = 500): void {
-	const npmChild = createChildMock();
-
-	stub
-		.withArgs('npm', [ 'ls', `${packageName}`, '--json', '--depth', '0', '--global' ], sinon.match.any)
-		.returns(npmChild);
-
-	setTimeout(() => {
-		if (version) {
-			npmChild.stdout?.emit('data', `{
-				"dependencies": {
-					"${packageName}": {
-					"version": "${version}",
-					"from": "${packageName}@${version}",
-					"resolved": "https://registry.npmjs.org/${packageName}/-/${packageName}-${version}.tgz"
-					}
-				}
-				}`);
-		} else {
-			npmChild.stdout?.emit('data', '{}');
-		}
-		npmChild.emit('close', 0);
-	}, waitTime);
+	if (version) {
+		stub
+			.withArgs('npm', [ 'ls', `${packageName}`, '--json', '--depth', '0', '--global' ], sinon.match.any)
+			.resolves({
+				stdout: `{
+					"dependencies": {
+						"${packageName}": {
+							"version": "${version}",
+							"from": "${packageName}@${version}",
+							"resolved": "https://registry.npmjs.org/${packageName}/-/${packageName}-${version}.tgz"
+						}
+						}
+					}`
+			} as execa.ExecaReturnValue);
+	} else {
+		stub
+			.withArgs('npm', [ 'ls', `${packageName}`, '--json', '--depth', '0', '--global' ], sinon.match.any)
+			.resolves({ stdout: '{}' });
+	}
 }
 
 /**
@@ -121,22 +96,16 @@ export function mockNpmCli (stub: sinon.SinonStub, packageName: string, version?
  * @param {number} [waitTime=500] - Time to wait before outputting data
  */
 export function mockNode (stub: sinon.SinonStub, version?: string, waitTime = 500): void {
-	const nodeChild = createChildMock();
-	stub
-		.withArgs('node', sinon.match.any, sinon.match.any)
-		.returns(nodeChild);
-
-	setTimeout(() => {
-		if (version) {
-			nodeChild.stdout?.emit('data', `v${version}`);
-			nodeChild.emit('close', 0);
-		} else {
-			nodeChild.stderr?.emit('data', '/bin/sh: node: command not found');
-			nodeChild.emit('close', 127);
-		}
-	}, waitTime);
+	if (version) {
+		stub
+			.withArgs('node', sinon.match.any, sinon.match.any)
+			.resolves({ stdout: version } as execa.ExecaReturnValue);
+	} else {
+		stub
+			.withArgs('node', sinon.match.any, sinon.match.any)
+			.rejects({ stderr: '/bin/sh: node: command not found' });
+	}
 }
-
 /**
  * Mocks titaniumlibs sdk.getInstalledSDKs to return the requested SDK alongside an older GA SDK
  * (7.0.2.GA) and a non GA SDK (8.1.0.v20190416065710)

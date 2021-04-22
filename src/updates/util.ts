@@ -1,4 +1,5 @@
-import { run } from 'appcd-subprocess';
+import execa from 'execa';
+import { exec } from '../util';
 import * as libnpm from 'libnpm';
 
 interface InstallErrorMetadata {
@@ -32,7 +33,7 @@ export class InstallError extends Error {
  */
 export async function checkInstalledNpmPackageVersion (name: string): Promise<string|undefined> {
 	try {
-		const { stdout } = await run('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true, env: { ...process.env, NODE_ENV: undefined } });
+		const { stdout } = await exec('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true });
 		const { dependencies } = JSON.parse(stdout);
 		return dependencies[name]?.version;
 	} catch (error) {
@@ -56,22 +57,17 @@ export async function checkLatestNpmPackageVersion(name: string): Promise<string
  * @param {String} name The package to install
  * @param {String} version The version to install
  */
-export async function installNpmPackage(name: string, version: string): Promise<void> {
-	const { code, stdout, stderr } = await run('npm', [ 'install', '-g', `${name}@${version}`, '--json' ], { shell: true, ignoreExitCode: true });
-	if (code) {
-		const metadata = {
-			errorCode: '',
-			exitCode: code,
-			stderr,
-			stdout,
-			command: `npm install -g ${name}@${version}`
-		};
+export async function installNpmPackage(name: string, version: string): Promise<execa.ExecaReturnValue> {
+	try {
+		return exec('npm', [ 'install', '-g', `${name}@${version}`, '--json' ], { shell: true });
+	} catch (error) {
 		try {
-			const jsonResponse = JSON.parse(stdout);
-			metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
-		} catch (error) {
+			const jsonResponse = JSON.parse(error.stdout);
+			error.errorCode = jsonResponse.error && jsonResponse.error.code;
+		} catch (_error) {
 			// squash
 		}
-		throw new InstallError('Failed to install package', metadata);
+
+		throw error;
 	}
 }

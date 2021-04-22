@@ -1,14 +1,13 @@
 import { appc, titanium, node, alloy, checkAllUpdates } from '../src/updates/';
+import * as util from '../src/util';
 
 import { expect } from 'chai';
-import child_process from 'child_process';
 import mockFS from 'mock-fs';
 import nock from 'nock';
 import os from 'os';
 import * as path from 'path';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest, mockNodeRequest } from './fixtures/network/network-mocks';
-import * as sinon from 'sinon';
-import { createChildMock, mockAppcCli, mockNode, mockNpmCli, mockSdk } from './util';
+import { mockAppcCli, mockNode, mockNpmCli, mockSdk } from './util';
 
 describe('updates', () => {
 
@@ -59,7 +58,7 @@ describe('updates', () => {
 	describe('appc.installer', () => {
 
 		it('checkForUpdates with install', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 
 			mockNpmRequest();
 			mockAppcCli(stub, '7.1.0-master.13', '4.2.12');
@@ -73,7 +72,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdates with no core', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmRequest();
 			mockAppcCli(stub, undefined, '4.2.12');
 
@@ -87,7 +86,7 @@ describe('updates', () => {
 
 		it('checkForUpdates with no install', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockAppcCli(stub, undefined, undefined);
 
 			const update = await appc.install.checkForUpdate();
@@ -99,7 +98,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdates with latest already', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmRequest();
 			mockAppcCli(stub, '7.1.0-master.13', '4.2.13');
 
@@ -114,7 +113,7 @@ describe('updates', () => {
 
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockAppcCli(stub, '4.2.0', '4.2.12', 500, true);
 			mockAppcCoreRequest('6.6.6');
 
@@ -126,7 +125,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with no install', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockAppcCli(stub, undefined, undefined);
 			mockAppcCoreRequest('6.6.6');
 
@@ -138,7 +137,7 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockAppcCli(stub, '6.6.6', '4.2.12', 500, true);
 			mockAppcCoreRequest('6.6.6');
 
@@ -173,44 +172,24 @@ describe('updates', () => {
 
 	describe('node', () => {
 		it('validateEnvironment with no node installed', async () => {
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub);
 
 			const env = await node.checkInstalledVersion();
 			expect(env).to.equal(undefined);
 		});
 
 		it('validateEnvironment with node installed', async () => {
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v12.18.1');
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub, 'v12.18.1');
 
 			const env = await node.checkInstalledVersion();
 			expect(env).to.deep.equal('12.18.1');
 		});
 
 		it('validateEnvironment with new supported SDK ranges', async () => {
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v8.7.0');
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub, 'v8.7.0');
 
 			const env = await node.checkInstalledVersion();
 			expect(env).to.deep.equal('8.7.0');
@@ -218,34 +197,19 @@ describe('updates', () => {
 
 		it('Get update with older version (v8.7.0)', async () => {
 			mockNodeRequest();
-
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v8.7.0');
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub, 'v8.7.0');
 
 			const url = await node.checkLatestVersion();
 			expect(url).to.deep.equal('12.18.2');
 
 		});
 
-		it('Check for update with update availale', async () => {
+		it('Check for update with update available', async () => {
 			mockNodeRequest();
 
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v12.18.1');
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub, 'v12.18.1');
 
 			const update = await node.checkForUpdate();
 
@@ -260,15 +224,8 @@ describe('updates', () => {
 		it('Check for update with up to date version', async () => {
 			mockNodeRequest();
 
-			const nodeChild = createChildMock();
-			global.sandbox.stub(child_process, 'spawn')
-				.withArgs('node', sinon.match.any, sinon.match.any)
-				.returns(nodeChild);
-
-			setTimeout(() => {
-				nodeChild.stdout?.emit('data', 'v12.18.2');
-				nodeChild.emit('close', 0);
-			}, 500);
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNode(stub, 'v12.18.2');
 
 			const update = await node.checkForUpdate();
 
@@ -290,7 +247,7 @@ describe('updates', () => {
 	describe('alloy', () => {
 		it('checkForUpdates with no core', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmCli(stub, 'alloy', '1.15.2');
 
 			const update = await alloy.checkForUpdate();
@@ -303,7 +260,7 @@ describe('updates', () => {
 
 		it('checkForUpdates with no install', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmCli(stub, 'alloy', undefined);
 
 			const update = await alloy.checkForUpdate();
@@ -316,7 +273,7 @@ describe('updates', () => {
 
 		it('checkForUpdates with latest already', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmCli(stub, 'alloy', '1.15.4');
 
 			const update = await alloy.checkForUpdate();
@@ -331,7 +288,7 @@ describe('updates', () => {
 	describe('titanium.cli', () => {
 		it('checkForUpdates with no core', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNpmCli(stub, 'titanium', '5.2.4');
 
 			const update = await titanium.cli.checkForUpdate();
@@ -345,7 +302,8 @@ describe('updates', () => {
 		it('checkForUpdates with no install', async () => {
 			mockNpmRequest();
 
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
+
 			mockNpmCli(stub, 'titanium', undefined);
 
 			const update = await titanium.cli.checkForUpdate();
@@ -358,7 +316,8 @@ describe('updates', () => {
 
 		it('checkForUpdates with latest already', async () => {
 			mockNpmRequest();
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
+
 			mockNpmCli(stub, 'titanium', '5.3.0');
 
 			const update = await titanium.cli.checkForUpdate();
@@ -372,7 +331,7 @@ describe('updates', () => {
 
 	describe('checkforUpdates', () => {
 		it('useAppcTooling false', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
 			mockSDKRequest();
 			mockNpmRequest();
