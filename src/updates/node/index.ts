@@ -1,17 +1,17 @@
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import * as util from '../util';
-import { run } from 'appcd-subprocess';
 import { UpdateInfo, ProductNames } from '..';
 import { promisify } from 'util';
 import stream from 'stream';
 import got from 'got';
 import os from 'os';
+import { exec } from '../../util';
+import execa from 'execa';
 
 async function getVersion(): Promise<string | undefined> {
 	let version;
 	try {
-		const { stdout } = await run('node', [ '--version' ], { shell: true });
+		const { stdout } = await exec('node', [ '--version' ], { shell: true });
 		version = semver.clean(stdout) || undefined;
 
 	} catch (error) {
@@ -47,7 +47,7 @@ export async function checkLatestVersion(supportedVersions = '10.x || 12.x'): Pr
 
 }
 
-export async function installUpdate(version: string): Promise<void> {
+export async function installUpdate(version: string): Promise<execa.ExecaReturnValue> {
 	let extension = '.pkg';
 
 	if (process.platform === 'win32') {
@@ -68,42 +68,26 @@ export async function installUpdate(version: string): Promise<void> {
 		throw new Error('Node.js failed to download');
 	}
 
+	let command;
+	let args;
+
 	if (process.platform === 'win32') {
-		const { code, stdout, stderr } = await run('msiexec', [ '/i', `${os.tmpdir()}file${extension}` ], { shell: true, ignoreExitCode: true });
-
-		if (code) {
-			const metadata = {
-				errorCode: '',
-				exitCode: code,
-				stderr,
-				stdout,
-				command: `msiexec /i ${os.tmpdir()}file${extension}`
-			};
-
-			throw new util.InstallError('Failed to install package', metadata);
-		}
-
+		command = 'msiexec';
+		args = [ '/i', `${os.tmpdir()}file${extension}` ];
 	} else if (process.platform === 'darwin') {
-
-		const { code, stdout, stderr } = await run('installer', [ '-pkg', `${os.tmpdir()}file${extension}`, '-target', '/' ], { shell: true, ignoreExitCode: true });
-
-		if (code) {
-			const metadata = {
-				errorCode: '',
-				exitCode: code,
-				stderr,
-				stdout,
-				command: `installer -pkg ${os.tmpdir()}file${extension} -target /`
-			};
-			if (stdout === 'installer: Must be run as root to install this package.\n') {
-				metadata.errorCode = 'EACCES';
-			}
-
-			throw new util.InstallError('Failed to install package', metadata);
-		}
-
+		command = 'installer';
+		args = [ '-pkg', `${os.tmpdir()}file${extension}`, '-target', '/' ];
 	} else {
 		throw new Error('Failed to download due to unsupported platform');
+	}
+
+	try {
+		return exec(command, args, { shell: true });
+	} catch (error) {
+		if (error.stdout === 'installer: Must be run as root to install this package.\n') {
+			error.errorCode = 'EACCES';
+		}
+		throw error;
 	}
 }
 

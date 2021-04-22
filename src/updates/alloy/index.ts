@@ -1,3 +1,4 @@
+import { ExecaReturnValue } from 'execa';
 import * as semver from 'semver';
 import { ProductNames, UpdateInfo } from '..';
 import { checkInstalledNpmPackageVersion, checkLatestNpmPackageVersion, installNpmPackage } from '../util';
@@ -10,7 +11,7 @@ export async function checkLatestVersion(): Promise<string> {
 	return checkLatestNpmPackageVersion('alloy');
 }
 
-export async function installUpdate(version: string): Promise<void> {
+export async function installUpdate(version: string): Promise<ExecaReturnValue> {
 	return installNpmPackage('alloy', version);
 }
 

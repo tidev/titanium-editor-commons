@@ -1,9 +1,9 @@
 import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
 import { CustomError } from '../src/completions/util';
+import * as util from '../src/util';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import child_process from 'child_process';
 import fs from 'fs-extra';
 import mockFS from 'mock-fs';
 import os from 'os';
@@ -11,7 +11,7 @@ import * as path from 'path';
 import sinon from 'sinon';
 
 import { parsers } from './fixtures/parsers';
-import { createChildMock } from './util';
+import execa from 'execa';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -53,17 +53,11 @@ function mockAppcCli (noInstall = false) {
 
 function mockNpmAlloy (noInstall = false) {
 	const installPath = path.join(os.homedir(), 'node_modules');
-	const npmChild = createChildMock();
-	const stub = global.sandbox.stub(child_process, 'spawn');
+	const stub = global.sandbox.stub(util, 'exec');
 
 	stub
 		.withArgs('npm', [ 'root', '-g' ], sinon.match.any)
-		.returns(npmChild);
-
-	setTimeout(() => {
-		npmChild.stdout?.emit('data', installPath);
-		npmChild.emit('close', 0);
-	}, 500);
+		.resolves({ stdout: installPath } as execa.ExecaReturnValue);
 
 	if (noInstall) {
 		return {

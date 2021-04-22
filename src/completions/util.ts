@@ -1,8 +1,8 @@
-import { run } from 'appcd-subprocess';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import * as core from '../updates/appc/core';
+import { exec } from '../util';
 
 import os from 'os';
 
@@ -57,7 +57,7 @@ async function getNpmRoot (): Promise<string> {
 		return npmRoot;
 	}
 	try {
-		const { stdout } = await run('npm', [ 'root', '-g' ], { shell: true });
+		const { stdout } = await exec('npm', [ 'root', '-g' ], { shell: true });
 		return npmRoot = stdout.trim();
 	} catch (error) {
 		throw new Error('Unable to find npm root');

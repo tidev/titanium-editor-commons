@@ -1,6 +1,7 @@
 import { environment } from '../src';
+import * as util from '../src/util';
+
 import { expect } from 'chai';
-import child_process from 'child_process';
 import mockFS from 'mock-fs';
 import nock from 'nock';
 import { mockAppcCli, mockNode, mockNpmCli, mockSdk } from './util';
@@ -18,7 +19,7 @@ describe('environment', () => {
 
 	describe('validateEnvironment', () => {
 		it('validateEnvironment with all installed component ', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.2');
 			mockSdk('7.5.0');
 			mockAppcCli(stub, '4.2.0', '4.2.12', 750, true);
@@ -36,7 +37,7 @@ describe('environment', () => {
 		});
 
 		it('validateEnvironment with no installed SDKS', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.1');
 			mockAppcCli(stub, '4.2.0', '4.2.12', 750, true);
 			mockSdk(undefined);
@@ -53,7 +54,7 @@ describe('environment', () => {
 		});
 
 		it('validateEnvironment with no installed core', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.1');
 			mockAppcCli(stub, undefined, '4.2.12', 750);
 			mockSdk('7.5.0');
@@ -69,7 +70,7 @@ describe('environment', () => {
 		});
 
 		it('validateEnvironment with no installed appc npm', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
@@ -87,7 +88,7 @@ describe('environment', () => {
 		});
 
 		it('validateEnvironment with no Node.js', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 
 			mockNode(stub, undefined);
 
@@ -98,7 +99,7 @@ describe('environment', () => {
 		});
 
 		it('should detect Titanium and Alloy CLI when useAppcTooling is false', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
 			mockNpmCli(stub, 'alloy', '1.15.2', 750);
@@ -117,7 +118,7 @@ describe('environment', () => {
 		});
 
 		it('should detect Titanium and Alloy CLI when useAppcTooling is false, not installed', async () => {
-			const stub = global.sandbox.stub(child_process, 'spawn');
+			const stub = global.sandbox.stub(util, 'exec');
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
 			mockNpmCli(stub, 'alloy', undefined, 750);

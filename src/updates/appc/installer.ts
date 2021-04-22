@@ -1,14 +1,15 @@
-import { run } from 'appcd-subprocess';
+import execa from 'execa';
 import * as libnpm from 'libnpm';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
 import * as util from '../util';
+import { exec } from '../../util';
 
 export async function checkInstalledVersion (): Promise<string|undefined> {
 	// First try running appc cli to get the version
 	try {
-		const { stdout } = await run('appc', [ '--version', '--output', 'json' ], { shell: true });
+		const { stdout } = await exec('appc', [ '--version', '--output', 'json' ], { shell: true });
 		const { NPM } = JSON.parse(stdout);
 		return NPM;
 	} catch (error) {
@@ -23,7 +24,7 @@ export async function checkLatestVersion (): Promise<string> {
 	return version;
 }
 
-export async function installUpdate (version: string): Promise<void> {
+export async function installUpdate (version: string): Promise<execa.ExecaReturnValue> {
 	return util.installNpmPackage('appcelerator', version);
 }
 
