@@ -29,7 +29,7 @@
     "release": "semantic-release",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile",
-    "test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter",
+    "test": "cross-env JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/setup.ts tests/*-test.ts --reporter=mocha-jenkins-reporter",
     "postinstall": "husky install",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"
@@ -62,6 +62,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "commitizen": "^4.0.3",
+    "cross-env": "^7.0.3",
     "cz-conventional-changelog": "^3.0.2",
     "danger": "^10.0.0",
     "eslint": "^7.10.0",
