@@ -1,0 +1,39 @@
+name: CI
+on:
+  - pull_request
+  - push
+
+jobs:
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install NPM dependencies
+        run: npm ci
+      - name: Type Check
+        run: npm run compile
+      - name: Lint
+        run: npm run lint
+
+  Unit-Test:
+    name: ${{ matrix.os }} - Unit Tests
+    needs: Lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
+      - name: Install NPM dependencies
+        run: npm ci
+      - name: Run Tests
+        run: npm run test
