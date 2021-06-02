@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.0...v1.2.1) (2021-06-02)
+
+
+### Bug Fixes
+
+* **updates/sdk:** select SDK after installation ([2712086](https://github.com/appcelerator/titanium-editor-commons/commit/2712086c01f6099617626f526540ce74d4dfc585))
+
 # [1.2.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.1.0...v1.2.0) (2021-04-06)
 
 
