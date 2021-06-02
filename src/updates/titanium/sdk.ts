@@ -1,7 +1,9 @@
 import * as semver from 'semver';
 import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
+import * as cli from './cli';
 import { ProductNames } from '../product-names';
+import { exec } from '../../util';
 import * as util from '../util';
 
 interface SDKInfo {
@@ -42,6 +44,42 @@ export async function installUpdate (version: string): Promise<void> {
 		});
 	} catch (error) {
 		throw new util.InstallError('Failed to install package', error);
+	}
+
+	let useAppc = false;
+	try {
+		// Use Titanium CLI if it is installed as it's less failure prone
+		if (await cli.checkInstalledVersion()) {
+			await exec('ti', [ 'sdk', 'select', version ], { shell: true });
+		} else {
+			useAppc = true;
+			const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
+			const whoami = JSON.parse(stdout);
+			if (!whoami.username) {
+				// Not logged in, so throw back for the caller to deal with
+				throw new util.InstallError('Failed to select SDK as you are not logged in', {
+					command: `appc ti sdk select ${version}`,
+					stdout: '',
+					stderr: '',
+					errorCode: 'ESELECTERROR'
+				});
+			}
+
+			await exec('appc', [ 'ti', 'sdk', 'select', version ], { shell: true });
+		}
+	} catch (error) {
+		if (error instanceof util.InstallError) {
+			// Rethrow
+			throw error;
+		}
+
+		const command = useAppc ? `appc ti sdk select ${version}` : `ti sdk select ${version}`;
+		throw new util.InstallError('Failed to select SDK', {
+			command,
+			stdout: error.stdout || '',
+			stderr: error.stderr || '',
+			errorCode: 'ESELECTERROR'
+		});
 	}
 
 }
