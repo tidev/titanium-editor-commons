@@ -29,8 +29,8 @@ export async function checkInstalledVersion(): Promise<string | undefined> {
 
 export async function checkLatestVersion(supportedVersions = '10.x || 12.x'): Promise<string> {
 
-	const { body } = await got('https://nodejs.org/download/release/index.json', {
-		json: true
+	const { body } = await got<Array<{ version: string }>>('https://nodejs.org/download/release/index.json', {
+		responseType: 'json'
 	});
 
 	const versions = body.map(((element: { version: string }) => element.version));

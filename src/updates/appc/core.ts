@@ -22,8 +22,8 @@ export async function checkInstalledVersion (): Promise<string|undefined> {
 }
 
 export async function checkLatestVersion (): Promise<string> {
-	const { body } = await got(LATEST_URL, {
-		json: true
+	const { body } = await got<{ result: Array<{ name: string, version: string }>}>(LATEST_URL, {
+		responseType: 'json'
 	});
 	return body.result[0].version;
 }
