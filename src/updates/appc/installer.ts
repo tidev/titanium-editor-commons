@@ -1,5 +1,4 @@
 import execa from 'execa';
-import * as libnpm from 'libnpm';
 import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import { ProductNames } from '../product-names';
@@ -20,8 +19,7 @@ export async function checkInstalledVersion (): Promise<string|undefined> {
 }
 
 export async function checkLatestVersion (): Promise<string> {
-	const { version } = await libnpm.manifest('appcelerator@latest');
-	return version;
+	return util.checkLatestNpmPackageVersion('appcelerator');
 }
 
 export async function installUpdate (version: string): Promise<execa.ExecaReturnValue> {
