@@ -33,7 +33,8 @@ export class InstallError extends Error {
  */
 export async function checkInstalledNpmPackageVersion (name: string): Promise<string|undefined> {
 	try {
-		const { stdout } = await exec('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true });
+		// We have to force NODE_ENV to undefined as atom has it always set to production which breaks npm ls
+		const { stdout } = await exec('npm', [ 'ls', `${name}`, '--json', '--depth', '0', '--global' ], { shell: true, env: { ...process.env, NODE_ENV: undefined }  });
 		const { dependencies } = JSON.parse(stdout);
 		return dependencies[name]?.version;
 	} catch (error) {
