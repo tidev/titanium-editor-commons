@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.2...v1.2.3) (2021-06-08)
+
+
+### Bug Fixes
+
+* **updates:** replace pacote with an api call ([309906e](https://github.com/appcelerator/titanium-editor-commons/commit/309906e94fade626c11be4464a5141332262f82a))
+
 ## [1.2.2](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.1...v1.2.2) (2021-06-03)
 
 
