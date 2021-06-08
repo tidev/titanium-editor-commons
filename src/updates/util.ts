@@ -1,6 +1,6 @@
 import execa from 'execa';
+import got from 'got';
 import { exec } from '../util';
-import pacote from 'pacote';
 
 interface InstallErrorMetadata {
 	code?: number;
@@ -48,8 +48,10 @@ export async function checkInstalledNpmPackageVersion (name: string): Promise<st
  * @param {String} name The package to look up
  */
 export async function checkLatestNpmPackageVersion(name: string): Promise<string> {
-	const { version } = await pacote.manifest(`${name}@latest`);
-	return version;
+	const { body } = await got<{ version: string }>(`https://registry.npmjs.org/${name}/latest`, {
+		responseType: 'json'
+	});
+	return body.version;
 }
 
 /**

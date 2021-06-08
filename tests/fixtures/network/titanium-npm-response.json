@@ -1,346 +1,13 @@
 {
-    "_id": "titanium",
-    "_rev": "306-c4b35761fa06dcc01ff4241b1930094b",
+        
+    "about": {
+        "name": "Titanium Command-Line Interface",
+        "author": "Appcelerator",
+        "copyright": "Copyright (c) 2012-2020, Appcelerator, Inc.  All Rights Reserved.",
+        "id": "com.appcelerator.titanium.cli"
+    },
     "name": "titanium",
     "description": "Appcelerator Titanium Command line",
-    "dist-tags": {
-        "latest": "5.3.0"
-    },
-    "versions": {
-        "5.2.5": {
-            "about": {
-                "name": "Titanium Command-Line Interface",
-                "author": "Appcelerator",
-                "copyright": "Copyright (c) 2012-2017, Appcelerator, Inc.  All Rights Reserved.",
-                "id": "com.appcelerator.titanium.cli"
-            },
-            "name": "titanium",
-            "description": "Appcelerator Titanium Command line",
-            "keywords": [
-                "appcelerator",
-                "titanium",
-                "mobile",
-                "ios",
-                "iphone",
-                "android",
-                "blackberry",
-                "html5",
-                "mobileweb",
-                "mobile web",
-                "appc-client"
-            ],
-            "version": "5.2.5",
-            "author": {
-                "name": "Appcelerator, Inc.",
-                "email": "npmjs@appcelerator.com"
-            },
-            "maintainers": [
-                {
-                    "name": "cb1kenobi",
-                    "email": "chris@cb1inc.com"
-                },
-                {
-                    "name": "appcelerator",
-                    "email": "npmjs@appcelerator.com"
-                }
-            ],
-            "bugs": {
-                "url": "https://jira.appcelerator.org/browse/TIMOB"
-            },
-            "repository": {
-                "type": "git",
-                "url": "git://github.com/appcelerator/titanium.git"
-            },
-            "preferGlobal": true,
-            "dependencies": {
-                "adm-zip": "0.4.13",
-                "async": "^2.6.3",
-                "colors": "1.3.3",
-                "fields": "0.1.24",
-                "humanize": "0.0.9",
-                "moment": "^2.24.0",
-                "node-appc": "^1.1.1",
-                "request": "2.88.0",
-                "sprintf": "0.1.5",
-                "temp": "0.9.0",
-                "winston": "1.1.2"
-            },
-            "devDependencies": {
-                "@seadub/danger-plugin-dependencies": "0.1.0",
-                "@seadub/danger-plugin-eslint": "^1.0.1",
-                "@seadub/danger-plugin-junit": "0.1.1",
-                "danger": "^9.2.1",
-                "eslint": "^6.5.1",
-                "eslint-config-axway": "^4.3.0",
-                "eslint-plugin-mocha": "^6.2.0",
-                "fs-extra": "^8.1.0",
-                "husky": "^3.0.9",
-                "lint-staged": "^9.4.2",
-                "mocha": "^6.2.1",
-                "mocha-jenkins-reporter": "^0.4.2",
-                "nyc": "^14.1.1",
-                "semver": "^6.3.0",
-                "should": "^13.2.1"
-            },
-            "license": "Apache-2.0",
-            "bin": {
-                "ti": "./bin/titanium",
-                "titanium": "./bin/titanium"
-            },
-            "main": "./lib/titanium",
-            "directories": {
-                "lib": "./lib"
-            },
-            "scripts": {
-                "lint": "eslint .",
-                "test": "npm run lint && npm run unit-test",
-                "unit-test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha tests/**/test-*.js --reporter=mocha-jenkins-reporter"
-            },
-            "mocha": {
-                "timeout": 3000,
-                "check-leaks": true,
-                "globals": [
-                    "Hyperloop",
-                    "HyperloopObject"
-                ]
-            },
-            "nyc": {
-                "check-coverage": true,
-                "lines": 62,
-                "statements": 61,
-                "functions": 47,
-                "branches": 50,
-                "exclude": [
-                    "tests/**/*.js",
-                    "locales/**/*.js"
-                ],
-                "reporter": [
-                    "cobertura",
-                    "text"
-                ]
-            },
-            "engines": {
-                "node": ">=4.0"
-            },
-            "husky": {
-                "hooks": {
-                    "pre-commit": "lint-staged"
-                }
-            },
-            "lint-staged": {
-                "*.js": "eslint"
-            },
-            "gitHead": "bff8f3d979952564fdad0c680a375723479cfe3d",
-            "homepage": "https://github.com/appcelerator/titanium#readme",
-            "_id": "titanium@5.2.5",
-            "_npmVersion": "6.1.0",
-            "_nodeVersion": "10.19.0",
-            "_npmUser": {
-                "name": "appcelerator",
-                "email": "npmjs@appcelerator.com"
-            },
-            "dist": {
-                "integrity": "sha512-P2+0coxeYre+1Lf/k2t61W1UwcNhupQy5s5UcpDkbGiRg7EDoYVnkix1H08yg+mfKh14Jm9+6QDDKpEWM+arZQ==",
-                "shasum": "847f2fc93fa77d1735efa5f7f32b72364a0f44e2",
-                "tarball": "https://registry.npmjs.org/titanium/-/titanium-5.2.5.tgz",
-                "fileCount": 41,
-                "unpackedSize": 373334,
-                "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.4\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfYO/JCRA9TVsSAnZWagAAgkgQAJea3QSnwp05VIhkSxpD\nXkNIOFaHu+Dln/877Y1q4v+/Aa8D/V0G7G1w6wNFPq77jV7coFg6i1G0PYe2\niAmrOjhzfo0JB/MC1mZVWslFckjmemAItTPOj6RUhAMeeENYXsYSUSmuJG6W\n5oZSxGQUvXgIPtYrJiBzAT8JUlty3GdnehWOuh/J475rvc3HVvm36EHGiK8G\nRDR6Hq/VVCPKiA+2nM2JTswzYllYDjH+bXe6jQWf2o1SMS0vaJRAIeF768YJ\nm3i1YhEVqHzCcZXhK7ENO2dztg8r6sImYm6Cpe3cBGDZ8e2ytSZWE34Qcdqg\n/imgBlw9AZF5xRKZvmH6oCpPAOdfBhjNaEoEZ3Ufk/mRMB+35Q0+K+wzs2FZ\n/XmLEVDQI/jS8jK4sYyh2GlYnLgo1o/krU4fDMeqQDNhOvS1T1p4URvFtAuh\nj0Y3A5qhR/FEznnfRuaeNRs2Pj/lpcdumRTRzmCwlt8aMxjSwNJdT7ubStNs\nI7x2yqDI8VGMASEgO2SASCSRNtXlNrriXaOI9ky2IpkmN0r8z57KMFyroj4O\nq18VhWkiPBAc8AjhfkU2wUrIKm4ASyDvxcGnrTvPFuOdx/jzbzsUBP6amLS8\n4MkEcNGU7P82v9IiF8+kzm58vnyULapT2J8C96L1u35NbwFawZhCt5rFmZ/a\n3Vhl\r\n=dngy\r\n-----END PGP SIGNATURE-----\r\n"
-            },
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/titanium_5.2.5_1600188361227_0.5528074822763"
-            },
-            "_hasShrinkwrap": false
-        },
-        "5.3.0": {
-            "about": {
-                "name": "Titanium Command-Line Interface",
-                "author": "Appcelerator",
-                "copyright": "Copyright (c) 2012-2020, Appcelerator, Inc.  All Rights Reserved.",
-                "id": "com.appcelerator.titanium.cli"
-            },
-            "name": "titanium",
-            "description": "Appcelerator Titanium Command line",
-            "keywords": [
-                "appcelerator",
-                "titanium",
-                "mobile",
-                "ios",
-                "iphone",
-                "android",
-                "blackberry",
-                "html5",
-                "mobileweb",
-                "mobile web",
-                "appc-client"
-            ],
-            "version": "5.3.0",
-            "author": {
-                "name": "Appcelerator, Inc.",
-                "email": "npmjs@appcelerator.com"
-            },
-            "maintainers": [
-                {
-                    "name": "cb1kenobi",
-                    "email": "chris@cb1inc.com"
-                },
-                {
-                    "name": "appcelerator",
-                    "email": "npmjs@appcelerator.com"
-                }
-            ],
-            "bugs": {
-                "url": "https://jira.appcelerator.org/browse/TIMOB"
-            },
-            "repository": {
-                "type": "git",
-                "url": "git://github.com/appcelerator/titanium.git"
-            },
-            "preferGlobal": true,
-            "dependencies": {
-                "async": "^2.6.3",
-                "colors": "1.4.0",
-                "fields": "0.1.24",
-                "humanize": "0.0.9",
-                "node-appc": "^1.1.1",
-                "request": "2.88.2",
-                "sprintf": "0.1.5",
-                "temp": "0.9.1",
-                "winston": "2.4.5",
-                "yauzl": "^2.10.0"
-            },
-            "devDependencies": {
-                "@commitlint/cli": "^11.0.0",
-                "@commitlint/config-conventional": "^11.0.0",
-                "@seadub/danger-plugin-dependencies": "1.0.0",
-                "@seadub/danger-plugin-eslint": "^2.0.0",
-                "@seadub/danger-plugin-junit": "0.2.0",
-                "danger": "^10.4.1",
-                "eslint": "^7.10.0",
-                "eslint-config-axway": "^5.0.0",
-                "eslint-plugin-mocha": "^8.0.0",
-                "fs-extra": "^9.0.1",
-                "husky": "^4.3.0",
-                "lint-staged": "^10.4.0",
-                "mocha": "^8.1.3",
-                "mocha-jenkins-reporter": "^0.4.2",
-                "nyc": "^15.1.0",
-                "semver": "^7.3.2",
-                "should": "^13.2.1"
-            },
-            "license": "Apache-2.0",
-            "bin": {
-                "ti": "./bin/titanium",
-                "titanium": "./bin/titanium"
-            },
-            "main": "./lib/titanium",
-            "directories": {
-                "lib": "./lib"
-            },
-            "scripts": {
-                "lint": "eslint .",
-                "test": "npm run lint && npm run unit-test",
-                "unit-test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha \"tests/**/test-*.js\" --reporter=mocha-jenkins-reporter"
-            },
-            "mocha": {
-                "timeout": 3000,
-                "check-leaks": true,
-                "globals": [
-                    "Hyperloop",
-                    "HyperloopObject"
-                ]
-            },
-            "nyc": {
-                "check-coverage": true,
-                "lines": 57,
-                "statements": 57,
-                "functions": 52,
-                "branches": 45,
-                "exclude": [
-                    "tests/**/*.js",
-                    "locales/**/*.js"
-                ],
-                "reporter": [
-                    "cobertura",
-                    "text"
-                ]
-            },
-            "engines": {
-                "node": ">=10.13"
-            },
-            "husky": {
-                "hooks": {
-                    "pre-commit": "lint-staged",
-                    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
-                }
-            },
-            "lint-staged": {
-                "*.js": "eslint"
-            },
-            "commitlint": {
-                "extends": [
-                    "@commitlint/config-conventional"
-                ]
-            },
-            "gitHead": "e826dcf1376c0aaf99f1c558c34664ed76014a16",
-            "homepage": "https://github.com/appcelerator/titanium#readme",
-            "_id": "titanium@5.3.0",
-            "_npmVersion": "6.1.0",
-            "_nodeVersion": "10.19.0",
-            "_npmUser": {
-                "name": "appcelerator",
-                "email": "npmjs@appcelerator.com"
-            },
-            "dist": {
-                "integrity": "sha512-j+Bk1jWH4Ki/7hfizhG6MvaZMEeHNdaJnzjC50CUJThfDkxr8nN1rn7smaX9Wg5W1iiBeBQyJreTExZloTRCJw==",
-                "shasum": "a19a04bbbd4512ad3d71370818cf3a8d47d5b3cf",
-                "tarball": "https://registry.npmjs.org/titanium/-/titanium-5.3.0.tgz",
-                "fileCount": 41,
-                "unpackedSize": 334766,
-                "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfkb8TCRA9TVsSAnZWagAA+0UP/2nxNyBxjbms1KFPbFCy\nEnvF/PAHjFaB4i3KgUmEvFMRMzyBRr5PMK+O6QPky+RRGyqkIsM571s6WK+c\n3miurX5kn6U66dfXbYsBcidtQSCIvPsWTx+0Om1HFHVQ5onVBqbJpVdOkjh5\n4gP8vf8+pXxsLCMnwMCuY+As/ZvQMnWlTa4M1R7AhALUF2wKSIkRwe17ar+I\nDEtjfgBWfUCwtaUQ7pFMyVBuqVBK3n3UvgKhnoB9EdqAwLOp1BIUaaWP1xdI\nq8zMmDNOmbAu6j1Ji9XsRHOvsP6i2qdPSHJ0z9QnWGGqsbUAe5zWvuPSXA9M\nSZDBIz0X5C2/RziTSWf4MBSgjx48pWgxQShduji1dKpF9BrHhb0SNgDj2ayl\nHoi3KOvcHdQfx4IS7cSstAlB1u8YdrG6bjKmkRKInfYvl++QqenQmlxnv/On\nk2V2iA3MF4iwi3sPrcAmE/dyupp3FXKt1OQIf6cx4fJy+9EQ6+s0fE6cwtkF\nUWCGY5Vzchey5jYtwxLyY91lgHnJvwqpT7hA/foHjWmkk+D5cy5aU0an1/4P\nIFqIGxy+Q6mf4RyPbp5kldSwr69OBOZvELO3OEw0ynHNeaRWQph69drbvvsa\nTI9AbJpRqg0j7gV06gzZrvkIXvNSVKRW5Wr2r6GXprKthGhkwhNTn43zggCD\nkE/X\r\n=DJlT\r\n-----END PGP SIGNATURE-----\r\n"
-            },
-            "_npmOperationalInternal": {
-                "host": "s3://npm-registry-packages",
-                "tmp": "tmp/titanium_5.3.0_1603387154274_0.5953783486531716"
-            },
-            "_hasShrinkwrap": false
-        }
-    },
-    "readme": "## Titanium CLI\n\n> [Titanium CLI](https://github.com/appcelerator/titanium) is a\n[Command Line Tool](http://en.wikipedia.org/wiki/Command-line_interface)\nfor creating and building Titanium Mobile applications and modules. It's\nopen-source and easy to use. [We've](https://github.com/appcelerator)\ndesigned Titanium to be suitable for command line beginners, but still be\npowerful and extensible enough for production usage.\n\n[![Build Status](https://travis-ci.org/appcelerator/titanium.svg?branch=master)](https://travis-ci.org/appcelerator/titanium)\n[![Dependency Status](https://david-dm.org/appcelerator/titanium.svg)](https://david-dm.org/appcelerator/titanium)\n[![devDependency Status](https://david-dm.org/appcelerator/titanium/dev-status.svg)](https://david-dm.org/appcelerator/titanium#info=devDependencies)\n[![NPM version](https://badge.fury.io/js/titanium.svg)](http://badge.fury.io/js/grunt-appc-js) [![Greenkeeper badge](https://badges.greenkeeper.io/appcelerator/titanium.svg)](https://greenkeeper.io/)\n\n## Prerequisites\n\nThe Titanium CLI requires [Node.js 0.10.x](http://nodejs.org/dist/) or newer.\n\n## Installation\n\n    [sudo] npm install -g titanium\n\n## Bleeding Edge\n\nYou can download the latest and greatest *unstable* Titanium CLI code by\nrunning the following:\n\n    [sudo] npm install -g git://github.com/appcelerator/titanium.git\n\n## Obtaining a Titanium SDK\n\nYou will need to download a Titanium SDK 3.0 or newer:\n\n    # stable release (recommended)\n    titanium sdk install --default\n\nThere are times when the latest stable release has an issue or lacks a feature\nin which case you may want to try an unstable Titanium SDK build. These builds\nare not recommended for production use, but should work for development.\n\n    # unstable next release\n    titanium sdk install --branch 3_1_X --default\n\n    # bleeding edge\n    titanium sdk install --branch master --default\n\n## Setting up the Titanium CLI\n\nBefore you begin using the Titanium CLI, you should configure it by running the\n\"setup\" command:\n\n    titanium setup\n\nIt will prompt you with a number of questions such as your e-mail address (for\nlogging into the Appcelerator Network), the location of your Android SDK, and so on.\n\n## Usage\n\n    titanium <command> [options]\n\n## Built-in Commands\n\n### config\n\nConfigure your CLI settings.\n\n**Implementation not complete**\n\n    titanium config <setting> <value>\n\n### help\n\nDisplays help or help for a specific command.\n\n    titanium\n\n    titanium help\n\n    titanium --help\n\n    titanium help <command>\n\n    titanium <command> --help\n\n### login\n\nLogs into the Appcelerator Network\n\n**Implementation not complete**\n\nLogin requires both user and password options to be passed in.\n\n    titanium login <username> <password>\n\nIf you omit an option, the CLI will prompt you for the value.\n\n    titanium login\n\n### logout\n\nLogs out of the Appcelerator Network\n\n**Implementation not complete**\n\n    titanium logout\n\n### sdk\n\nDownload and install Titanium SDKs\n\n#### sdk install\n\nInstalls a specific version of the Titanium SDK. If no version is specified, it assumes the latest.\n\n    titanium sdk install\n\n    titanium sdk install <version>\n\n    titanium sdk install <version> --force\n\nDownload, install <version>, and set as default SDK.\n\n    titanium sdk install <version> --default\n\nDownload and install the latest version for the specified branch\n\n    titanium sdk install --branch master\n\n#### sdk uninstall\n\nUninstalls a Titanium SDK.\n\n    titanium sdk uninstall <version>\n\n#### sdk list\n\nLists all installed Titanium SDKs. Optionally lists all branches and releases.\n\n    titanium sdk list\n\n    titanium sdk list -b\n    titanium sdk list --branches\n\n    titanium sdk list -r\n    titanium sdk list --releases\n\n    titanium sdk list -br\n    titanium sdk list --branches --releases\n\n### setup\n\nReconfigures the Titanium CLI by asking you a series of questions.\n\n    titanium setup\n\n### status\n\nIndicates whether you are logged in or not.\n\n    titanium status\n\n    titanium status --output json\n\n### version\n\nDisplays the current version of the CLI and exits.\n\n    titanium -v\n\n    titanium --version\n\n### info\n\nDisplays information about your development environment including Xcode installs,\niOS SDKs, Android SDKs, and so on.\n\n    titanium info\n\n    titanium info -o json\n\n## Hacking the Titanium CLI\n\nIn order to begin hacking on the Titanium CLI, you need to download and install\n[git](http://git-scm.com/).\n\nIf you have already installed a previous version of the Titanium CLI, it's\nrecommended you uninstall the old one first:\n\n    [sudo] npm uninstall -g titanium\n\nThe Titanium CLI is essentially pure JavaScript, so there is no build process.\nYou just need to pull the code and resolve the dependendencies.\n\n    git clone git@github.com:appcelerator/titanium.git\n    cd titanium\n    npm install\n    sudo npm link\n\n### Running Unit Tests\n\nTo run the unit tests, simply run:\n\n    node forge test\n\n### Running Code Coverage\n\nTo generate the code coverage, you first must install\n[node-jscoverage](https://github.com/visionmedia/node-jscoverage). The easist\nway to do this is run:\n\n    git clone git@github.com:visionmedia/node-jscoverage.git\n    cd node-jscoverage\n    ./configure\n    make\n    sudo make install\n\nThen run:\n\n\tnode forge test-cov\n\nIt will generate a file called _coverage.html_ in the Titanium CLI directory.\n\n## Looking for the really old CLI?\n\nDon't worry, it's still around. You can install it by running:\n\n    [sudo] npm install –g titanium@0.0.26\n\n## Contributing\n\nTitanium is an open source project. Titanium wouldn't be where it is now without\ncontributions by the community. Please consider forking this repo to improve,\nenhance or fix issues. If you feel like the community will benefit from your\nfork, please open a pull request.\n\nTo protect the interests of the Titanium contributors, Appcelerator, customers\nand end users we require contributors to sign a Contributors License Agreement\n(CLA) before we pull the changes into the main repository. Our CLA is simple and\nstraightforward - it requires that the contributions you make to any\nAppcelerator open source project are properly licensed and that you have the\nlegal authority to make those changes. This helps us significantly reduce future\nlegal risk for everyone involved. It is easy, helps everyone, takes only a few\nminutes, and only needs to be completed once.\n\n[You can digitally sign the CLA](http://bit.ly/app_cla) online. Please indicate\nyour e-mail address in your first pull request so that we can make sure that\nwill locate your CLA. Once you've submitted it, you no longer need to send one\nfor subsequent submissions.\n\n## License\n\nThis project is open source and provided under the Apache Public License\n(version 2). Please make sure you see the `LICENSE` file included in this\ndistribution for more details on the license.  Also, please take notice of the\nprivacy notice at the end of the file.\n\n#### (C) Copyright 2012-2013, [Appcelerator](http://www.appcelerator.com/) Inc. All Rights Reserved.\n",
-    "maintainers": [
-        {
-            "name": "cb1kenobi",
-            "email": "chris@cb1inc.com"
-        },
-        {
-            "name": "appcelerator",
-            "email": "npmjs@appcelerator.com"
-        }
-    ],
-    "time": {
-        "modified": "2020-10-22T17:19:18.268Z",
-        "created": "2012-02-09T15:51:14.965Z",
-        "5.2.5": "2020-09-15T16:46:01.391Z",
-        "5.3.0": "2020-10-22T17:19:14.678Z"
-    },
-    "author": {
-        "name": "Appcelerator, Inc.",
-        "email": "npmjs@appcelerator.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/appcelerator/titanium.git"
-    },
-    "users": {
-        "joliva": true,
-        "xtopher": true,
-        "brentonhouse": true,
-        "karaoak": true,
-        "timoa": true,
-        "levani": true
-    },
-    "readmeFilename": "README.md",
     "keywords": [
         "appcelerator",
         "titanium",
@@ -354,9 +21,136 @@
         "mobile web",
         "appc-client"
     ],
+    "version": "5.3.0",
+    "author": {
+        "name": "Appcelerator, Inc.",
+        "email": "npmjs@appcelerator.com"
+    },
+    "maintainers": [
+        {
+            "name": "cb1kenobi",
+            "email": "chris@cb1inc.com"
+        },
+        {
+            "name": "appcelerator",
+            "email": "npmjs@appcelerator.com"
+        }
+    ],
     "bugs": {
         "url": "https://jira.appcelerator.org/browse/TIMOB"
     },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/appcelerator/titanium.git"
+    },
+    "preferGlobal": true,
+    "dependencies": {
+        "async": "^2.6.3",
+        "colors": "1.4.0",
+        "fields": "0.1.24",
+        "humanize": "0.0.9",
+        "node-appc": "^1.1.1",
+        "request": "2.88.2",
+        "sprintf": "0.1.5",
+        "temp": "0.9.1",
+        "winston": "2.4.5",
+        "yauzl": "^2.10.0"
+    },
+    "devDependencies": {
+        "@commitlint/cli": "^11.0.0",
+        "@commitlint/config-conventional": "^11.0.0",
+        "@seadub/danger-plugin-dependencies": "1.0.0",
+        "@seadub/danger-plugin-eslint": "^2.0.0",
+        "@seadub/danger-plugin-junit": "0.2.0",
+        "danger": "^10.4.1",
+        "eslint": "^7.10.0",
+        "eslint-config-axway": "^5.0.0",
+        "eslint-plugin-mocha": "^8.0.0",
+        "fs-extra": "^9.0.1",
+        "husky": "^4.3.0",
+        "lint-staged": "^10.4.0",
+        "mocha": "^8.1.3",
+        "mocha-jenkins-reporter": "^0.4.2",
+        "nyc": "^15.1.0",
+        "semver": "^7.3.2",
+        "should": "^13.2.1"
+    },
     "license": "Apache-2.0",
-    "homepage": "https://github.com/appcelerator/titanium#readme"
+    "bin": {
+        "ti": "./bin/titanium",
+        "titanium": "./bin/titanium"
+    },
+    "main": "./lib/titanium",
+    "directories": {
+        "lib": "./lib"
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "test": "npm run lint && npm run unit-test",
+        "unit-test": "JUNIT_REPORT_PATH=junit_report.xml nyc mocha \"tests/**/test-*.js\" --reporter=mocha-jenkins-reporter"
+    },
+    "mocha": {
+        "timeout": 3000,
+        "check-leaks": true,
+        "globals": [
+            "Hyperloop",
+            "HyperloopObject"
+        ]
+    },
+    "nyc": {
+        "check-coverage": true,
+        "lines": 57,
+        "statements": 57,
+        "functions": 52,
+        "branches": 45,
+        "exclude": [
+            "tests/**/*.js",
+            "locales/**/*.js"
+        ],
+        "reporter": [
+            "cobertura",
+            "text"
+        ]
+    },
+    "engines": {
+        "node": ">=10.13"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged",
+            "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+        }
+    },
+    "lint-staged": {
+        "*.js": "eslint"
+    },
+    "commitlint": {
+        "extends": [
+            "@commitlint/config-conventional"
+        ]
+    },
+    "gitHead": "e826dcf1376c0aaf99f1c558c34664ed76014a16",
+    "homepage": "https://github.com/appcelerator/titanium#readme",
+    "_id": "titanium@5.3.0",
+    "_npmVersion": "6.1.0",
+    "_nodeVersion": "10.19.0",
+    "_npmUser": {
+        "name": "appcelerator",
+        "email": "npmjs@appcelerator.com"
+    },
+    "dist": {
+        "integrity": "sha512-j+Bk1jWH4Ki/7hfizhG6MvaZMEeHNdaJnzjC50CUJThfDkxr8nN1rn7smaX9Wg5W1iiBeBQyJreTExZloTRCJw==",
+        "shasum": "a19a04bbbd4512ad3d71370818cf3a8d47d5b3cf",
+        "tarball": "https://registry.npmjs.org/titanium/-/titanium-5.3.0.tgz",
+        "fileCount": 41,
+        "unpackedSize": 334766,
+        "npm-signature": "-----BEGIN PGP SIGNATURE-----\r\nVersion: OpenPGP.js v3.0.13\r\nComment: https://openpgpjs.org\r\n\r\nwsFcBAEBCAAQBQJfkb8TCRA9TVsSAnZWagAA+0UP/2nxNyBxjbms1KFPbFCy\nEnvF/PAHjFaB4i3KgUmEvFMRMzyBRr5PMK+O6QPky+RRGyqkIsM571s6WK+c\n3miurX5kn6U66dfXbYsBcidtQSCIvPsWTx+0Om1HFHVQ5onVBqbJpVdOkjh5\n4gP8vf8+pXxsLCMnwMCuY+As/ZvQMnWlTa4M1R7AhALUF2wKSIkRwe17ar+I\nDEtjfgBWfUCwtaUQ7pFMyVBuqVBK3n3UvgKhnoB9EdqAwLOp1BIUaaWP1xdI\nq8zMmDNOmbAu6j1Ji9XsRHOvsP6i2qdPSHJ0z9QnWGGqsbUAe5zWvuPSXA9M\nSZDBIz0X5C2/RziTSWf4MBSgjx48pWgxQShduji1dKpF9BrHhb0SNgDj2ayl\nHoi3KOvcHdQfx4IS7cSstAlB1u8YdrG6bjKmkRKInfYvl++QqenQmlxnv/On\nk2V2iA3MF4iwi3sPrcAmE/dyupp3FXKt1OQIf6cx4fJy+9EQ6+s0fE6cwtkF\nUWCGY5Vzchey5jYtwxLyY91lgHnJvwqpT7hA/foHjWmkk+D5cy5aU0an1/4P\nIFqIGxy+Q6mf4RyPbp5kldSwr69OBOZvELO3OEw0ynHNeaRWQph69drbvvsa\nTI9AbJpRqg0j7gV06gzZrvkIXvNSVKRW5Wr2r6GXprKthGhkwhNTn43zggCD\nkE/X\r\n=DJlT\r\n-----END PGP SIGNATURE-----\r\n"
+    },
+    "_npmOperationalInternal": {
+        "host": "s3://npm-registry-packages",
+        "tmp": "tmp/titanium_5.3.0_1603387154274_0.5953783486531716"
+    },
+    "_hasShrinkwrap": false,
+    "readme": "## Titanium CLI\n\n> [Titanium CLI](https://github.com/appcelerator/titanium) is a\n[Command Line Tool](http://en.wikipedia.org/wiki/Command-line_interface)\nfor creating and building Titanium Mobile applications and modules. It's\nopen-source and easy to use. [We've](https://github.com/appcelerator)\ndesigned Titanium to be suitable for command line beginners, but still be\npowerful and extensible enough for production usage.\n\n[![Build Status](https://travis-ci.org/appcelerator/titanium.svg?branch=master)](https://travis-ci.org/appcelerator/titanium)\n[![Dependency Status](https://david-dm.org/appcelerator/titanium.svg)](https://david-dm.org/appcelerator/titanium)\n[![devDependency Status](https://david-dm.org/appcelerator/titanium/dev-status.svg)](https://david-dm.org/appcelerator/titanium#info=devDependencies)\n[![NPM version](https://badge.fury.io/js/titanium.svg)](http://badge.fury.io/js/grunt-appc-js) [![Greenkeeper badge](https://badges.greenkeeper.io/appcelerator/titanium.svg)](https://greenkeeper.io/)\n\n## Prerequisites\n\nThe Titanium CLI requires [Node.js 0.10.x](http://nodejs.org/dist/) or newer.\n\n## Installation\n\n    [sudo] npm install -g titanium\n\n## Bleeding Edge\n\nYou can download the latest and greatest *unstable* Titanium CLI code by\nrunning the following:\n\n    [sudo] npm install -g git://github.com/appcelerator/titanium.git\n\n## Obtaining a Titanium SDK\n\nYou will need to download a Titanium SDK 3.0 or newer:\n\n    # stable release (recommended)\n    titanium sdk install --default\n\nThere are times when the latest stable release has an issue or lacks a feature\nin which case you may want to try an unstable Titanium SDK build. These builds\nare not recommended for production use, but should work for development.\n\n    # unstable next release\n    titanium sdk install --branch 3_1_X --default\n\n    # bleeding edge\n    titanium sdk install --branch master --default\n\n## Setting up the Titanium CLI\n\nBefore you begin using the Titanium CLI, you should configure it by running the\n\"setup\" command:\n\n    titanium setup\n\nIt will prompt you with a number of questions such as your e-mail address (for\nlogging into the Appcelerator Network), the location of your Android SDK, and so on.\n\n## Usage\n\n    titanium <command> [options]\n\n## Built-in Commands\n\n### config\n\nConfigure your CLI settings.\n\n**Implementation not complete**\n\n    titanium config <setting> <value>\n\n### help\n\nDisplays help or help for a specific command.\n\n    titanium\n\n    titanium help\n\n    titanium --help\n\n    titanium help <command>\n\n    titanium <command> --help\n\n### login\n\nLogs into the Appcelerator Network\n\n**Implementation not complete**\n\nLogin requires both user and password options to be passed in.\n\n    titanium login <username> <password>\n\nIf you omit an option, the CLI will prompt you for the value.\n\n    titanium login\n\n### logout\n\nLogs out of the Appcelerator Network\n\n**Implementation not complete**\n\n    titanium logout\n\n### sdk\n\nDownload and install Titanium SDKs\n\n#### sdk install\n\nInstalls a specific version of the Titanium SDK. If no version is specified, it assumes the latest.\n\n    titanium sdk install\n\n    titanium sdk install <version>\n\n    titanium sdk install <version> --force\n\nDownload, install <version>, and set as default SDK.\n\n    titanium sdk install <version> --default\n\nDownload and install the latest version for the specified branch\n\n    titanium sdk install --branch master\n\n#### sdk uninstall\n\nUninstalls a Titanium SDK.\n\n    titanium sdk uninstall <version>\n\n#### sdk list\n\nLists all installed Titanium SDKs. Optionally lists all branches and releases.\n\n    titanium sdk list\n\n    titanium sdk list -b\n    titanium sdk list --branches\n\n    titanium sdk list -r\n    titanium sdk list --releases\n\n    titanium sdk list -br\n    titanium sdk list --branches --releases\n\n### setup\n\nReconfigures the Titanium CLI by asking you a series of questions.\n\n    titanium setup\n\n### status\n\nIndicates whether you are logged in or not.\n\n    titanium status\n\n    titanium status --output json\n\n### version\n\nDisplays the current version of the CLI and exits.\n\n    titanium -v\n\n    titanium --version\n\n### info\n\nDisplays information about your development environment including Xcode installs,\niOS SDKs, Android SDKs, and so on.\n\n    titanium info\n\n    titanium info -o json\n\n## Hacking the Titanium CLI\n\nIn order to begin hacking on the Titanium CLI, you need to download and install\n[git](http://git-scm.com/).\n\nIf you have already installed a previous version of the Titanium CLI, it's\nrecommended you uninstall the old one first:\n\n    [sudo] npm uninstall -g titanium\n\nThe Titanium CLI is essentially pure JavaScript, so there is no build process.\nYou just need to pull the code and resolve the dependendencies.\n\n    git clone git@github.com:appcelerator/titanium.git\n    cd titanium\n    npm install\n    sudo npm link\n\n### Running Unit Tests\n\nTo run the unit tests, simply run:\n\n    node forge test\n\n### Running Code Coverage\n\nTo generate the code coverage, you first must install\n[node-jscoverage](https://github.com/visionmedia/node-jscoverage). The easist\nway to do this is run:\n\n    git clone git@github.com:visionmedia/node-jscoverage.git\n    cd node-jscoverage\n    ./configure\n    make\n    sudo make install\n\nThen run:\n\n\tnode forge test-cov\n\nIt will generate a file called _coverage.html_ in the Titanium CLI directory.\n\n## Looking for the really old CLI?\n\nDon't worry, it's still around. You can install it by running:\n\n    [sudo] npm install –g titanium@0.0.26\n\n## Contributing\n\nTitanium is an open source project. Titanium wouldn't be where it is now without\ncontributions by the community. Please consider forking this repo to improve,\nenhance or fix issues. If you feel like the community will benefit from your\nfork, please open a pull request.\n\nTo protect the interests of the Titanium contributors, Appcelerator, customers\nand end users we require contributors to sign a Contributors License Agreement\n(CLA) before we pull the changes into the main repository. Our CLA is simple and\nstraightforward - it requires that the contributions you make to any\nAppcelerator open source project are properly licensed and that you have the\nlegal authority to make those changes. This helps us significantly reduce future\nlegal risk for everyone involved. It is easy, helps everyone, takes only a few\nminutes, and only needs to be completed once.\n\n[You can digitally sign the CLA](http://bit.ly/app_cla) online. Please indicate\nyour e-mail address in your first pull request so that we can make sure that\nwill locate your CLA. Once you've submitted it, you no longer need to send one\nfor subsequent submissions.\n\n## License\n\nThis project is open source and provided under the Apache Public License\n(version 2). Please make sure you see the `LICENSE` file included in this\ndistribution for more details on the license.  Also, please take notice of the\nprivacy notice at the end of the file.\n\n#### (C) Copyright 2012-2013, [Appcelerator](http://www.appcelerator.com/) Inc. All Rights Reserved.\n",
+    "readmeFilename": "README.md"
 }
