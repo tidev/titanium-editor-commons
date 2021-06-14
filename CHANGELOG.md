@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.3...v1.2.4) (2021-06-14)
+
+
+### Bug Fixes
+
+* **update:** correctly pass back error metadata ([fd828fd](https://github.com/appcelerator/titanium-editor-commons/commit/fd828fdabcd63f7125d6be9f2d5c6783bc47713f))
+
 ## [1.2.3](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.2...v1.2.3) (2021-06-08)
 
 
