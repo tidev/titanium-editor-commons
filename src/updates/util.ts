@@ -62,11 +62,11 @@ export async function checkLatestNpmPackageVersion(name: string): Promise<string
  */
 export async function installNpmPackage(name: string, version: string): Promise<execa.ExecaReturnValue> {
 	try {
-		return exec('npm', [ 'install', '-g', `${name}@${version}`, '--json' ], { shell: true });
+		return await exec('npm', [ 'install', '-g', `${name}@${version}`, '--json' ], { shell: true });
 	} catch (error) {
 		try {
-			const jsonResponse = JSON.parse(error.stdout);
-			error.errorCode = jsonResponse.error && jsonResponse.error.code;
+			const jsonResponse = JSON.parse(error.metadata.stdout);
+			error.metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
 		} catch (_error) {
 			// squash
 		}

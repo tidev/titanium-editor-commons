@@ -26,17 +26,15 @@ export class InstallError extends Error {
 
 export async function exec(command: string, args: string[], options: execa.Options): Promise<execa.ExecaReturnValue> {
 	try {
-		return execa(command, args, options);
+		return await execa.command(`${command} ${args.join(' ')}`, options);
 	} catch (error) {
 		const { code, stderr, stdout } = error;
-
 		const metadata = {
 			exitCode: code,
 			stderr,
 			stdout,
-			command: `${command} ${args}`
+			command: `${command} ${args.join(' ')}`
 		};
-
 		throw new InstallError('Failed to install package', metadata);
 	}
 }

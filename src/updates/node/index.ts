@@ -82,10 +82,11 @@ export async function installUpdate(version: string): Promise<execa.ExecaReturnV
 	}
 
 	try {
-		return exec(command, args, { shell: true });
+		return await exec(command, args, { shell: true });
 	} catch (error) {
-		if (error.stdout === 'installer: Must be run as root to install this package.\n') {
-			error.errorCode = 'EACCES';
+		const stdout = error?.metadata.stdout;
+		if (stdout && stdout.toLowerCase().includes('installer: must be run as root to install this package')) {
+			error.metadata.errorCode = 'EACCES';
 		}
 		throw error;
 	}
