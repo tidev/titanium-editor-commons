@@ -246,7 +246,7 @@ describe('updates', () => {
 			expect(url).to.deep.equal('https://nodejs.org/en/blog/release/v10.13.0/');
 		});
 
-		it('should fail if sudo require', async () => {
+		(process.platform === 'darwin' ? it : it.skip)('should fail if sudo require', async () => {
 			mockNodeRequest();
 			fixProcessPlatform = mockOS('darwin');
 			const stub = global.sandbox.stub(execa, 'command');
