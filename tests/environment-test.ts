@@ -22,7 +22,7 @@ describe('environment', () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.2');
 			mockSdk('7.5.0');
-			mockAppcCli(stub, '4.2.0', '4.2.12', 750, true);
+			mockAppcCli(stub, '4.2.0', '4.2.12', true);
 
 			const env = await environment.validateEnvironment();
 			expect(env.missing).to.deep.equal([]);
@@ -39,7 +39,7 @@ describe('environment', () => {
 		it('validateEnvironment with no installed SDKS', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.1');
-			mockAppcCli(stub, '4.2.0', '4.2.12', 750, true);
+			mockAppcCli(stub, '4.2.0', '4.2.12', true);
 			mockSdk(undefined);
 
 			const env = await environment.validateEnvironment();
@@ -56,7 +56,7 @@ describe('environment', () => {
 		it('validateEnvironment with no installed core', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNode(stub, '12.18.1');
-			mockAppcCli(stub, undefined, '4.2.12', 750);
+			mockAppcCli(stub, undefined, '4.2.12');
 			mockSdk('7.5.0');
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI');
@@ -74,7 +74,7 @@ describe('environment', () => {
 
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
-			mockAppcCli(stub, '4.2.0', undefined, 750, true);
+			mockAppcCli(stub, '4.2.0', undefined, true);
 
 			const env = await environment.validateEnvironment();
 			expect(env.missing[0].name).to.deep.equal('Appcelerator CLI (npm)');
@@ -102,8 +102,8 @@ describe('environment', () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
-			mockNpmCli(stub, 'alloy', '1.15.2', 750);
-			mockNpmCli(stub, 'titanium', '5.3.0', 1000);
+			mockNpmCli(stub, 'alloy', '1.15.2');
+			mockNpmCli(stub, 'titanium', '5.3.0');
 
 			const env = await environment.validateEnvironment(undefined, false);
 			expect(env.missing.length).to.equal(0);
@@ -121,8 +121,8 @@ describe('environment', () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockSdk('7.5.0');
 			mockNode(stub, '12.18.1');
-			mockNpmCli(stub, 'alloy', undefined, 750);
-			mockNpmCli(stub, 'titanium', undefined, 1000);
+			mockNpmCli(stub, 'alloy', undefined);
+			mockNpmCli(stub, 'titanium', undefined);
 
 			const env = await environment.validateEnvironment(undefined, false);
 			expect(env.missing.length).to.equal(2);

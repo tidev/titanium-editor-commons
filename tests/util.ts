@@ -11,10 +11,9 @@ import execa from 'execa';
  * @param {sinon.SinonStub} stub - A stub created by stubbing the spawn method on child_process
  * @param {string} coreVersion - Value of the core version to output
  * @param {string} installerVersion - Value of the installer version to output
- * @param {number} waitTime - Time to wait before outputting the version to stdout
  * @param {boolean} mockVersionFile - Whether to mock the appc cli version file
  */
-export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, installerVersion?: string, waitTime = 500, mockVersionFile = false): void {
+export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, installerVersion?: string, mockVersionFile = false): void {
 	if (coreVersion && installerVersion) {
 		stub
 			.withArgs('appc', sinon.match.any, sinon.match.any)
@@ -39,7 +38,7 @@ export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, instal
 			.withArgs('appc', sinon.match.any, sinon.match.any)
 			.rejects({ stderr: '/bin/sh: appc: command not found\n' });
 
-		mockNpmCli(stub, 'appcelerator', installerVersion, waitTime + 250);
+		mockNpmCli(stub, 'appcelerator', installerVersion);
 
 		if (coreVersion) {
 			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
@@ -64,9 +63,8 @@ export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, instal
  * @param {sinon.SinonStub} stub - A stub created by stubbing the spawn method on child_process
  * @param {string} packageName - Name of the package to return
  * @param {string} version - Version of the package to return
- * @param {number} [waitTime=500] - Time to wait before outputting data
  */
-export function mockNpmCli (stub: sinon.SinonStub, packageName: string, version?: string, waitTime = 500): void {
+export function mockNpmCli (stub: sinon.SinonStub, packageName: string, version?: string): void {
 	if (version) {
 		stub
 			.withArgs('npm', [ 'ls', `${packageName}`, '--json', '--depth', '0', '--global' ], sinon.match.any)
@@ -89,13 +87,33 @@ export function mockNpmCli (stub: sinon.SinonStub, packageName: string, version?
 }
 
 /**
+ * Mocks the npm install command for a package
+ *
+ * @param {sinon.SinonStub} stub - A stub created by stubbing the spawn method on child_process
+ * @param {string} packageName - Name of the package to return
+ * @param {string} version - Version of the package to return
+ * @param {boolean} throws - Whether the command should throw or not
+ */
+export function mockNpmInstall(stub: sinon.SinonStub, packageName: string, version: string, throws = false): void {
+
+	if (throws) {
+		stub
+			.withArgs(`npm install -g ${packageName}@${version} --json`, global.sandbox.match.any)
+			.rejects({ stdout: '{ "error": { "code": "EACCES" } }' } as execa.ExecaReturnValue);
+	} else {
+		stub
+			.withArgs(`npm install -g ${packageName}@${version} --json`, global.sandbox.match.any)
+			.resolves({	stdout: '{ "error": { "code": "EACCES" } }' } as execa.ExecaReturnValue);
+	}
+}
+
+/**
  * Mocks the Node.js executable to return the specified value
  *
  * @param {sinon.SinonStub} stub - A stub created by stubbing the spawn method on child_process
  * @param {string} [version] - Version to output
- * @param {number} [waitTime=500] - Time to wait before outputting data
  */
-export function mockNode (stub: sinon.SinonStub, version?: string, waitTime = 500): void {
+export function mockNode (stub: sinon.SinonStub, version?: string): void {
 	if (version) {
 		stub
 			.withArgs('node', sinon.match.any, sinon.match.any)
@@ -180,4 +198,23 @@ export function mockSdk(version?: string): void {
 				}
 			]);
 	}
+}
+
+/**
+ * Mocks the process.platform property
+ *
+ * @export
+ * @param {string} platform - The platform to return
+ * @returns {() => void} - Function to call to restore original the process.platform value
+ */
+export function mockOS (platform: string): () => void {
+	const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');
+
+	Object.defineProperty(process, 'platform', {
+		value: platform
+	});
+
+	return () => {
+		Object.defineProperty(process, 'platform', originalPlatform!); // eslint-disable-line @typescript-eslint/no-non-null-assertion
+	};
 }
