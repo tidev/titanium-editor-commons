@@ -1,4 +1,5 @@
 import nock from 'nock';
+import * as fs from 'fs';
 import * as path from 'path';
 
 export function mockAppcCoreRequest (version: string): void {
@@ -38,6 +39,10 @@ export function mockNpmRequest (): void {
 export function mockNodeRequest(): void {
 	nock('https://nodejs.org')
 		.get('/download/release/index.json')
-		.replyWithFile(200, path.join(__dirname, 'node-response.json'));
+		.replyWithFile(200, path.join(__dirname, 'node-response.json'))
+		.get('/dist/v1.2.3/node-v1.2.3.pkg')
+		.reply(200, () => {
+			return fs.createReadStream(path.join(__dirname, 'node-installer.pkg'));
+		});
 
 }

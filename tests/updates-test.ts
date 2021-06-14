@@ -1,3 +1,4 @@
+import execa from 'execa';
 import { appc, titanium, node, alloy, checkAllUpdates } from '../src/updates/';
 import * as util from '../src/util';
 
@@ -7,8 +8,9 @@ import nock from 'nock';
 import os from 'os';
 import * as path from 'path';
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest, mockNodeRequest } from './fixtures/network/network-mocks';
-import { mockAppcCli, mockNode, mockNpmCli, mockSdk } from './util';
+import { mockAppcCli, mockNode, mockNpmCli, mockNpmInstall, mockOS, mockSdk } from './util';
 
+let fixProcessPlatform: () => void|undefined;
 describe('updates', () => {
 
 	beforeEach(() => {
@@ -18,6 +20,7 @@ describe('updates', () => {
 	afterEach(() => {
 		nock.cleanAll();
 		mockFS.restore();
+		fixProcessPlatform?.();
 	});
 
 	describe('titanium.sdk', () => {
@@ -114,7 +117,7 @@ describe('updates', () => {
 	describe('appc.core', () => {
 		it('checkForUpdate with install', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
-			mockAppcCli(stub, '4.2.0', '4.2.12', 500, true);
+			mockAppcCli(stub, '4.2.0', '4.2.12', true);
 			mockAppcCoreRequest('6.6.6');
 
 			const update = await appc.core.checkForUpdate();
@@ -138,7 +141,7 @@ describe('updates', () => {
 
 		it('checkForUpdate with latest installed', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
-			mockAppcCli(stub, '6.6.6', '4.2.12', 500, true);
+			mockAppcCli(stub, '6.6.6', '4.2.12', true);
 			mockAppcCoreRequest('6.6.6');
 
 			const update = await appc.core.checkForUpdate();
@@ -242,6 +245,25 @@ describe('updates', () => {
 			const url = await node.getReleaseNotes('v10.13.0');
 			expect(url).to.deep.equal('https://nodejs.org/en/blog/release/v10.13.0/');
 		});
+
+		it('should fail if sudo require', async () => {
+			mockNodeRequest();
+			fixProcessPlatform = mockOS('darwin');
+			const stub = global.sandbox.stub(execa, 'command');
+			stub
+				.withArgs(global.sandbox.match.any, global.sandbox.match.any)
+				.rejects({ stdout: 'installer: must be run as root to install this package' } as execa.ExecaReturnValue);
+
+			try {
+				await node.installUpdate('1.2.3');
+			} catch (error) {
+				expect(error).to.be.instanceOf(util.InstallError);
+				expect(error.metadata.errorCode).to.equal('EACCES');
+				expect(error.metadata.command).to.match(/installer -pkg \S+ -target \//);
+				return;
+			}
+			throw new Error('installUpdate did not throw');
+		});
 	});
 
 	describe('alloy', () => {
@@ -282,6 +304,27 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('1.15.4');
 			expect(update.productName).to.equal('Alloy');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('install', async () => {
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNpmInstall(stub, 'alloy', '1.15.14');
+			await alloy.installUpdate('1.15.14');
+		});
+
+		it('install with sudo', async () => {
+			const stub = global.sandbox.stub(execa, 'command');
+			mockNpmInstall(stub, 'alloy', '1.15.14', true);
+
+			try {
+				await alloy.installUpdate('1.15.14');
+			} catch (error) {
+				expect(error).to.be.instanceOf(util.InstallError);
+				expect(error.metadata.errorCode).to.equal('EACCES');
+				expect(error.metadata.command).to.equal('npm install -g alloy@1.15.14 --json');
+				return;
+			}
+			throw new Error('installUpdate did not throw');
 		});
 	});
 
@@ -326,6 +369,27 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('5.3.0');
 			expect(update.productName).to.equal('Titanium CLI');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('install', async () => {
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNpmInstall(stub, 'titanium', '5.3.0');
+			await titanium.cli.installUpdate('5.3.0');
+		});
+
+		it('install with sudo', async () => {
+			const stub = global.sandbox.stub(execa, 'command');
+			mockNpmInstall(stub, 'titanium', '5.3.0', true);
+
+			try {
+				await titanium.cli.installUpdate('5.3.0');
+			} catch (error) {
+				expect(error).to.be.instanceOf(util.InstallError);
+				expect(error.metadata.errorCode).to.equal('EACCES');
+				expect(error.metadata.command).to.equal('npm install -g titanium@5.3.0 --json');
+				return;
+			}
+			throw new Error('installUpdate did not throw');
 		});
 	});
 
