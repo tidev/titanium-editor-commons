@@ -205,7 +205,7 @@ export function mockSdk(version?: string): void {
  *
  * @export
  * @param {string} platform - The platform to return
- * @returns {() => void} - Function to call to restore original the process.platform value
+ * @returns {Function} - Function to call to restore original the process.platform value
  */
 export function mockOS (platform: string): () => void {
 	const originalPlatform = Object.getOwnPropertyDescriptor(process, 'platform');

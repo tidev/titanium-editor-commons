@@ -19,7 +19,7 @@ export enum CompletionsFormat {
  * @param {CompletionsFormat} completionsVersion - Completions format to load
  * @returns {Object}
  */
-export async function loadCompletions (sdkVersion: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<{ alloy: AlloyCompletions; titanium: TitaniumCompletions }> {
+export async function loadCompletions (sdkVersion: string, completionsVersion: CompletionsFormat = CompletionsFormat.v1): Promise<CompletionsData> {
 	const { alloyVersion } = await findAlloy();
 	const sdkCompletions = await fs.readJSON(getSDKCompletionsFileName(sdkVersion, completionsVersion));
 	const alloyCompletions = await fs.readJSON(getAlloyCompletionsFileName(alloyVersion, completionsVersion));
@@ -85,6 +85,11 @@ export async function generateSDKCompletions (force = false, sdkVersion: string,
 	}
 }
 
+export interface CompletionsData {
+	alloy: AlloyCompletions;
+	titanium: TitaniumCompletions;
+}
+
 export interface TagDictionary {
 	[key: string]: Tag;
 }
@@ -115,6 +120,7 @@ interface AlloyCompletions {
 	version: CompletionsFormat;
 	alloyVersion: string;
 	tags: TagDictionary;
+	types: TypeDictionary;
 }
 
 interface TitaniumCompletions {
