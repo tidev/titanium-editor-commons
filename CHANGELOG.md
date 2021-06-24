@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.4...v1.2.5) (2021-06-24)
+
+
+### Bug Fixes
+
+* **completions:** export completions format interfaces ([74ac174](https://github.com/appcelerator/titanium-editor-commons/commit/74ac174b70aa5f170dc28afb43cdb99af6d9dc61))
+
 ## [1.2.4](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.3...v1.2.4) (2021-06-14)
 
 
