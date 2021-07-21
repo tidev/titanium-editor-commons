@@ -1,14 +1,24 @@
-import execa from 'execa';
-import { appc, titanium, node, alloy, checkAllUpdates } from '../src/updates/';
+import * as titaniumlib from 'titaniumlib';
+import * as path from 'path';
 import * as util from '../src/util';
 
-import { expect } from 'chai';
+import execa from 'execa';
+import { appc, titanium, node, alloy, checkAllUpdates } from '../src/updates/';
+
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
 import mockFS from 'mock-fs';
 import nock from 'nock';
 import os from 'os';
-import * as path from 'path';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+
 import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest, mockNodeRequest } from './fixtures/network/network-mocks';
 import { mockAppcCli, mockNode, mockNpmCli, mockNpmInstall, mockOS, mockSdk } from './util';
+
+chai.use(chaiAsPromised);
+chai.use(sinonChai);
+const expect = chai.expect;
 
 let fixProcessPlatform: () => void|undefined;
 describe('updates', () => {
@@ -55,6 +65,64 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('8.0.0.GA');
 			expect(update.productName).to.equal('Titanium SDK');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('install with titanium cli', async () => {
+
+			global.sandbox
+				.stub(titaniumlib.sdk, 'install')
+				.resolves('');
+
+			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			const selectStub = execStub
+				.withArgs('ti', sinon.match.any, sinon.match.any)
+				.resolves({ stdout: '{}' } as execa.ExecaReturnValue);
+
+			mockNpmCli(execStub, 'titanium', '5.3.0');
+
+			await titanium.sdk.installUpdate('8.0.0.GA');
+			expect(selectStub).to.have.been.calledOnceWith('ti', [ 'sdk', 'select', '8.0.0.GA' ], { shell: true });
+		});
+
+		it('install with appc cli logged in', async () => {
+			global.sandbox
+				.stub(titaniumlib.sdk, 'install')
+				.resolves('');
+
+			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			const whoamiStub = execStub
+				.withArgs('appc', [ 'whoami', '-o', 'json'], sinon.match.any)
+				.resolves({ stdout: '{ "username": "bob" }' } as execa.ExecaReturnValue);
+
+			const selectStub = execStub
+				.withArgs('appc', [ 'ti', 'sdk', 'select', '8.0.0.GA' ], sinon.match.any)
+				.resolves({ stdout: '' } as execa.ExecaReturnValue);
+
+			mockNpmCli(execStub, 'titanium');
+			mockAppcCli(execStub, '6.6.6', '4.2.13');
+
+			await titanium.sdk.installUpdate('8.0.0.GA');
+			expect(whoamiStub).to.have.been.calledOnceWith('appc', [ 'whoami', '-o', 'json' ], { shell: true });
+			expect(selectStub).to.have.been.calledOnceWith('appc', [ 'ti', 'sdk', 'select', '8.0.0.GA' ], { shell: true });
+		});
+
+		it('install with appc cli logged out', async () => {
+			global.sandbox
+				.stub(titaniumlib.sdk, 'install')
+				.resolves('');
+
+			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			execStub
+				.withArgs('appc', [ 'whoami', '-o', 'json'], sinon.match.any)
+				.resolves({ stdout: '{}' } as execa.ExecaReturnValue);
+
+			mockNpmCli(execStub, 'titanium');
+			mockAppcCli(execStub, '6.6.6', '4.2.13');
+
+			await expect(titanium.sdk.installUpdate('8.0.0.GA')).to.eventually.be.rejectedWith('Failed to select SDK as you are not logged in');
 		});
 
 		it('getReleaseNotes()', () => {
@@ -121,6 +189,16 @@ describe('updates', () => {
 			expect(update.hasUpdate).to.equal(false);
 		});
 
+		it('installUpdate()', async () => {
+			const stub = global.sandbox.stub(util, 'exec')
+				.withArgs('npm', sinon.match.any, sinon.match.any)
+				.resolves({ stdout: '' } as execa.ExecaReturnValue);
+
+			await appc.install.installUpdate('6.6.6');
+
+			expect(stub).to.have.been.calledOnceWith('npm', [ 'install', '-g', 'appcelerator@6.6.6', '--json' ], { shell: true });
+		});
+
 		it('getReleaseNotes()', () => {
 			expect(appc.install.getReleaseNotes()).to.equal('https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/');
 		});
@@ -182,6 +260,16 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('6.6.6');
 			expect(update.productName).to.equal('Appcelerator CLI');
 			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('installUpdate()', async () => {
+			const stub = global.sandbox.stub(util, 'exec')
+				.withArgs('appc', sinon.match.any, sinon.match.any)
+				.resolves({ stdout: '' } as execa.ExecaReturnValue);
+
+			await appc.core.installUpdate('6.6.6');
+
+			expect(stub).to.have.been.calledOnceWith('appc', [ 'use', '6.6.6' ], { shell: true });
 		});
 
 		it('getReleaseNotes()', () => {

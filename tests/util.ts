@@ -16,7 +16,7 @@ import execa from 'execa';
 export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, installerVersion?: string, mockVersionFile = false): void {
 	if (coreVersion && installerVersion) {
 		stub
-			.withArgs('appc', sinon.match.any, sinon.match.any)
+			.withArgs('appc', [ '--version', '--output', 'json' ], sinon.match.any)
 			.resolves({ stdout: `{"NPM":"${installerVersion}","CLI":"${coreVersion}"}` } as execa.ExecaReturnValue);
 
 		if (mockVersionFile) {

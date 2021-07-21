@@ -117,7 +117,7 @@ describe('completions', () => {
 
 		it('Generate Alloy Completions without alloy installed', async () => {
 			mockFS({ ...mockAppcCli(true), ...mockNpmAlloy(true) });
-			expect(generateAlloyCompletions(true)).to.be.rejectedWith(Error, 'Unable to find installed alloy version.');
+			await expect(generateAlloyCompletions(true)).to.be.rejectedWith(Error, 'Unable to find Alloy');
 		});
 
 		it('Generate Alloy Completions with pre-existing completions', async () => {
