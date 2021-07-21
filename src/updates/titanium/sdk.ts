@@ -85,7 +85,12 @@ export async function installUpdate (version: string): Promise<void> {
 }
 
 export function getReleaseNotes (version: string): string {
-	return `https://docs.appcelerator.com/platform/latest/#!/guide/Titanium_SDK_${version}_Release_Note`;
+	// https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Release_Notes/Titanium_SDK_Release_Notes_10.x/Titanium_SDK_10.0.0.GA_Release_Note.html
+	const versionData = semver.parse(semver.coerce(version));
+	if (!versionData) {
+		throw new Error(`Failed to parse major version from ${version}`);
+	}
+	return `https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Release_Notes/Titanium_SDK_Release_Notes_${versionData.major}.x/Titanium_SDK_${version}_Release_Note.html`;
 }
 
 export async function checkForUpdate (): Promise<UpdateInfo> {
