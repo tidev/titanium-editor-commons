@@ -19,27 +19,30 @@ export function mockAppcCoreRequest (version: string): void {
 		});
 }
 
+// we use nock.reply and fs.readFileSync instead of nock.replyWithFile to ensure that the files are
+// read before setting up any fs mocks. If we used nock.replyWitFile we get errors
+
 export function mockSDKRequest (): void {
 	nock('https://appc-mobilesdk-server.s3-us-west-2.amazonaws.com')
 		.get('/releases.json')
-		.replyWithFile(200, path.join(__dirname, 'sdk-response.json'));
+		.reply(200, fs.readFileSync(path.join(__dirname, 'sdk-response.json'), 'utf8'));
 
 }
 
 export function mockNpmRequest (): void {
 	nock('https://registry.npmjs.org')
 		.get('/appcelerator/latest')
-		.replyWithFile(200, path.join(__dirname, 'appcelerator-npm-response.json'))
+		.reply(200, fs.readFileSync(path.join(__dirname, 'appcelerator-npm-response.json'), 'utf8'))
 		.get('/alloy/latest')
-		.replyWithFile(200, path.join(__dirname, 'alloy-npm-response.json'))
+		.reply(200, fs.readFileSync(path.join(__dirname, 'alloy-npm-response.json'), 'utf8'))
 		.get('/titanium/latest')
-		.replyWithFile(200, path.join(__dirname, 'titanium-npm-response.json'));
+		.reply(200, fs.readFileSync(path.join(__dirname, 'titanium-npm-response.json'), 'utf8'));
 }
 
 export function mockNodeRequest(): void {
 	nock('https://nodejs.org')
 		.get('/download/release/index.json')
-		.replyWithFile(200, path.join(__dirname, 'node-response.json'))
+		.reply(200, fs.readFileSync(path.join(__dirname, 'node-response.json'), 'utf8'))
 		.get('/dist/v1.2.3/node-v1.2.3.pkg')
 		.reply(200, () => {
 			return fs.createReadStream(path.join(__dirname, 'node-installer.pkg'));

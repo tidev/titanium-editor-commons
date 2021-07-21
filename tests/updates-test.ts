@@ -422,7 +422,7 @@ describe('updates', () => {
 	});
 
 	describe('checkforUpdates', () => {
-		it('useAppcTooling false', async () => {
+		it('useAppcTooling false no updates', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
 			mockSDKRequest();
@@ -434,6 +434,64 @@ describe('updates', () => {
 
 			const updates = await checkAllUpdates({}, false);
 			expect(updates.length).to.equal(0);
+		});
+
+		it('useAppcTooling false with updates', async () => {
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNodeRequest();
+			mockSDKRequest();
+			mockNpmRequest();
+			mockSdk('8.0.0');
+			mockNode(stub, '12.18.1');
+			mockNpmCli(stub, 'alloy', '1.15.3');
+			mockNpmCli(stub, 'titanium', '5.3.0');
+
+			const updates = await checkAllUpdates({}, false);
+			expect(updates.length).to.equal(2);
+
+			expect(updates[0].productName).to.equal('Node.js');
+			expect(updates[0].currentVersion).to.equal('12.18.1');
+			expect(updates[0].latestVersion).to.equal('12.18.2');
+
+			expect(updates[1].productName).to.equal('Alloy');
+			expect(updates[1].currentVersion).to.equal('1.15.3');
+			expect(updates[1].latestVersion).to.equal('1.15.4');
+		});
+
+		it('useAppcTooling true no updates', async () => {
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNodeRequest();
+			mockSDKRequest();
+			mockNpmRequest();
+			mockSdk('8.0.0');
+			mockNode(stub, '12.18.2');
+			mockAppcCoreRequest('6.6.6');
+			mockAppcCli(stub, '6.6.6', '4.2.13', true);
+
+			const updates = await checkAllUpdates({}, true);
+			expect(updates.length).to.equal(0);
+		});
+
+		it('useAppcTooling true with updates', async () => {
+			const stub = global.sandbox.stub(util, 'exec');
+			mockNodeRequest();
+			mockSDKRequest();
+			mockNpmRequest();
+			mockSdk('8.0.0');
+			mockNode(stub, '12.18.1');
+			mockAppcCoreRequest('6.6.6');
+			mockAppcCli(stub, '6.6.6', '4.2.12', true);
+
+			const updates = await checkAllUpdates({}, true);
+			expect(updates.length).to.equal(2);
+
+			expect(updates[0].productName).to.equal('Node.js');
+			expect(updates[0].currentVersion).to.equal('12.18.1');
+			expect(updates[0].latestVersion).to.equal('12.18.2');
+
+			expect(updates[1].productName).to.equal('Appcelerator CLI (npm)');
+			expect(updates[1].currentVersion).to.equal('4.2.12');
+			expect(updates[1].latestVersion).to.equal('4.2.13');
 		});
 	});
 });
