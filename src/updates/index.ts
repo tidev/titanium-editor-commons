@@ -33,7 +33,8 @@ async function checkAllUpdates(supportedVersions?: SupportedVersions, useAppcToo
 
 	const updates = await Promise.all(updateChecks);
 
-	return updates.filter(update => update && update.hasUpdate);
+	// Remove anything that doesn't require an update and then sort the array by running priority
+	return updates.filter(update => update && update.hasUpdate).sort((curr: UpdateInfo, prev: UpdateInfo) => curr.priority - prev.priority);
 }
 
 export {
