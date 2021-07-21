@@ -28,7 +28,7 @@ export async function installUpdate (version: string): Promise<execa.ExecaReturn
 
 export function getReleaseNotes (): string {
 	// There are no public release notes for appc-install, so just point to the latest CLI release notes
-	return 'https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_Release_Notes';
+	return 'https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/';
 }
 
 export async function checkForUpdate (): Promise<UpdateInfo> {

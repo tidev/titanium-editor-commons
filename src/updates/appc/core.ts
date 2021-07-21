@@ -33,7 +33,12 @@ export async function installUpdate (version: string): Promise<execa.ExecaReturn
 }
 
 export function getReleaseNotes (version: string): string {
-	return `https://docs.appcelerator.com/platform/latest/#!/guide/Appcelerator_CLI_${version}.GA_Release_Note`;
+	// https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/Appcelerator_CLI_Release_Notes_9.x/Appcelerator_CLI_9.0.1_GA_Release_Note.html
+	const versionData = semver.parse(version);
+	if (!versionData) {
+		throw new Error(`Failed to parse major version from ${version}`);
+	}
+	return `https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/Appcelerator_CLI_Release_Notes_${versionData.major}.x/Appcelerator_CLI_${version}_GA_Release_Note.html`;
 }
 
 export async function checkForUpdate (): Promise<UpdateInfo> {

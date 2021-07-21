@@ -56,6 +56,14 @@ describe('updates', () => {
 			expect(update.productName).to.equal('Titanium SDK');
 			expect(update.hasUpdate).to.equal(false);
 		});
+
+		it('getReleaseNotes()', () => {
+			expect(titanium.sdk.getReleaseNotes('10.0.0.GA')).to.equal('https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Release_Notes/Titanium_SDK_Release_Notes_10.x/Titanium_SDK_10.0.0.GA_Release_Note.html');
+		});
+
+		it('getReleaseNotes() should throw if cant determine major version', () => {
+			expect(() => titanium.sdk.getReleaseNotes('foo')).to.throw(Error, 'Failed to parse major version from foo');
+		});
 	});
 
 	describe('appc.installer', () => {
@@ -111,6 +119,10 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('4.2.13');
 			expect(update.productName).to.equal('Appcelerator CLI (npm)');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('getReleaseNotes()', () => {
+			expect(appc.install.getReleaseNotes()).to.equal('https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/');
 		});
 	});
 
@@ -170,6 +182,14 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('6.6.6');
 			expect(update.productName).to.equal('Appcelerator CLI');
 			expect(update.hasUpdate).to.equal(true);
+		});
+
+		it('getReleaseNotes()', () => {
+			expect(appc.core.getReleaseNotes('6.6.6')).to.equal('https://titaniumsdk.com/guide/Appcelerator_CLI/Appcelerator_CLI_Release_Notes/Appcelerator_CLI_Release_Notes_6.x/Appcelerator_CLI_6.6.6_GA_Release_Note.html');
+		});
+
+		it('getReleaseNotes() should throw if cant determine major version', () => {
+			expect(() => appc.core.getReleaseNotes('foo')).to.throw(Error, 'Failed to parse major version from foo');
 		});
 	});
 
@@ -326,6 +346,10 @@ describe('updates', () => {
 			}
 			throw new Error('installUpdate did not throw');
 		});
+
+		it('getReleaseNotes()', () => {
+			expect(alloy.getReleaseNotes('1.16.3')).to.equal('https://github.com/appcelerator/alloy/releases/tag/1.16.3');
+		});
 	});
 
 	describe('titanium.cli', () => {
@@ -390,6 +414,10 @@ describe('updates', () => {
 				return;
 			}
 			throw new Error('installUpdate did not throw');
+		});
+
+		it('getReleaseNotes()', () => {
+			expect(titanium.cli.getReleaseNotes('5.3.2')).to.equal('https://github.com/appcelerator/titanium/releases/tag/5.3.2');
 		});
 	});
 
