@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.5...v1.3.0) (2021-07-21)
+
+
+### Features
+
+* point release notes at titaniumsdk.com site ([545f6f1](https://github.com/appcelerator/titanium-editor-commons/commit/545f6f1a71bcf54f898b3372f9199a30659df460))
+
 ## [1.2.5](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.4...v1.2.5) (2021-06-24)
 
 
