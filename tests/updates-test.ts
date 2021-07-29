@@ -104,7 +104,7 @@ describe('updates', () => {
 			mockSdkInstall(execStub, '8.0.0.GA', true);
 
 			execStub
-				.withArgs('appc', [ 'whoami', '-o', 'json'], sinon.match.any)
+				.withArgs('appc', [ 'whoami', '-o', 'json' ], sinon.match.any)
 				.resolves({ stdout: '{}' } as execa.ExecaReturnValue);
 
 			mockNpmCli(execStub, 'titanium');
