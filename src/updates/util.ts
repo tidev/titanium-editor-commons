@@ -17,11 +17,12 @@ export class InstallError extends Error {
 
 	constructor (
 		message: string,
-		metadata: InstallErrorMetadata
+		metadata: InstallErrorMetadata,
+		code = 'EINSTALLFAILED'
 	) {
 		super(message);
 
-		this.code = 'EINSTALLFAILED';
+		this.code = code;
 		this.metadata = metadata || {};
 	}
 }
