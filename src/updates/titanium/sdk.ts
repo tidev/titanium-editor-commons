@@ -21,17 +21,22 @@ interface SDKListInfo {
 
 export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 	let latestSDK;
-	let installedSdks: Record<string, SDKListInfo>|undefined;
+
+	let stdout;
 	try {
-		const { stdout } = await runTiCommand([ 'sdk', 'list', '--output', 'json' ]);
-		installedSdks = JSON.parse(stdout).sdks as Record<string, SDKListInfo>;
+		const result = await runTiCommand([ 'sdk', 'list', '--output', 'json' ]);
+		stdout = result.stdout;
 	} catch (error) {
-		// throw
+		if (error instanceof util.InstallError) {
+			throw error;
+		}
 	}
 
-	if (!installedSdks) {
+	if (!stdout) {
 		return;
 	}
+
+	const installedSdks: Record<string, SDKListInfo> = JSON.parse(stdout).sdks;
 
 	for (const { manifest, name } of Object.values(installedSdks)) {
 		// ignore if not a GA
@@ -118,14 +123,7 @@ async function runTiCommand (args: string[]): Promise<ExecaReturnValue> {
 		// ignore and continue on to appc
 	}
 
-	try {
-		await checkLoggedIn();
-	} catch (error) {
-		throw new util.InstallError('Failed to run appc cli as you are not logged in.', {
-			stderr: '',
-			stdout: ''
-		});
-	}
+	await checkLoggedIn();
 
 	try {
 		return exec('appc', [ 'ti', ...args ], { shell: true });
@@ -140,6 +138,9 @@ async function checkLoggedIn (): Promise<void> {
 	const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
 	const whoami = JSON.parse(stdout);
 	if (!whoami.username) {
-		throw new Error('Not logged in');
+		throw new util.InstallError('Failed to run appc cli as you are not logged in.', {
+			stderr: '',
+			stdout: ''
+		}, 'ENOTLOGGEDIN');
 	}
 }
