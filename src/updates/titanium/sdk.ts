@@ -1,19 +1,39 @@
 import * as semver from 'semver';
-import { sdk } from 'titaniumlib';
 import { UpdateInfo } from '..';
 import * as cli from './cli';
 import { ProductNames } from '../product-names';
 import { exec } from '../../util';
 import * as util from '../util';
+import { ExecaReturnValue } from 'execa';
 
 interface SDKInfo {
 	name: string;
 	version: string;
 }
 
+interface SDKListInfo {
+	name: string;
+	manifest: {
+		name: string;
+		version: string;
+	}
+}
+
 export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 	let latestSDK;
-	for (const { manifest, name } of sdk.getInstalledSDKs(true)) {
+	let installedSdks: Record<string, SDKListInfo>|undefined;
+	try {
+		const { stdout } = await runTiCommand([ 'sdk', 'list', '--output', 'json' ]);
+		installedSdks = JSON.parse(stdout).sdks as Record<string, SDKListInfo>;
+	} catch (error) {
+		// throw
+	}
+
+	if (!installedSdks) {
+		return;
+	}
+
+	for (const { manifest, name } of Object.values(installedSdks)) {
 		// ignore if not a GA
 		if (!name.includes('.GA')) {
 			continue;
@@ -29,59 +49,26 @@ export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 }
 
 export async function checkLatestVersion (): Promise<SDKInfo> {
-	const { latest } = await sdk.getReleases();
+	const { stdout } = await runTiCommand([ 'sdk', 'list', '--releases', '--output', 'json' ]);
+	const releases = Object.keys(JSON.parse(stdout).releases).map(name => name.replace('.GA', ''));
+	const latest = releases.sort(semver.rcompare)[0];
 
 	return {
-		name: latest.name,
-		version: latest.version
+		name: `${latest}.GA`,
+		version: latest
 	};
 }
 
 export async function installUpdate (version: string): Promise<void> {
 	try {
-		await sdk.install({
-			uri: version
-		});
-	} catch (error) {
-		throw new util.InstallError('Failed to install package', error);
-	}
-
-	let useAppc = false;
-	try {
-		// Use Titanium CLI if it is installed as it's less failure prone
-		if (await cli.checkInstalledVersion()) {
-			await exec('ti', [ 'sdk', 'select', version ], { shell: true });
-		} else {
-			useAppc = true;
-			const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
-			const whoami = JSON.parse(stdout);
-			if (!whoami.username) {
-				// Not logged in, so throw back for the caller to deal with
-				throw new util.InstallError('Failed to select SDK as you are not logged in', {
-					command: `appc ti sdk select ${version}`,
-					stdout: '',
-					stderr: '',
-					errorCode: 'ESELECTERROR'
-				});
-			}
-
-			await exec('appc', [ 'ti', 'sdk', 'select', version ], { shell: true });
-		}
+		await runTiCommand([ 'sdk', 'install', version, '--default' ]);
 	} catch (error) {
 		if (error instanceof util.InstallError) {
-			// Rethrow
 			throw error;
 		}
 
-		const command = useAppc ? `appc ti sdk select ${version}` : `ti sdk select ${version}`;
-		throw new util.InstallError('Failed to select SDK', {
-			command,
-			stdout: error.stdout || '',
-			stderr: error.stderr || '',
-			errorCode: 'ESELECTERROR'
-		});
+		throw new util.InstallError('Failed to install SDK', error);
 	}
-
 }
 
 export function getReleaseNotes (version: string): string {
@@ -114,4 +101,45 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 	}
 
 	return updateInfo;
+}
+
+/**
+ * Runs the Titanium CLI, first attempting to use the Ti CLI directly and falling back to via Appc
+ * CLI if not found
+ *
+ * @param {string[]} args - The arguments to be ran
+ */
+async function runTiCommand (args: string[]): Promise<ExecaReturnValue> {
+	try {
+		if (await cli.checkInstalledVersion()) {
+			return exec('ti', args, { shell: true });
+		}
+	} catch (error) {
+		// ignore and continue on to appc
+	}
+
+	try {
+		await checkLoggedIn();
+	} catch (error) {
+		throw new util.InstallError('Failed to run appc cli as you are not logged in.', {
+			stderr: '',
+			stdout: ''
+		});
+	}
+
+	try {
+		return exec('appc', [ 'ti', ...args ], { shell: true });
+	} catch (error) {
+		// ignore and throw
+	}
+
+	throw new Error('Failed to run');
+}
+
+async function checkLoggedIn (): Promise<void> {
+	const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
+	const whoami = JSON.parse(stdout);
+	if (!whoami.username) {
+		throw new Error('Not logged in');
+	}
 }
