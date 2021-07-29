@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.3.0...v1.4.0) (2021-07-29)
+
+
+### Features
+
+* replace titaniumlib with direct calls to ti cli ([eac929f](https://github.com/appcelerator/titanium-editor-commons/commit/eac929f77dcb99b09638fdfaecbdccfbf6e0c4c1))
+
 # [1.3.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.2.5...v1.3.0) (2021-07-21)
 
 
