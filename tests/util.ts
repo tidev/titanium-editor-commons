@@ -219,7 +219,15 @@ export function mockSdkList (stub: sinon.SinonStub, version?: string): void {
 	}
 }
 
-export function mockSdkInstall (stub: sinon.SinonStub, version: string, useAppc = false) {
+/**
+ * Mocks the ti sdk install command
+ *
+ *
+ * @param {sinon.SinonStub} stub - Sinon stub insance
+ * @param {string} version - Version to be installed
+ * @param {boolean} [useAppc=false] - Whether the command is appc ti or ti
+ */
+export function mockSdkInstall (stub: sinon.SinonStub, version: string, useAppc = false): void {
 	if (useAppc) {
 		stub
 			.withArgs('ti', sinon.match.any, sinon.match.any)
