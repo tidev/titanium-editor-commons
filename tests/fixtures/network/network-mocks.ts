@@ -22,13 +22,6 @@ export function mockAppcCoreRequest (version: string): void {
 // we use nock.reply and fs.readFileSync instead of nock.replyWithFile to ensure that the files are
 // read before setting up any fs mocks. If we used nock.replyWitFile we get errors
 
-export function mockSDKRequest (): void {
-	nock('https://appc-mobilesdk-server.s3-us-west-2.amazonaws.com')
-		.get('/releases.json')
-		.reply(200, fs.readFileSync(path.join(__dirname, 'sdk-response.json'), 'utf8'));
-
-}
-
 export function mockNpmRequest (): void {
 	nock('https://registry.npmjs.org')
 		.get('/appcelerator/latest')
