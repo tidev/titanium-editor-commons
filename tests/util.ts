@@ -1,4 +1,3 @@
-import * as titaniumlib from 'titaniumlib';
 import * as path from 'path';
 import * as os from 'os';
 import mockFS from 'mock-fs';
@@ -124,79 +123,116 @@ export function mockNode (stub: sinon.SinonStub, version?: string): void {
 			.rejects({ stderr: '/bin/sh: node: command not found' });
 	}
 }
+
 /**
- * Mocks titaniumlibs sdk.getInstalledSDKs to return the requested SDK alongside an older GA SDK
+ *
+ * @param {sinon.SinonStub} stub - The sinon stub instance
+ */
+
+export function mockSdkListReleases(stub: sinon.SinonStub): void {
+	stub
+		.withArgs('ti', [ 'sdk', 'list', '--releases', '--output', 'json' ], sinon.match.any)
+		.resolves({ stdout: `{
+			"releases": {
+				"8.0.0.GA": "https://github.com/appcelerator/titanium_mobile/releases/download/8_0_0_GA/mobilesdk-8.0.0.GA-osx.zip"
+			}
+		}` });
+}
+
+/**
+ * Mocks the ti sdk list output to return the requested SDK alongside an older GA SDK
  * (7.0.2.GA) and a non GA SDK (8.1.0.v20190416065710)
  *
+ * @param {sinon.SinonStub} stub - The sinon stub instance
  * @param {String} version - The version to insert, if the value is undefined then an empty array will be returned
  */
-export function mockSdk(version?: string): void {
-	if (version === undefined) {
-		global.sandbox
-			.stub(titaniumlib.sdk, 'getInstalledSDKs')
-			.returns([]);
-	} else {
-		global.sandbox
-			.stub(titaniumlib.sdk, 'getInstalledSDKs')
-			.returns([
-				{
-					name: '7.0.2.GA',
-					manifest: {
-						name: '7.0.2.v20180209105903',
-						version: '7.0.2',
-						moduleAPIVersion: {
-							iphone: '2',
-							android: '4',
-							windows: '4'
+export function mockSdkList (stub: sinon.SinonStub, version?: string): void {
+	mockNpmCli(stub, 'titanium', '5.3.0');
+	if (version) {
+		stub
+			.withArgs('ti', [ 'sdk', 'list', '--output', 'json' ], sinon.match.any)
+			.resolves({ stdout: `{
+				"sdks": {
+					"7.0.2.GA": {
+						"name": "7.0.2.GA",
+						"manifest": {
+							"name": "7.0.2.v20180209105903",
+							"version": "7.0.2",
+							"moduleAPIVersion": {
+								"iphone": "2",
+								"android": "4",
+								"windows": "4"
+							},
+							"timestamp": "2/9/2018 19:05",
+							"githash": "5ef0c56",
+							"platforms": [
+								"iphone",
+								"android"
+							]
 						},
-						timestamp: '2/9/2018 19:05',
-						githash: '5ef0c56',
-						platforms: [
-							'iphone',
-							'android'
-						]
+						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA"
 					},
-					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA'
-				},
-				{
-					name: `${version}.GA`,
-					manifest: {
-						name: `${version}.v20181115134726`,
-						version,
-						moduleAPIVersion: {
-							iphone: '2',
-							android: '4',
-							windows: '6'
+					"8.1.0.v20190416065710": {
+						"name": "8.1.0.v20190416065710",
+						"manifest": {
+							"name": "8.1.0.v20190416065710",
+							"version": "8.1.0",
+							"moduleAPIVersion": {
+								"iphone": "2",
+								"android": "4",
+								"windows": "7"
+							},
+							"timestamp": "4/16/2019 14:03",
+							"githash": "37f6d88",
+							"platforms": [
+								"iphone",
+								"android"
+							]
 						},
-						timestamp: '11/15/2018 21:52',
-						githash: '2e5a7423d0',
-						platforms: [
-							'iphone',
-							'android'
-						]
+						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710"
 					},
-					path: `/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/${version}.GA`
-				},
-				{
-					name: '8.1.0.v20190416065710',
-					manifest: {
-						name: '8.1.0.v20190416065710',
-						version: '8.1.0',
-						moduleAPIVersion: {
-							iphone: '2',
-							android: '4',
-							windows: '7'
+					"${version}.GA": {
+						"name": "${version}.GA",
+						"manifest": {
+							"name": "${version}.v20181115134726",
+							"version": "${version}",
+							"moduleAPIVersion": {
+								"iphone": "2",
+								"android": "4",
+								"windows": "6"
+							},
+							"timestamp": "11/15/2018 21:52",
+							"githash": "2e5a7423d0",
+							"platforms": [
+								"iphone",
+								"android"
+							]
 						},
-						timestamp: '4/16/2019 14:03',
-						githash: '37f6d88',
-						platforms: [
-							'iphone',
-							'android'
-						]
-					},
-					path: '/Users/eharris/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710'
+						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/${version}.GA"
+					}
 				}
-			]);
+			}` });
+	} else {
+		stub
+			.withArgs('ti', [ 'sdk', 'list', '--output', 'json' ], sinon.match.any)
+			.resolves({ stdout: '{ "sdks": {} }' });
+	}
+}
+
+export function mockSdkInstall (stub: sinon.SinonStub, version: string, useAppc = false) {
+	if (useAppc) {
+		stub
+			.withArgs('ti', sinon.match.any, sinon.match.any)
+			.resolves({ stdout: '{}' });
+
+		stub
+			.withArgs('appc', [ 'ti', 'sdk', 'install', version, '--default' ], sinon.match.any)
+			.resolves({ stdout: '{}' });
+	} else {
+		mockNpmCli(stub, 'titanium', '5.3.0');
+		stub
+			.withArgs('ti', [ 'sdk', 'install', version, '--default' ], sinon.match.any)
+			.resolves({ stdout: '{}' });
 	}
 }
 

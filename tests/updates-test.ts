@@ -1,4 +1,3 @@
-import * as titaniumlib from 'titaniumlib';
 import * as path from 'path';
 import * as util from '../src/util';
 
@@ -13,8 +12,8 @@ import os from 'os';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 
-import { mockAppcCoreRequest, mockNpmRequest, mockSDKRequest, mockNodeRequest } from './fixtures/network/network-mocks';
-import { mockAppcCli, mockNode, mockNpmCli, mockNpmInstall, mockOS, mockSdk } from './util';
+import { mockAppcCoreRequest, mockNpmRequest, mockNodeRequest } from './fixtures/network/network-mocks';
+import { mockAppcCli, mockNode, mockNpmCli, mockNpmInstall, mockOS, mockSdkList, mockSdkListReleases, mockSdkInstall } from './util';
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
@@ -35,8 +34,10 @@ describe('updates', () => {
 
 	describe('titanium.sdk', () => {
 		it('checkForUpdate with installed SDKS', async () => {
-			mockSdk('7.5.0');
-			mockSDKRequest();
+			const stub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, '7.5.0');
+			mockSdkListReleases(stub);
 
 			const update = await titanium.sdk.checkForUpdate();
 			expect(update.currentVersion).to.equal('7.5.0.GA');
@@ -46,8 +47,10 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with no installed SDKS', async () => {
-			mockSdk(undefined);
-			mockSDKRequest();
+			const stub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, undefined);
+			mockSdkListReleases(stub);
 
 			const update = await titanium.sdk.checkForUpdate();
 			expect(update.currentVersion).to.equal('');
@@ -57,8 +60,10 @@ describe('updates', () => {
 		});
 
 		it('checkForUpdate with latest installed', async () => {
-			mockSdk('8.0.0');
-			mockSDKRequest();
+			const stub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, '8.0.0');
+			mockSdkListReleases(stub);
 
 			const update = await titanium.sdk.checkForUpdate();
 			expect(update.currentVersion).to.equal('8.0.0.GA');
@@ -68,52 +73,35 @@ describe('updates', () => {
 		});
 
 		it('install with titanium cli', async () => {
-
-			global.sandbox
-				.stub(titaniumlib.sdk, 'install')
-				.resolves('');
-
 			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
-
-			const selectStub = execStub
-				.withArgs('ti', sinon.match.any, sinon.match.any)
-				.resolves({ stdout: '{}' } as execa.ExecaReturnValue);
-
-			mockNpmCli(execStub, 'titanium', '5.3.0');
+			mockSdkInstall(execStub, '8.0.0.GA', false);
 
 			await titanium.sdk.installUpdate('8.0.0.GA');
-			expect(selectStub).to.have.been.calledOnceWith('ti', [ 'sdk', 'select', '8.0.0.GA' ], { shell: true });
+			const installCall = execStub.getCall(1);
+			expect(installCall.args).to.deep.equal([ 'ti', [ 'sdk', 'install', '8.0.0.GA', '--default' ], { shell: true } ]);
 		});
 
 		it('install with appc cli logged in', async () => {
-			global.sandbox
-				.stub(titaniumlib.sdk, 'install')
-				.resolves('');
-
 			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+			mockSdkInstall(execStub, '8.0.0.GA', true);
 
 			const whoamiStub = execStub
-				.withArgs('appc', [ 'whoami', '-o', 'json'], sinon.match.any)
+				.withArgs('appc', [ 'whoami', '-o', 'json' ], sinon.match.any)
 				.resolves({ stdout: '{ "username": "bob" }' } as execa.ExecaReturnValue);
-
-			const selectStub = execStub
-				.withArgs('appc', [ 'ti', 'sdk', 'select', '8.0.0.GA' ], sinon.match.any)
-				.resolves({ stdout: '' } as execa.ExecaReturnValue);
 
 			mockNpmCli(execStub, 'titanium');
 			mockAppcCli(execStub, '6.6.6', '4.2.13');
 
 			await titanium.sdk.installUpdate('8.0.0.GA');
+
 			expect(whoamiStub).to.have.been.calledOnceWith('appc', [ 'whoami', '-o', 'json' ], { shell: true });
-			expect(selectStub).to.have.been.calledOnceWith('appc', [ 'ti', 'sdk', 'select', '8.0.0.GA' ], { shell: true });
+			const installCall = execStub.getCall(2);
+			expect(installCall.args).to.deep.equal([ 'appc', [ 'ti', 'sdk', 'install', '8.0.0.GA', '--default' ], { shell: true } ]);
 		});
 
 		it('install with appc cli logged out', async () => {
-			global.sandbox
-				.stub(titaniumlib.sdk, 'install')
-				.resolves('');
-
 			const execStub: sinon.SinonStub = global.sandbox.stub(util, 'exec');
+			mockSdkInstall(execStub, '8.0.0.GA', true);
 
 			execStub
 				.withArgs('appc', [ 'whoami', '-o', 'json'], sinon.match.any)
@@ -122,7 +110,7 @@ describe('updates', () => {
 			mockNpmCli(execStub, 'titanium');
 			mockAppcCli(execStub, '6.6.6', '4.2.13');
 
-			await expect(titanium.sdk.installUpdate('8.0.0.GA')).to.eventually.be.rejectedWith('Failed to select SDK as you are not logged in');
+			await expect(titanium.sdk.installUpdate('8.0.0.GA')).to.eventually.be.rejectedWith('Failed to run appc cli as you are not logged in');
 		});
 
 		it('getReleaseNotes()', () => {
@@ -354,7 +342,7 @@ describe('updates', () => {
 			expect(url).to.deep.equal('https://nodejs.org/en/blog/release/v10.13.0/');
 		});
 
-		(process.platform === 'darwin' ? it : it.skip)('should fail if sudo require', async () => {
+		(process.platform === 'darwin' ? it : it.skip)('should fail if sudo required', async () => {
 			mockNodeRequest();
 			fixProcessPlatform = mockOS('darwin');
 			const stub = global.sandbox.stub(execa, 'command');
@@ -513,9 +501,9 @@ describe('updates', () => {
 		it('useAppcTooling false no updates', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
-			mockSDKRequest();
+			mockSdkListReleases(stub);
 			mockNpmRequest();
-			mockSdk('8.0.0');
+			mockSdkList(stub, '8.0.0');
 			mockNode(stub, '12.18.2');
 			mockNpmCli(stub, 'alloy', '1.15.4');
 			mockNpmCli(stub, 'titanium', '5.3.0');
@@ -527,9 +515,9 @@ describe('updates', () => {
 		it('useAppcTooling false with updates', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
-			mockSDKRequest();
+			mockSdkListReleases(stub);
 			mockNpmRequest();
-			mockSdk('8.0.0');
+			mockSdkList(stub, '8.0.0');
 			mockNode(stub, '12.18.1');
 			mockNpmCli(stub, 'alloy', '1.15.3');
 			mockNpmCli(stub, 'titanium', '5.3.0');
@@ -549,9 +537,9 @@ describe('updates', () => {
 		it('useAppcTooling true no updates', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
-			mockSDKRequest();
+			mockSdkListReleases(stub);
 			mockNpmRequest();
-			mockSdk('8.0.0');
+			mockSdkList(stub, '8.0.0');
 			mockNode(stub, '12.18.2');
 			mockAppcCoreRequest('6.6.6');
 			mockAppcCli(stub, '6.6.6', '4.2.13', true);
@@ -563,9 +551,9 @@ describe('updates', () => {
 		it('useAppcTooling true with updates', async () => {
 			const stub = global.sandbox.stub(util, 'exec');
 			mockNodeRequest();
-			mockSDKRequest();
+			mockSdkListReleases(stub);
 			mockNpmRequest();
-			mockSdk('8.0.0');
+			mockSdkList(stub, '8.0.0');
 			mockNode(stub, '12.18.1');
 			mockAppcCoreRequest('6.6.6');
 			mockAppcCli(stub, '6.6.6', '4.2.12', true);
