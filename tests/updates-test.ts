@@ -354,8 +354,8 @@ describe('updates', () => {
 				await node.installUpdate('1.2.3');
 			} catch (error) {
 				expect(error).to.be.instanceOf(util.InstallError);
-				expect(error.metadata.errorCode).to.equal('EACCES');
-				expect(error.metadata.command).to.match(/installer -pkg \S+ -target \//);
+				expect((error as util.InstallError).metadata.errorCode).to.equal('EACCES');
+				expect((error as util.InstallError).metadata.command).to.match(/installer -pkg \S+ -target \//);
 				return;
 			}
 			throw new Error('installUpdate did not throw');
@@ -416,8 +416,8 @@ describe('updates', () => {
 				await alloy.installUpdate('1.15.14');
 			} catch (error) {
 				expect(error).to.be.instanceOf(util.InstallError);
-				expect(error.metadata.errorCode).to.equal('EACCES');
-				expect(error.metadata.command).to.equal('npm install -g alloy@1.15.14 --json');
+				expect((error as util.InstallError).metadata.errorCode).to.equal('EACCES');
+				expect((error as util.InstallError).metadata.command).to.equal('npm install -g alloy@1.15.14 --json');
 				return;
 			}
 			throw new Error('installUpdate did not throw');
@@ -485,8 +485,8 @@ describe('updates', () => {
 				await titanium.cli.installUpdate('5.3.0');
 			} catch (error) {
 				expect(error).to.be.instanceOf(util.InstallError);
-				expect(error.metadata.errorCode).to.equal('EACCES');
-				expect(error.metadata.command).to.equal('npm install -g titanium@5.3.0 --json');
+				expect((error as util.InstallError).metadata.errorCode).to.equal('EACCES');
+				expect((error as util.InstallError).metadata.command).to.equal('npm install -g titanium@5.3.0 --json');
 				return;
 			}
 			throw new Error('installUpdate did not throw');

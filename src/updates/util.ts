@@ -1,31 +1,6 @@
 import execa from 'execa';
 import got from 'got';
-import { exec } from '../util';
-
-interface InstallErrorMetadata {
-	code?: number;
-	errorCode?: string;
-	exitCode?: number;
-	stderr: string;
-	stdout: string;
-	command?: string;
-}
-
-export class InstallError extends Error {
-	public code: string;
-	public metadata: InstallErrorMetadata;
-
-	constructor (
-		message: string,
-		metadata: InstallErrorMetadata,
-		code = 'EINSTALLFAILED'
-	) {
-		super(message);
-
-		this.code = code;
-		this.metadata = metadata || {};
-	}
-}
+import { exec, InstallError } from '../util';
 
 /**
  * Check the version of a package that is installed globally via npm
@@ -66,8 +41,10 @@ export async function installNpmPackage(name: string, version: string): Promise<
 		return await exec('npm', [ 'install', '-g', `${name}@${version}`, '--json' ], { shell: true });
 	} catch (error) {
 		try {
-			const jsonResponse = JSON.parse(error.metadata.stdout);
-			error.metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
+			if (error instanceof InstallError && error.metadata.stdout) {
+				const jsonResponse = JSON.parse(error.metadata.stdout);
+				error.metadata.errorCode = jsonResponse.error && jsonResponse.error.code;
+			}
 		} catch (_error) {
 			// squash
 		}

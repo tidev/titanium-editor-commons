@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import stream from 'stream';
 import got from 'got';
 import os from 'os';
-import { exec } from '../../util';
+import { exec, InstallError } from '../../util';
 import execa from 'execa';
 
 async function getVersion(): Promise<string | undefined> {
@@ -84,18 +84,18 @@ export async function installUpdate(version: string): Promise<execa.ExecaReturnV
 	try {
 		return await exec(command, args, { shell: true });
 	} catch (error) {
-		const stdout = error?.metadata.stdout;
-		if (stdout && stdout.toLowerCase().includes('installer: must be run as root to install this package')) {
-			error.metadata.errorCode = 'EACCES';
+		if (error instanceof InstallError) {
+			const stdout = error?.metadata.stdout;
+			if (stdout && stdout.toLowerCase().includes('installer: must be run as root to install this package')) {
+				error.metadata.errorCode = 'EACCES';
+			}
 		}
 		throw error;
 	}
 }
 
 export function getReleaseNotes(version: string): string {
-
 	return `https://nodejs.org/en/blog/release/v${semver.clean(version)}/`;
-
 }
 
 export async function checkForUpdate(supportedVersions?: string): Promise<UpdateInfo> {
