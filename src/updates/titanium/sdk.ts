@@ -2,8 +2,7 @@ import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import * as cli from './cli';
 import { ProductNames } from '../product-names';
-import { exec } from '../../util';
-import * as util from '../util';
+import { exec, InstallError } from '../../util';
 import { ExecaReturnValue } from 'execa';
 
 interface SDKInfo {
@@ -27,7 +26,7 @@ export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 		const result = await runTiCommand([ 'sdk', 'list', '--output', 'json' ]);
 		stdout = result.stdout;
 	} catch (error) {
-		if (error instanceof util.InstallError) {
+		if (error instanceof InstallError) {
 			throw error;
 		}
 	}
@@ -68,11 +67,11 @@ export async function installUpdate (version: string): Promise<void> {
 	try {
 		await runTiCommand([ 'sdk', 'install', version, '--default' ]);
 	} catch (error) {
-		if (error instanceof util.InstallError) {
+		if (error instanceof InstallError) {
 			throw error;
 		}
 
-		throw new util.InstallError('Failed to install SDK', error);
+		throw new InstallError('Failed to install SDK');
 	}
 }
 
@@ -138,7 +137,7 @@ async function checkLoggedIn (): Promise<void> {
 	const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
 	const whoami = JSON.parse(stdout);
 	if (!whoami.username) {
-		throw new util.InstallError('Failed to run appc cli as you are not logged in.', {
+		throw new InstallError('Failed to run appc cli as you are not logged in.', {
 			stderr: '',
 			stdout: ''
 		}, 'ENOTLOGGEDIN');

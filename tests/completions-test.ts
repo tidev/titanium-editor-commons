@@ -143,8 +143,8 @@ describe('completions', () => {
 				await generateSDKCompletions(true, '8.1.0.GA', '', CompletionsFormat.v1);
 			} catch (error) {
 				expect(error).to.be.instanceOf(CustomError);
-				expect(error.message).to.equal('The current projects SDK version 8.1.0.GA, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions.');
-				expect(error.code).to.equal('ESDKNOTINSTALLED');
+				expect((error as CustomError).message).to.equal('The current projects SDK version 8.1.0.GA, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions.');
+				expect((error as CustomError).code).to.equal('ESDKNOTINSTALLED');
 			}
 		});
 		it('Generate SDK Completions with pre-existing completions', async () => {
