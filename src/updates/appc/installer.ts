@@ -32,7 +32,7 @@ export function getReleaseNotes (): string {
 }
 
 export async function checkForUpdate (): Promise<UpdateInfo> {
-	const [ currentVersion, latestVersion ] = await Promise.all<string|undefined, string>([
+	const [ currentVersion, latestVersion ] = await Promise.all([
 		checkInstalledVersion(),
 		checkLatestVersion()
 	]);
