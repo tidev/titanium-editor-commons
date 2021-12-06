@@ -99,7 +99,7 @@ export function getReleaseNotes(version: string): string {
 }
 
 export async function checkForUpdate(supportedVersions?: string): Promise<UpdateInfo> {
-	const [ currentVersion, latestVersion ] = await Promise.all<string | undefined, string>([
+	const [ currentVersion, latestVersion ] = await Promise.all([
 		checkInstalledVersion(),
 		checkLatestVersion(supportedVersions)
 	]);
