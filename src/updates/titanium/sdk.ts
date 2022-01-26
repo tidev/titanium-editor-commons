@@ -119,27 +119,8 @@ async function runTiCommand (args: string[]): Promise<ExecaReturnValue> {
 			return exec('ti', args, { shell: true });
 		}
 	} catch (error) {
-		// ignore and continue on to appc
-	}
-
-	await checkLoggedIn();
-
-	try {
-		return exec('appc', [ 'ti', ...args ], { shell: true });
-	} catch (error) {
-		// ignore and throw
+		// ignore
 	}
 
 	throw new Error('Failed to run');
-}
-
-async function checkLoggedIn (): Promise<void> {
-	const { stdout } = await exec('appc', [ 'whoami', '-o', 'json' ], { shell: true });
-	const whoami = JSON.parse(stdout);
-	if (!whoami.username) {
-		throw new InstallError('Failed to run appc cli as you are not logged in.', {
-			stderr: '',
-			stdout: ''
-		}, 'ENOTLOGGEDIN');
-	}
 }

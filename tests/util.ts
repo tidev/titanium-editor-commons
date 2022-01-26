@@ -1,61 +1,5 @@
-import * as path from 'path';
-import * as os from 'os';
-import mockFS from 'mock-fs';
-import sinon from 'sinon';
+import * as sinon from 'sinon';
 import execa from 'execa';
-
-/**
- * Mocks the main appc cli executable and outputs the specified core and installer versions
- *
- * @param {sinon.SinonStub} stub - A stub created by stubbing the spawn method on child_process
- * @param {string} coreVersion - Value of the core version to output
- * @param {string} installerVersion - Value of the installer version to output
- * @param {boolean} mockVersionFile - Whether to mock the appc cli version file
- */
-export function mockAppcCli (stub: sinon.SinonStub, coreVersion?: string, installerVersion?: string, mockVersionFile = false): void {
-	if (coreVersion && installerVersion) {
-		stub
-			.withArgs('appc', [ '--version', '--output', 'json' ], sinon.match.any)
-			.resolves({ stdout: `{"NPM":"${installerVersion}","CLI":"${coreVersion}"}` } as execa.ExecaReturnValue);
-
-		if (mockVersionFile) {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
-			mockFS({
-				[installPath]: {
-					'.version': coreVersion,
-					[coreVersion]: {
-						package: {
-							'package.json': `{ "version": "${coreVersion}" }`
-						}
-					}
-				},
-			});
-		}
-		return;
-	} else {
-		stub
-			.withArgs('appc', sinon.match.any, sinon.match.any)
-			.rejects({ stderr: '/bin/sh: appc: command not found\n' });
-
-		mockNpmCli(stub, 'appcelerator', installerVersion);
-
-		if (coreVersion) {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
-			mockFS({
-				[installPath]: {
-					'.version': coreVersion,
-					[coreVersion]: {
-						package: {
-							'package.json': `{ "version": "${coreVersion}" }`
-						}
-					}
-				},
-			});
-		} else if (mockVersionFile) {
-			mockFS({});
-		}
-	}
-}
 
 /**
  * Mocks the npm cli to return data for the specified package
@@ -97,11 +41,11 @@ export function mockNpmInstall(stub: sinon.SinonStub, packageName: string, versi
 
 	if (throws) {
 		stub
-			.withArgs(`npm install -g ${packageName}@${version} --json`, global.sandbox.match.any)
+			.withArgs(`npm install -g ${packageName}@${version} --json`, sinon.match.any)
 			.rejects({ stdout: '{ "error": { "code": "EACCES" } }' } as execa.ExecaReturnValue);
 	} else {
 		stub
-			.withArgs(`npm install -g ${packageName}@${version} --json`, global.sandbox.match.any)
+			.withArgs(`npm install -g ${packageName}@${version} --json`, sinon.match.any)
 			.resolves({	stdout: '{ "error": { "code": "EACCES" } }' } as execa.ExecaReturnValue);
 	}
 }
@@ -225,23 +169,12 @@ export function mockSdkList (stub: sinon.SinonStub, version?: string): void {
  *
  * @param {sinon.SinonStub} stub - Sinon stub insance
  * @param {string} version - Version to be installed
- * @param {boolean} [useAppc=false] - Whether the command is appc ti or ti
  */
-export function mockSdkInstall (stub: sinon.SinonStub, version: string, useAppc = false): void {
-	if (useAppc) {
-		stub
-			.withArgs('ti', sinon.match.any, sinon.match.any)
-			.resolves({ stdout: '{}' });
-
-		stub
-			.withArgs('appc', [ 'ti', 'sdk', 'install', version, '--default' ], sinon.match.any)
-			.resolves({ stdout: '{}' });
-	} else {
-		mockNpmCli(stub, 'titanium', '5.3.0');
-		stub
-			.withArgs('ti', [ 'sdk', 'install', version, '--default' ], sinon.match.any)
-			.resolves({ stdout: '{}' });
-	}
+export function mockSdkInstall (stub: sinon.SinonStub, version: string): void {
+	mockNpmCli(stub, 'titanium', '5.3.0');
+	stub
+		.withArgs('ti', [ 'sdk', 'install', version, '--default' ], sinon.match.any)
+		.resolves({ stdout: '{}' });
 }
 
 /**
