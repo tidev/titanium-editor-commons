@@ -1,6 +1,6 @@
+import * as util from '../src/util';
 import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
 import { CustomError } from '../src/completions/util';
-import * as util from '../src/util';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -16,47 +16,14 @@ import execa from 'execa';
 chai.use(chaiAsPromised);
 const expect = chai.expect;
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
+let sandbox: sinon.SinonSandbox;
 
-function mockAppcCli (noInstall = false) {
-	const installPath = path.join(os.homedir(), '.appcelerator', 'install');
-	if (noInstall) {
-		return {
-			[installPath]: {}
-		};
-	} else {
-		return {
-			[installPath]: {
-				'.version': '4.2.0',
-				'4.2.0': {
-					package: {
-						'package.json': '{ "version": "4.2.0" }',
-						node_modules: {
-							alloy: {
-								'package.json': '{"version": "0.2.0"}',
-								Alloy: {
-									commands: {
-										compile: {
-											parsers: mockFS.directory({
-												items: parsers
-											}),
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			},
-		};
-	}
-}
-
-function mockNpmAlloy (noInstall = false) {
+async function mockNpmAlloy (noInstall = false) {
 	const installPath = path.join(os.homedir(), 'node_modules');
-	const stub = global.sandbox.stub(util, 'exec');
+	const stub = sandbox.stub(util, 'exec');
 
 	stub
-		.withArgs('npm', [ 'root', '-g' ], sinon.match.any)
+		.withArgs('npm', sinon.match.any, sinon.match.any)
 		.resolves({ stdout: installPath } as execa.ExecaReturnValue);
 
 	if (noInstall) {
@@ -76,6 +43,9 @@ function mockNpmAlloy (noInstall = false) {
 								}),
 							}
 						}
+					},
+					docs: {
+						'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'alloy-api.jsca'))
 					}
 				}
 			}
@@ -95,33 +65,29 @@ function mockCompletions () {
 describe('completions', () => {
 
 	beforeEach(() => {
+		sandbox = sinon.createSandbox();
 		mockFS.restore();
 	});
 
 	afterEach(() => {
 		mockFS.restore();
+		sandbox.restore();
 	});
 
 	describe('completions.generateAlloyCompletions', () => {
-		it('Generate Alloy Completions from appc cli', async () => {
-			mockFS(mockAppcCli());
-			const completions = await generateAlloyCompletions(true);
-			expect(completions).to.equal('0.2.0');
-
-		});
 		it('Generate AlloyCompletions from npm', async () => {
-			mockFS({ ...mockAppcCli(true), ...mockNpmAlloy() });
+			mockFS({ ...await mockNpmAlloy() });
 			const completions = await generateAlloyCompletions(true);
 			expect(completions).to.equal('0.2.0');
 		});
 
 		it('Generate Alloy Completions without alloy installed', async () => {
-			mockFS({ ...mockAppcCli(true), ...mockNpmAlloy(true) });
+			mockFS({ ...await mockNpmAlloy(true) });
 			await expect(generateAlloyCompletions(true)).to.be.rejectedWith(Error, 'Unable to find Alloy');
 		});
 
 		it('Generate Alloy Completions with pre-existing completions', async () => {
-			mockFS({ ...mockAppcCli(), ...mockCompletions() });
+			mockFS({ ...await mockNpmAlloy(), ...mockCompletions() });
 			const completions = await generateAlloyCompletions(false);
 			expect(completions).to.equal(undefined);
 		});
@@ -163,31 +129,9 @@ describe('completions', () => {
 
 	describe('completions.loadCompletions', () => {
 		it('Load Completions', async () => {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[installPath]: {
-					'.version': '4.2.0',
-					'4.2.0': {
-						package: {
-							'package.json': '{ "version": "4.2.0" }',
-							node_modules: {
-								alloy: {
-									'package.json': '{"version": "0.2.0"}',
-									Alloy: {
-										commands: {
-											compile: {
-												parsers: mockFS.directory({
-													items: parsers
-												}),
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				},
+				...await mockNpmAlloy(),
 				[FIXTURES_DIR]: {
 					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'ti-api.jsca'))
 				},
@@ -209,34 +153,9 @@ describe('completions', () => {
 
 	describe('completions.loadCompletions V2', () => {
 		it('Load Completions', async () => {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[installPath]: {
-					'.version': '4.2.0',
-					'4.2.0': {
-						package: {
-							'package.json': '{ "version": "4.2.0" }',
-							node_modules: {
-								alloy: {
-									'package.json': '{"version": "0.2.0"}',
-									Alloy: {
-										commands: {
-											compile: {
-												parsers: mockFS.directory({
-													items: parsers
-												}),
-											}
-										}
-									},
-									docs: {
-										'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'alloy-api.jsca'))
-									}
-								}
-							}
-						}
-					}
-				},
+				...await mockNpmAlloy(),
 				[FIXTURES_DIR]: {
 					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'ti-api.jsca'))
 				},
@@ -258,34 +177,9 @@ describe('completions', () => {
 
 	describe('completions.loadCompletions V3', () => {
 		it('Load Completions', async () => {
-			const installPath = path.join(os.homedir(), '.appcelerator', 'install');
 
 			mockFS({
-				[installPath]: {
-					'.version': '4.2.0',
-					'4.2.0': {
-						package: {
-							'package.json': '{ "version": "4.2.0" }',
-							node_modules: {
-								alloy: {
-									'package.json': '{"version": "0.2.0"}',
-									Alloy: {
-										commands: {
-											compile: {
-												parsers: mockFS.directory({
-													items: parsers
-												}),
-											}
-										}
-									},
-									docs: {
-										'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'alloy-api.jsca'))
-									}
-								}
-							}
-						}
-					}
-				},
+				...await mockNpmAlloy(),
 				[FIXTURES_DIR]: {
 					'api.jsca': await fs.readFile(path.join(FIXTURES_DIR, 'ti-api.jsca'))
 				},

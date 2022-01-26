@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
-import * as core from '../updates/appc/core';
 import { exec } from '../util';
 
 import os from 'os';
@@ -31,16 +30,10 @@ export function getAlloyCompletionsFileName (alloyVersion: string, completionsVe
  */
 export async function findAlloy (): Promise<{ alloyPath: string, alloyVersion: string }> {
 	let alloyPath;
-
-	const appcCliVersion = await core.checkInstalledVersion();
-	if (appcCliVersion) {
-		alloyPath = path.join(os.homedir(), '.appcelerator', 'install', appcCliVersion, 'package', 'node_modules', 'alloy');
-	} else {
-		const npmDir = await getNpmRoot();
-		const npmAlloyPath = path.join(npmDir, 'alloy');
-		if (await fs.pathExists(npmAlloyPath)) {
-			alloyPath = npmAlloyPath;
-		}
+	const npmDir = await getNpmRoot();
+	const npmAlloyPath = path.join(npmDir, 'alloy');
+	if (await fs.pathExists(npmAlloyPath)) {
+		alloyPath = npmAlloyPath;
 	}
 
 	if (!alloyPath) {
