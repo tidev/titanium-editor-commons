@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.4.0...v2.0.0) (2022-02-28)
+
+
+### Features
+
+* remove appc cli related code ([6c27dae](https://github.com/appcelerator/titanium-editor-commons/commit/6c27dae383430ea591deb10cb18d2d16869ac34b))
+
+# [1.5.1](https://github.com/appcelerator/titanium-editor-commons/compare/v1.5.0...v1.5.1) (2022-02-28)
+
+This is a republish of v1.4.0 as v1.5.0 was published as a semver minor incorrectly
+
+
 # [1.5.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.4.0...v1.5.0) (2022-02-28)
 
 
