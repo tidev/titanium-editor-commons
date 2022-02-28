@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.4.0...v1.5.0) (2022-02-28)
+
+
+### Features
+
+* remove appc cli related code ([6c27dae](https://github.com/appcelerator/titanium-editor-commons/commit/6c27dae383430ea591deb10cb18d2d16869ac34b))
+
 # [1.4.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.3.0...v1.4.0) (2021-07-29)
 
 
