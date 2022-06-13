@@ -69,7 +69,7 @@
     "eslint-config-axway": "^6.0.0",
     "eslint-plugin-mocha": "^9.0.0",
     "husky": "^7.0.1",
-    "lint-staged": "^12.1.5",
+    "lint-staged": "^13.0.1",
     "mocha": "^9.1.0",
     "mocha-jenkins-reporter": "^0.4.2",
     "mock-fs": "^5.0.0",
