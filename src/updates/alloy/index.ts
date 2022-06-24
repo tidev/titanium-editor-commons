@@ -4,7 +4,7 @@ import { ProductNames, UpdateInfo } from '..';
 import { checkInstalledNpmPackageVersion, checkLatestNpmPackageVersion, installNpmPackage } from '../util';
 
 export async function checkInstalledVersion(): Promise<string|undefined> {
-	return  checkInstalledNpmPackageVersion('alloy');
+	return checkInstalledNpmPackageVersion('alloy');
 }
 
 export async function checkLatestVersion(): Promise<string> {

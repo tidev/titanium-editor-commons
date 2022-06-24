@@ -54,7 +54,7 @@ describe('updates', () => {
 			mockSdkListReleases(stub);
 
 			const update = await titanium.sdk.checkForUpdate();
-			expect(update.currentVersion).to.equal('');
+			expect(update.currentVersion).to.equal(undefined);
 			expect(update.latestVersion).to.equal('8.0.0.GA');
 			expect(update.productName).to.equal('Titanium SDK');
 			expect(update.hasUpdate).to.equal(true);
@@ -71,6 +71,20 @@ describe('updates', () => {
 			expect(update.latestVersion).to.equal('8.0.0.GA');
 			expect(update.productName).to.equal('Titanium SDK');
 			expect(update.hasUpdate).to.equal(false);
+		});
+
+		it('checkForUpdate with no CLI installed', async () => {
+			const stub: sinon.SinonStub = sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, '8.0.0');
+			mockSdkListReleases(stub);
+			mockNpmCli(stub, 'titanium', undefined);
+
+			const update = await titanium.sdk.checkForUpdate();
+			expect(update.currentVersion).to.equal(undefined);
+			expect(update.latestVersion).to.equal('latest');
+			expect(update.productName).to.equal('Titanium SDK');
+			expect(update.hasUpdate).to.equal(true);
 		});
 
 		it('install with titanium cli', async () => {
