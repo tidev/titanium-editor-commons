@@ -92,7 +92,9 @@ export async function checkLatestVersion (): Promise<SDKInfo> {
 	let releases;
 	try {
 		const { stdout } = await runTiCommand([ 'sdk', 'list', '--releases', '--output', 'json' ]);
-		releases = Object.keys(JSON.parse(stdout).releases).map(name => name.replace('.GA', ''));
+		releases = Object.keys(JSON.parse(stdout).releases)
+			.filter(release => release.endsWith('GA'))
+			.map(name => name.replace('.GA', ''));
 	} catch (error) {
 		if (error instanceof InstallError) {
 			throw error;
@@ -106,7 +108,7 @@ export async function checkLatestVersion (): Promise<SDKInfo> {
 		};
 	}
 
-	const latest = releases?.sort(semver.rcompare)[0];
+	const latest = releases.sort(semver.rcompare)[0];
 	return {
 		name: `${latest}.GA`,
 		version: latest
