@@ -2,7 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { CompletionsFormat, JSCA, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
-import { CustomError, findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
+import { findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
+import { CustomError } from '../util';
 
 async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; types: TypeDictionary }> {
 	const types: TypeDictionary = {};

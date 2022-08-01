@@ -9,6 +9,21 @@ interface InstallErrorMetadata {
 	command?: string;
 }
 
+export interface Action {
+	title: string;
+	run: () => Promise<void>;
+}
+export class CustomError extends Error {
+
+	public actions: Action[]|undefined;
+	public code: string;
+	constructor(message: string, code: string, actions?: Action[]) {
+		super(message);
+		this.actions = actions;
+		this.code = code;
+	}
+}
+
 export class InstallError extends Error {
 	public code: string;
 	public metadata: InstallErrorMetadata;

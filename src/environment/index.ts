@@ -1,4 +1,5 @@
 import * as updates from '../updates';
+import { Action, CustomError } from '../util';
 
 interface Missing {
 	name: string;
@@ -10,15 +11,22 @@ interface Installed {
 	version: string;
 }
 
+interface Issue {
+	title: string;
+	actions: Action[]
+}
+
 interface EnvironmentInfo {
 	installed: Installed[];
 	missing: Missing[];
+	issues: Issue[];
 }
 
 export async function validateEnvironment(supportedVersions?: updates.SupportedVersions): Promise<EnvironmentInfo> {
 	const environmentInfo: EnvironmentInfo = {
 		installed: [],
-		missing: []
+		issues: [],
+		missing: [],
 	};
 
 	const nodeVersion = await updates.node.checkInstalledVersion();
@@ -71,20 +79,28 @@ export async function validateEnvironment(supportedVersions?: updates.SupportedV
 		});
 	}
 
-	const sdkVersion = await updates.titanium.sdk.checkInstalledVersion();
-
-	if (sdkVersion) {
-		environmentInfo.installed.push({
-			name: updates.ProductNames.TitaniumSDK,
-			version: sdkVersion.name
-		});
-	} else {
-		environmentInfo.missing.push({
-			name: updates.ProductNames.TitaniumSDK,
-			getInstallInfo: () => {
-				return updates.titanium.sdk.checkForUpdate();
-			}
-		});
+	try {
+		const sdkVersion = await updates.titanium.sdk.checkInstalledVersion(true);
+		if (sdkVersion) {
+			environmentInfo.installed.push({
+				name: updates.ProductNames.TitaniumSDK,
+				version: sdkVersion.name
+			});
+		} else {
+			environmentInfo.missing.push({
+				name: updates.ProductNames.TitaniumSDK,
+				getInstallInfo: () => {
+					return updates.titanium.sdk.checkForUpdate();
+				}
+			});
+		}
+	} catch (error) {
+		if (error instanceof CustomError && error.code === 'ESELECTEDSDKNOTINSTALLED') {
+			environmentInfo.issues.push({
+				title: error.message,
+				actions: error.actions || []
+			});
+		}
 	}
 
 	return environmentInfo;

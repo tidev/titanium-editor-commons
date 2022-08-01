@@ -89,78 +89,84 @@ export function mockSdkListReleases(stub: sinon.SinonStub): void {
  *
  * @param {sinon.SinonStub} stub - The sinon stub instance
  * @param {String} version - The version to insert, if the value is undefined then an empty array will be returned
+ * @param {String} activeSDK - The version to set as the active/selected SDK
  */
-export function mockSdkList (stub: sinon.SinonStub, version?: string): void {
-	mockNpmCli(stub, 'titanium', '5.3.0');
-	if (version) {
-		stub
-			.withArgs('ti', [ 'sdk', 'list', '--output', 'json' ], sinon.match.any)
-			.resolves({ stdout: `{
-				"sdks": {
-					"7.0.2.GA": {
-						"name": "7.0.2.GA",
-						"manifest": {
-							"name": "7.0.2.v20180209105903",
-							"version": "7.0.2",
-							"moduleAPIVersion": {
-								"iphone": "2",
-								"android": "4",
-								"windows": "4"
-							},
-							"timestamp": "2/9/2018 19:05",
-							"githash": "5ef0c56",
-							"platforms": [
-								"iphone",
-								"android"
-							]
-						},
-						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA"
-					},
-					"8.1.0.v20190416065710": {
-						"name": "8.1.0.v20190416065710",
-						"manifest": {
-							"name": "8.1.0.v20190416065710",
-							"version": "8.1.0",
-							"moduleAPIVersion": {
-								"iphone": "2",
-								"android": "4",
-								"windows": "7"
-							},
-							"timestamp": "4/16/2019 14:03",
-							"githash": "37f6d88",
-							"platforms": [
-								"iphone",
-								"android"
-							]
-						},
-						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710"
-					},
-					"${version}.GA": {
-						"name": "${version}.GA",
-						"manifest": {
-							"name": "${version}.v20181115134726",
-							"version": "${version}",
-							"moduleAPIVersion": {
-								"iphone": "2",
-								"android": "4",
-								"windows": "6"
-							},
-							"timestamp": "11/15/2018 21:52",
-							"githash": "2e5a7423d0",
-							"platforms": [
-								"iphone",
-								"android"
-							]
-						},
-						"path": "/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/${version}.GA"
-					}
-				}
-			}` });
-	} else {
-		stub
-			.withArgs('ti', [ 'sdk', 'list', '--output', 'json' ], sinon.match.any)
-			.resolves({ stdout: '{ "sdks": {} }' });
+export function mockSdkList (stub: sinon.SinonStub, version?: string, activeSDK?: string): void {
+	if (version && !activeSDK) {
+		activeSDK = version;
 	}
+
+	const output = {
+		activeSDK: activeSDK ? `${activeSDK}.GA` : undefined,
+		sdks: {}
+	};
+
+	if (version) {
+		output.sdks = {
+			'7.0.2.GA': {
+				name: '7.0.2.GA',
+				manifest: {
+					name: '7.0.2.v20180209105903',
+					version: '7.0.2',
+					moduleAPIVersion: {
+						iphone: '2',
+						android: '4',
+						windows: '4'
+					},
+					timestamp: '2/9/2018 19:05',
+					githash: '5ef0c56',
+					platforms: [
+						'iphone',
+						'android'
+					]
+				},
+				path: '/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/7.0.2.GA'
+			},
+			'8.1.0.v20190416065710': {
+				name: '8.1.0.v20190416065710',
+				manifest: {
+					name: '8.1.0.v20190416065710',
+					version: '8.1.0',
+					moduleAPIVersion: {
+						iphone: '2',
+						android: '4',
+						windows: '7'
+					},
+					timestamp: '4/16/2019 14:03',
+					githash: '37f6d88',
+					platforms: [
+						'iphone',
+						'android'
+					]
+				},
+				path: '/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/8.1.0.v20190416065710'
+			},
+			[`${version}.GA`]: {
+				name: `${version}.GA`,
+				manifest: {
+					name: `${version}.v20181115134726`,
+					version: `${version}`,
+					moduleAPIVersion: {
+						iphone: '2',
+						android: '4',
+						windows: '6'
+					},
+					timestamp: '11/15/2018 21:52',
+					githash: '2e5a7423d0',
+					platforms: [
+						'iphone',
+						'android'
+					]
+				},
+				path: `/Users/tester/Library/Application Support/Titanium/mobilesdk/osx/${version}.GA`
+			}
+		};
+	}
+
+	mockNpmCli(stub, 'titanium', '5.3.0');
+	stub
+		.withArgs('ti', [ 'sdk', 'list', '--output', 'json' ], sinon.match.any)
+		.resolves({ stdout: JSON.stringify(output) });
 }
 
 /**

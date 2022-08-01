@@ -1,8 +1,7 @@
 import * as completion from './completions';
 import * as environment from './environment';
 import * as updates from './updates';
-import { InstallError } from './util';
-import { CustomError } from './completions/util';
+import { InstallError, CustomError } from './util';
 
 const Errors = {
 	CustomError,

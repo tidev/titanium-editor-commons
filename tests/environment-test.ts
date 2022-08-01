@@ -87,5 +87,15 @@ describe('environment', () => {
 				]
 			);
 		});
+
+		it('validateEnvironment with installed SDKs', async () => {
+			const stub = sandbox.stub(util, 'exec');
+			mockNode(stub, '12.18.1');
+			mockNpmCli(stub, 'titanium', '5.3.0');
+			mockNpmCli(stub, 'alloy', '1.15.3');
+			mockSdkList(stub, '8.0.0', '7.0.0');
+
+			expect(environment.validateEnvironment()).to.eventually.throw(util.CustomError, 'Selected SDK 7.0.0.GA is not installed');
+		});
 	});
 });
