@@ -89,6 +89,24 @@ describe('updates', () => {
 		it('getReleaseNotes() should throw if cant determine major version', () => {
 			expect(() => titanium.sdk.getReleaseNotes('foo')).to.throw(Error, 'Failed to parse major version from foo');
 		});
+
+		it('should handle active sdk not matching', async () => {
+			const stub: sinon.SinonStub = sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, '8.0.0', '7.0.0');
+			mockSdkListReleases(stub);
+
+			expect(titanium.sdk.checkForUpdate()).to.eventually.throw(util.CustomError, 'Selected SDK 7.0.0.GA is not installed');
+		});
+
+		it('should handle active sdk not matching and no sdk installed', async () => {
+			const stub: sinon.SinonStub = sandbox.stub(util, 'exec');
+
+			mockSdkList(stub, undefined, '7.0.0');
+			mockSdkListReleases(stub);
+
+			expect(titanium.sdk.checkForUpdate()).to.eventually.throw(util.CustomError, 'Selected SDK 7.0.0.GA is not installed');
+		});
 	});
 
 	describe('node', () => {

@@ -2,7 +2,7 @@ import * as semver from 'semver';
 import { UpdateInfo } from '..';
 import * as cli from './cli';
 import { ProductNames } from '../product-names';
-import { exec, InstallError } from '../../util';
+import { CustomError, exec, InstallError } from '../../util';
 import { ExecaReturnValue } from 'execa';
 
 interface SDKInfo {
@@ -18,8 +18,17 @@ interface SDKListInfo {
 	}
 }
 
-export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
-	let latestSDK;
+interface SDKList {
+	activeSDK: string;
+	defaultInstallLocation: string;
+	installLocations: string[];
+	installed: Record<string, string>;
+	releases: Record<string, SDKListInfo>;
+	sdks: Record<string, SDKListInfo>
+}
+
+export async function checkInstalledVersion (validateSelected = false): Promise<SDKInfo|undefined> {
+	let latestSDK: SDKInfo|undefined;
 
 	let stdout;
 	try {
@@ -35,9 +44,14 @@ export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 		return;
 	}
 
-	const installedSdks: Record<string, SDKListInfo> = JSON.parse(stdout).sdks;
-
+	const { activeSDK, sdks: installedSdks } = JSON.parse(stdout) as SDKList;
+	// We only care about the active SDK check if there actually is an activeSDK in the output
+	let activeSDKMissing = activeSDK !== undefined;
 	for (const { manifest, name } of Object.values(installedSdks)) {
+		if (name === activeSDK) {
+			activeSDKMissing = false;
+		}
+
 		// ignore if not a GA
 		if (!name.includes('.GA')) {
 			continue;
@@ -48,6 +62,28 @@ export async function checkInstalledVersion (): Promise<SDKInfo|undefined> {
 				version: manifest.version
 			};
 		}
+	}
+
+	if (validateSelected && activeSDKMissing) {
+		const options = [
+			{
+				title: `Install ${activeSDK}`,
+				run() {
+					return installUpdate(activeSDK);
+				}
+			}
+		];
+
+		if (latestSDK) {
+			options.push({
+				title: `Select SDK ${latestSDK.name}`,
+				async run() {
+					await runTiCommand([ 'sdk', 'select', (latestSDK as SDKInfo).name ]);
+				}
+			});
+		}
+
+		throw new CustomError(`Selected SDK ${activeSDK} is not installed`, 'ESELECTEDSDKNOTINSTALLED', options);
 	}
 	return latestSDK;
 }

@@ -5,15 +5,6 @@ import { exec } from '../util';
 
 import os from 'os';
 
-export class CustomError extends Error {
-
-	public code: string;
-	constructor (message: string, code: string) {
-		super(message);
-		this.code = code;
-	}
-}
-
 export function getSDKCompletionsFileName (sdkVersion: string, completionsVersion: number): string {
 	return path.join(os.homedir(), '.titanium', 'completions', 'titanium', sdkVersion, `completions-v${completionsVersion}.json`);
 }

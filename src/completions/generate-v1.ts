@@ -2,7 +2,8 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import { CompletionsFormat, PropertiesDictionary, TagDictionary, TypeDictionary  } from './index';
-import { CustomError, findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
+import { findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
+import { CustomError } from '../util';
 
 /**
  * Generate completions for an Alloy version.

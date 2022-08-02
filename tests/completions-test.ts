@@ -1,6 +1,5 @@
 import * as util from '../src/util';
 import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
-import { CustomError } from '../src/completions/util';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -108,9 +107,9 @@ describe('completions', () => {
 			try {
 				await generateSDKCompletions(true, '8.1.0.GA', '', CompletionsFormat.v1);
 			} catch (error) {
-				expect(error).to.be.instanceOf(CustomError);
-				expect((error as CustomError).message).to.equal('The current projects SDK version 8.1.0.GA, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions.');
-				expect((error as CustomError).code).to.equal('ESDKNOTINSTALLED');
+				expect(error).to.be.instanceOf(util.CustomError);
+				expect((error as util.CustomError).message).to.equal('The current projects SDK version 8.1.0.GA, is not installed. Please update the SDK version in the tiapp to generate autocomplete suggestions.');
+				expect((error as util.CustomError).code).to.equal('ESDKNOTINSTALLED');
 			}
 		});
 		it('Generate SDK Completions with pre-existing completions', async () => {
