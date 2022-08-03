@@ -1,3 +1,15 @@
+# [2.1.0](https://github.com/appcelerator/titanium-editor-commons/compare/v2.0.0...v2.1.0) (2022-08-03)
+
+
+### Bug Fixes
+
+* **updates/sdk:** correctly handle no Titanium CLI being installed when checking for SDK updates ([#739](https://github.com/appcelerator/titanium-editor-commons/issues/739)) ([71efbd4](https://github.com/appcelerator/titanium-editor-commons/commit/71efbd4568f815fe83e370c2aafd6a5063680eae))
+
+
+### Features
+
+* **install/sdk:** check that the selected SDK is installed when validating environment ([#752](https://github.com/appcelerator/titanium-editor-commons/issues/752)) ([740f3ec](https://github.com/appcelerator/titanium-editor-commons/commit/740f3eccb0e88f41e1c325e376d61117f6b94c1f))
+
 # [2.0.0](https://github.com/appcelerator/titanium-editor-commons/compare/v1.4.0...v2.0.0) (2022-02-28)
 
 
