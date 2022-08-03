@@ -89,10 +89,26 @@ export async function checkInstalledVersion (validateSelected = false): Promise<
 }
 
 export async function checkLatestVersion (): Promise<SDKInfo> {
-	const { stdout } = await runTiCommand([ 'sdk', 'list', '--releases', '--output', 'json' ]);
-	const releases = Object.keys(JSON.parse(stdout).releases).map(name => name.replace('.GA', ''));
-	const latest = releases.sort(semver.rcompare)[0];
+	let releases;
+	try {
+		const { stdout } = await runTiCommand([ 'sdk', 'list', '--releases', '--output', 'json' ]);
+		releases = Object.keys(JSON.parse(stdout).releases)
+			.filter(release => release.endsWith('GA'))
+			.map(name => name.replace('.GA', ''));
+	} catch (error) {
+		if (error instanceof InstallError) {
+			throw error;
+		}
+	}
 
+	if (!releases) {
+		return {
+			name: 'latest',
+			version: 'latest'
+		};
+	}
+
+	const latest = releases.sort(semver.rcompare)[0];
 	return {
 		name: `${latest}.GA`,
 		version: latest
@@ -112,6 +128,9 @@ export async function installUpdate (version: string): Promise<void> {
 }
 
 export function getReleaseNotes (version: string): string {
+	if (version === 'latest') {
+		return 'https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Release_Notes/';
+	}
 	// https://titaniumsdk.com/guide/Titanium_SDK/Titanium_SDK_Release_Notes/Titanium_SDK_Release_Notes_10.x/Titanium_SDK_10.0.0.GA_Release_Note.html
 	const versionData = semver.parse(semver.coerce(version));
 	if (!versionData) {
@@ -127,7 +146,7 @@ export async function checkForUpdate (): Promise<UpdateInfo> {
 	]);
 
 	const updateInfo: UpdateInfo = {
-		currentVersion: currentVersion ? currentVersion.name : '',
+		currentVersion: currentVersion?.name || undefined,
 		latestVersion: latestVersion.name,
 		action: installUpdate,
 		productName: ProductNames.TitaniumSDK,
