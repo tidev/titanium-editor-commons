@@ -1,3 +1,10 @@
+# [2.2.0](https://github.com/appcelerator/titanium-editor-commons/compare/v2.1.0...v2.2.0) (2025-06-03)
+
+
+### Features
+
+* update default nodejs version range ([#816](https://github.com/appcelerator/titanium-editor-commons/issues/816)) ([80dcb07](https://github.com/appcelerator/titanium-editor-commons/commit/80dcb07818f52edea0215ad52ac7fdeacfce15a9))
+
 # [2.1.0](https://github.com/appcelerator/titanium-editor-commons/compare/v2.0.0...v2.1.0) (2022-08-03)
 
 
