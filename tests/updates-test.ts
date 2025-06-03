@@ -154,7 +154,7 @@ describe('updates', () => {
 			mockNode(stub, 'v8.7.0');
 
 			const url = await node.checkLatestVersion();
-			expect(url).to.deep.equal('12.18.2');
+			expect(url).to.deep.equal('22.6.0');
 
 		});
 
@@ -167,7 +167,7 @@ describe('updates', () => {
 			const update = await node.checkForUpdate();
 
 			expect(update.currentVersion).to.deep.equal('12.18.1');
-			expect(update.latestVersion).to.deep.equal('12.18.2');
+			expect(update.latestVersion).to.deep.equal('22.6.0');
 			expect(update.action).to.be.instanceOf(Function);
 			expect(update.productName).to.deep.equal('Node.js');
 			expect(update.priority).to.deep.equal(1);
@@ -178,12 +178,12 @@ describe('updates', () => {
 			mockNodeRequest();
 
 			const stub = sandbox.stub(util, 'exec');
-			mockNode(stub, 'v12.18.2');
+			mockNode(stub, 'v22.6.0');
 
 			const update = await node.checkForUpdate();
 
-			expect(update.currentVersion).to.deep.equal('12.18.2');
-			expect(update.latestVersion).to.deep.equal('12.18.2');
+			expect(update.currentVersion).to.deep.equal('22.6.0');
+			expect(update.latestVersion).to.deep.equal('22.6.0');
 			expect(update.action).to.be.instanceOf(Function);
 			expect(update.productName).to.deep.equal('Node.js');
 			expect(update.priority).to.deep.equal(1);
@@ -359,7 +359,7 @@ describe('updates', () => {
 			mockSdkListReleases(stub);
 			mockNpmRequest();
 			mockSdkList(stub, '8.0.0');
-			mockNode(stub, '12.18.2');
+			mockNode(stub, '22.6.0');
 			mockNpmCli(stub, 'alloy', '1.15.4');
 			mockNpmCli(stub, 'titanium', '5.3.0');
 
@@ -382,7 +382,7 @@ describe('updates', () => {
 
 			expect(updates[0].productName).to.equal('Node.js');
 			expect(updates[0].currentVersion).to.equal('12.18.1');
-			expect(updates[0].latestVersion).to.equal('12.18.2');
+			expect(updates[0].latestVersion).to.equal('22.6.0');
 
 			expect(updates[1].productName).to.equal('Alloy');
 			expect(updates[1].currentVersion).to.equal('1.15.3');

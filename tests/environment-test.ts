@@ -24,7 +24,7 @@ describe('environment', () => {
 	describe('validateEnvironment', () => {
 		it('validateEnvironment with all installed component ', async () => {
 			const stub = sandbox.stub(util, 'exec');
-			mockNode(stub, '12.18.2');
+			mockNode(stub, '22.6.0');
 			mockSdkList(stub, '7.5.0');
 			mockNpmCli(stub, 'titanium', '5.3.0');
 			mockNpmCli(stub, 'alloy', '1.15.3');
@@ -33,7 +33,7 @@ describe('environment', () => {
 			expect(env.missing).to.deep.equal([]);
 			expect(env.installed).to.deep.equal(
 				[
-					{ name: 'Node.js', version: '12.18.2' },
+					{ name: 'Node.js', version: '22.6.0' },
 					{ name: 'Alloy', version: '1.15.3' },
 					{ name: 'Titanium CLI', version: '5.3.0' },
 					{ name: 'Titanium SDK', version: '7.5.0.GA' }
