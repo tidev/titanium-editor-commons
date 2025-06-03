@@ -21,8 +21,8 @@ import { completion } from 'titanium-editor-commons';
 const alloyVersion = await completion.generateAlloyCompletions(true, completion.CompletionsFormat.v3);
 console.log(alloyVersion) // The Alloy version the completions were generated for
 
-// Generate a v3 completions file for SDK 10.0.2.GA, do not create one if it already exists
-const sdkVersion = await completion.generateSDKCompletions(false, '10.0.2.GA', '/Users/user/Library/Application Support/Titanium/mobilesdk/osx/10.0.2.GA', completion.CompletionsFormat.v3);
+// Generate a v3 completions file for SDK 12.7.0, do not create one if it already exists
+const sdkVersion = await completion.generateSDKCompletions(false, '12.7.0', '/Users/user/Library/Application Support/Titanium/mobilesdk/osx/12.7.0', completion.CompletionsFormat.v3);
 console.log(sdkVersion) // The SDK version the completions were generated for
 ```
 
@@ -32,7 +32,7 @@ console.log(sdkVersion) // The SDK version the completions were generated for
 import { completion } from 'titanium-editor-commons';
 
 // Load a v3 completions file
-const completions = await completion.loadCompletions('10.0.2.GA', completion.CompletionsFormat.v3)
+const completions = await completion.loadCompletions('12.7.0', completion.CompletionsFormat.v3)
 console.log(completions) // An object with `alloy` and `titanium` keys with their respective completions data. View the `CompletionsData` type for full information
 ```
 
@@ -43,8 +43,8 @@ This validates that an environment has the required tooling to perform Titanium 
 ```js
 import { environment } from 'titanium-editor-commons';
 
-// Validate the environment has the required Appc tooling. If Node.js is missing, require a version that matches the 12.x || 14.x range
-const details = await environment.validateEnvironment({ nodeJS: '12.x || 14.x'}, true);
+// Validate the environment has the required Appc tooling. If Node.js is missing, require a version that matches the 18.x || 22.x range
+const details = await environment.validateEnvironment({ nodeJS: '18.x || 22.x'}, true);
 console.log(details); // An object with `installed` and `missing` keys
 ```
 
@@ -56,8 +56,8 @@ You can either check for all updates or import the individual products and check
 ```js
 import { updates } from 'titanium-editor-commons';
 
-// Check for updates in the OSS tooling, and check if there is an Node.js update that matches the 12.x || 14.x range
-const newUpdates = await updates.checkAllUpdates({ nodeJS: '12.x || 14.x'}, false);
+// Check for updates in the OSS tooling, and check if there is an Node.js update that matches the 18.x || 22.x range
+const newUpdates = await updates.checkAllUpdates({ nodeJS: '18.x || 22.x'}, false);
 console.log(newUpdates); // An array of products that require updates, sorted in order of the priority they should be instaleld
 
 const alloyUpdate = await updates.alloy.checkForUpdate();
