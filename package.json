@@ -3,7 +3,7 @@
   "version": "2.3.0",
   "description": "",
   "main": "index.js",
-  "author": "Axway, Inc. <npmjs@appcelerator.com>",
+  "author": "TiDev, Inc. <npm@tidev.io>",
   "maintainers": [
     "Ewan Harris <eharris@axway.com>"
   ],
@@ -36,8 +36,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/appcelerator/titanium-editor-commons.git"
+    "url": "git+https://github.com/tidev/titanium-editor-commons.git"
   },
+  "homepage": "https://github.com/tidev/titanium-editor-commons",
   "keywords": [],
   "devDependencies": {
     "@commitlint/cli": "^16.0.1",
