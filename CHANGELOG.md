@@ -1,3 +1,10 @@
+# [2.3.0](https://github.com/appcelerator/titanium-editor-commons/compare/v2.2.0...v2.3.0) (2025-07-17)
+
+
+### Features
+
+* **updates/node:** raise minimum supported node version ([#817](https://github.com/appcelerator/titanium-editor-commons/issues/817)) ([063aaed](https://github.com/appcelerator/titanium-editor-commons/commit/063aaed57084a880d503b6da843ec1a0107a399e))
+
 # [2.2.0](https://github.com/appcelerator/titanium-editor-commons/compare/v2.1.0...v2.2.0) (2025-06-03)
 
 
