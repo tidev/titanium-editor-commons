@@ -4,10 +4,12 @@ import * as path from 'path';
 import { CompletionsFormat, JSCA, PropertiesDictionary, TagDictionary, TypeDictionary } from './index';
 import { findAlloy, getAlloyCompletionsFileName, getSDKCompletionsFileName } from './util';
 import { CustomError } from '../util';
+import { mergePropertyDescription } from './descriptions';
 
 async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; types: TypeDictionary }> {
 	const types: TypeDictionary = {};
 	const props: PropertiesDictionary = {};
+	const descriptions = new Map<string, Map<string, string>>();
 
 	for (const type of api.types) {
 		if (type.deprecated) {
@@ -20,19 +22,20 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 			if (prop.name.indexOf('Modules.') !== 0) {
 
 				propertyNamesOfType.push(prop.name);
+				const entries = descriptions.get(prop.name) || new Map<string, string>();
+				descriptions.set(prop.name, entries);
+				const description = mergePropertyDescription(entries, type.name, prop.description);
 
 				// property name
 				if (props[prop.name]) { // if duplicated property name - merge available values
-					Object.assign(props[prop.name], {
-						description: props[prop.name].description === prop.description.replace(/<p>|<\/p>/g, '') ? props[prop.name].description : ''
-					});
+					props[prop.name].description = description;
 					if (prop.constants?.length) {
 						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}
 				} else {
 					props[prop.name] = {
-						description: prop.description.replace(/<p>|<\/p>/g, ''),
+						description,
 						type: prop.type,
 						readOnly: ((prop.permission !== 'read-only')),
 						values: []
