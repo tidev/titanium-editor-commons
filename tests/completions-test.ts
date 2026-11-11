@@ -1,5 +1,5 @@
 import * as util from '../src/util';
-import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
+import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, getSDKCompletionsFileName, loadCompletions } from '../src/completions';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -125,6 +125,82 @@ describe('completions', () => {
 			expect(completions).to.equal(undefined);
 		});
 	});
+
+	for (const format of [ CompletionsFormat.v2, CompletionsFormat.v3 ]) {
+		describe(`property descriptions V${format}`, () => {
+			const cases = [
+				{
+					name: 'preserves a description that has no duplicate',
+					descriptions: [ '<p>Bottom navigation style.</p>' ],
+					expected: 'Bottom navigation style.'
+				},
+				{
+					name: 'preserves different descriptions with their source types',
+					descriptions: [ '<p>Bottom navigation controller for switching tabs.</p>', '<p>Bottom navigation style.</p>' ],
+					expected: 'Ti.UI.Android: Bottom navigation controller for switching tabs.\n\nTi.UI: Bottom navigation style.'
+				},
+				{
+					name: 'keeps an identical description once without adding labels',
+					descriptions: [ '<p>Bottom navigation style.</p>', '<p>Bottom navigation style.</p>' ],
+					expected: 'Bottom navigation style.'
+				},
+				{
+					name: 'keeps an existing description when a duplicate is empty',
+					descriptions: [ '<p>Bottom navigation style.</p>', '' ],
+					expected: 'Bottom navigation style.'
+				},
+				{
+					name: 'uses a later description when the first is empty',
+					descriptions: [ '', '<p>Bottom navigation style.</p>' ],
+					expected: 'Bottom navigation style.'
+				},
+				{
+					name: 'deduplicates repeated text after different descriptions',
+					descriptions: [ '<p>Android tab style.</p>', '<p>Tab style.</p>', '<p>Android tab style.</p>' ],
+					expected: 'Ti.UI.Android: Android tab style.\n\nTi.UI: Tab style.'
+				},
+				{
+					name: 'preserves all three distinct descriptions',
+					descriptions: [ '<p>Android tab style.</p>', '<p>Tab style.</p>', '<p>Style of this tab group.</p>' ],
+					expected: 'Ti.UI.Android: Android tab style.\n\nTi.UI: Tab style.\n\nTi.UI.TabGroup: Style of this tab group.'
+				},
+				{
+					name: 'leaves undocumented properties empty',
+					descriptions: [ '', '' ],
+					expected: ''
+				}
+			];
+
+			for (const testCase of cases) {
+				it(testCase.name, async () => {
+					const names = [ 'Titanium.UI.Android', 'Titanium.UI', 'Titanium.UI.TabGroup' ];
+					const types = testCase.descriptions.map((description, index) => ({
+						name: names[index],
+						description: '',
+						functions: [],
+						events: [],
+						properties: [ {
+							name: 'tabStyle',
+							permission: 'read-write',
+							type: 'Number',
+							description,
+							constants: [ String(index) ]
+						} ]
+					}));
+					mockFS({
+						[FIXTURES_DIR]: { 'api.jsca': JSON.stringify({ types }) }
+					});
+
+					await generateSDKCompletions(true, '14.0.0.GA', FIXTURES_DIR, format);
+					const generated = await fs.readJSON(getSDKCompletionsFileName('14.0.0.GA', format));
+
+					expect(generated.properties.tabStyle.description).to.equal(testCase.expected);
+					expect(generated.properties.tabStyle.type).to.equal('Number');
+					expect(generated.properties.tabStyle.values).to.deep.equal(types.map((type, index) => String(index)));
+				});
+			}
+		});
+	}
 
 	describe('completions.loadCompletions', () => {
 		it('Load Completions', async () => {
