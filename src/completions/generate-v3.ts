@@ -30,11 +30,13 @@ async function parseJSCA (api: JSCA): Promise<{ props: PropertiesDictionary; typ
 						const values: string[] = props[prop.name].values ? props[prop.name].values.concat(prop.constants) : prop.constants;
 						props[prop.name].values = [ ...new Set(values) ];
 					}
+					// The shared entry is read-only only if every occurrence is read-only.
+					props[prop.name].readOnly = props[prop.name].readOnly && prop.permission === 'read-only';
 				} else {
 					props[prop.name] = {
 						description: prop.description.replace(/<p>|<\/p>/g, ''),
 						type: prop.type,
-						readOnly: ((prop.permission !== 'read-only')),
+						readOnly: prop.permission === 'read-only',
 						values: []
 
 					};

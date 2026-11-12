@@ -1,5 +1,5 @@
 import * as util from '../src/util';
-import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, loadCompletions } from '../src/completions';
+import { CompletionsFormat, generateAlloyCompletions, generateSDKCompletions, getSDKCompletionsFileName, loadCompletions } from '../src/completions';
 
 import chai from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -196,5 +196,34 @@ describe('completions', () => {
 			expect(completions.titanium.sdkVersion).to.equal('8.1.0.GA');
 			expect(completions.titanium.version).to.equal(3);
 		});
+	});
+
+	describe('property permissions V3', () => {
+		const cases = [
+			{ name: 'marks read-only properties', permissions: [ 'read-only' ], expected: true },
+			{ name: 'keeps read-write properties writable', permissions: [ 'read-write' ], expected: false },
+			{ name: 'keeps write-only properties writable', permissions: [ 'write-only' ], expected: false },
+			{ name: 'does not infer read-only when permission is omitted', permissions: [ undefined ], expected: false },
+			{ name: 'merges duplicate read-only properties', permissions: [ 'read-only', 'read-only' ], expected: true },
+			{ name: 'preserves a writable occurrence after a read-only one', permissions: [ 'read-only', 'read-write' ], expected: false },
+			{ name: 'preserves a writable occurrence before a read-only one', permissions: [ 'read-write', 'read-only' ], expected: false }
+		];
+		for (const testCase of cases) {
+			it(testCase.name, async () => {
+				const types = testCase.permissions.map((permission, index) => ({
+					name: `Titanium.Test${index}`,
+					description: '', functions: [], events: [],
+					properties: [ { name: 'state', type: 'Boolean', description: 'State.', permission, constants: [] } ]
+				}));
+				mockFS({ [FIXTURES_DIR]: { 'api.jsca': JSON.stringify({ types }) } });
+				await generateSDKCompletions(true, '14.0.0.GA', FIXTURES_DIR, CompletionsFormat.v3);
+				const generated = await fs.readJSON(getSDKCompletionsFileName('14.0.0.GA', CompletionsFormat.v3));
+				expect(generated.properties.state.readOnly).to.equal(testCase.expected);
+				expect(generated.properties.state.values).to.deep.equal([ 'true', 'false' ]);
+				for (const type of Object.values(generated.types)) {
+					expect((type as { properties: string[] }).properties).to.include('state');
+				}
+			});
+		}
 	});
 });
