@@ -26,6 +26,8 @@ const sdkVersion = await completion.generateSDKCompletions(false, '12.7.0', '/Us
 console.log(sdkVersion) // The SDK version the completions were generated for
 ```
 
+In v3, a property's `readOnly` flag is `true` when its JSCA permission is `read-only`. A shared property name is marked read-only only when every occurrence is read-only; a writable occurrence keeps the shared entry writable, independently of type order. This aggregate flag does not describe each type's permission separately. Check that type's SDK contract when assigning a shared property.
+
 ### Loading completions
 
 ```js
